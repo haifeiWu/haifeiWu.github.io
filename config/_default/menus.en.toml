@@ -1,0 +1,46 @@
+# -- Main Menu --
+
+[[main]]
+  name = "About"
+  pageRef = "about"
+  weight = 10
+
+[[main]]
+  name = "Projects"
+  pageRef = "projects"
+  weight = 20
+
+[[main]]
+  name = "Blog"
+  pageRef = "posts"
+  weight = 30
+
+[[main]]
+  name = "Tags"
+  pageRef = "tags"
+  weight = 40
+
+[[main]]
+  identifier = "github"
+  pre = "github"
+  url = "https://github.com/haifeiWu"
+  weight = 200
+
+[[main]]
+  identifier = "juejin"
+  pre = "link"
+  url = "https://juejin.cn/user/1574156379896103/posts"
+  weight = 300
+
+[[main]]
+  identifier = "email"
+  pre = "mail"
+  url = "mailto:whfstudio@163.com"
+  weight = 400
+
+# -- Footer Menu --
+
+[[footer]]
+  name = "Tags"
+  pageRef = "tags"
+  weight = 10

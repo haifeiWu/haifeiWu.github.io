@@ -1,0 +1,24 @@
+locale = "zh-cn"
+label = "简体中文"
+weight = 9
+title = "haifeiWu"
+
+[params]
+  displayName = "简体中文"
+  isoCode = "zh-cn"
+  rtl = false
+  dateFormat = "2006-01-02"
+  logo = "img/avatar.png"
+  description = "后端开发者，专注分布式系统、中间件与 AI 工程。"
+
+[params.author]
+  name = "haifeiWu"
+  email = "whfstudio@163.com"
+  image = "img/avatar.png"
+  headline = "from coder to master……"
+  bio = "北京后端开发者，热爱分布式系统、中间件与 AI 工程，正在深入学习 Go 与 Rust。"
+  links = [
+    { github = "https://github.com/haifeiWu" },
+    { email = "mailto:whfstudio@163.com" },
+    { link = "https://juejin.cn/user/1574156379896103/posts" },
+  ]
