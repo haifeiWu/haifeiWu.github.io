@@ -1,0 +1,12 @@
+{{/* 在 zh-cn stub 页面中渲染英文版文章内容（中文站博客复用） */}}
+{{- $key := .Page.Params.translationKey -}}
+{{- $found := false -}}
+{{- range .Page.Translations -}}
+  {{- if eq .Params.translationKey $key -}}
+    {{- .Content | safeHTML -}}
+    {{- $found = true -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $found -}}
+  {{- warnf "[include-post] key=%s translations=%d pageLang=%s" $key (len .Page.Translations) .Page.Lang -}}
+{{- end -}}

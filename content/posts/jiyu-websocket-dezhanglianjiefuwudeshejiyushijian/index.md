@@ -4,6 +4,7 @@ title: "基于 websocket 的长连接服务的设计与实践"
 date: "2024-06-18T18:29:44+08:00"
 tags: ["后端", "架构", "程序员"]
 summary: "业务场景 在常见的 pk 游戏的场景下，pk 双方需要实时感知双方的做题状态，因此长连接在这种场景下的应用极为常见，本文将基于此来讨论下长连接服务的设计与实现。"
+translationKey: "jiyu-websocket-dezhanglianjiefuwudeshejiyushijian"
 ---
 
 > 📌 本文原发布于掘金社区：[基于 websocket 的长连接服务的设计与实践](https://juejin.cn/post/7381669580471173157)

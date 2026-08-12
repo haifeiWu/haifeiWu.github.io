@@ -4,6 +4,7 @@ title: "GFS论文阅读"
 date: "2023-03-08T15:32:18+08:00"
 tags: ["后端", "架构", "算法"]
 summary: "概述 这篇论文主要讲述了Google文件系统（GFS）的设计和实现。它介绍了GFS的目标、架构、组件、数据流和一些关键技术，如租约、快照和恢复等。"
+translationKey: "gfslunwenyuedu"
 ---
 
 > 📌 本文原发布于掘金社区：[GFS论文阅读](https://juejin.cn/post/7208048755123437626)
