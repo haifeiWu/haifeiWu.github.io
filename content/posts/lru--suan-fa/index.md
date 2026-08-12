@@ -1,20 +1,21 @@
 ---
+aliases: ["/zh-cn/posts/lru--suan-fa/"]
 categories: ["Java"]
 title: "LRU 算法"
 date: "2019-06-29T00:00:00+08:00"
 tags: ["缓存", "算法", "设计模式"]
-summary: "What ？ LRU 是 Least Recently Used 的缩写，即最近最少使用，是一种常用的页面置换算法，选择最近最久未使用的页面予以淘汰。该算法赋予每个页面一个访问字段，用来记录一个页面自上次被访问以来所经历的时间 t，当须淘汰"
+summary: "What？LRU 是 Least Recently Used 的缩写，即最近最少使用，是一种常用的页面置换算法，选择最近最久未使用的页面予以淘汰。该算法赋予每个页面一个访问字段，用来记录一个页面自上次被访问以来所经历的时间 t，当须淘汰"
 translationKey: "lru--suan-fa"
 ---
 
 > 📌 本文原发布于代码星冰乐：[LRU 算法](https://changhuin.github.io/article/2019/9a45/)
 
-## What ？
+## What？
 
 LRU 是 Least Recently Used 的缩写，即最近最少使用，是一种常用的页面置换算法，选择最近最久未使用的页面予以淘汰。该算法赋予每个页面一个访问字段，用来记录一个页面自上次被访问以来所经历的时间 t，当须淘汰一个页面时，选择现有页面中其 t 值最大的，即最近最久未使用的页面予以淘汰。-百科\
-上面是对操作系统中 LRU 算法的阐述，本文说的 LRU 主要是指该算法在业务层的缓存算法中的应用，总而言之，基本的实现逻辑是一样的。
+上面是对操作系统中 LRU 算法的阐述，本文说的 LRU 主要是指该算法在业务层缓存算法中的应用，总而言之，基本的实现逻辑是一样的。
 
-## How ？
+## How？
 
 算法思想：
 
@@ -122,7 +123,7 @@ LRU 是 Least Recently Used 的缩写，即最近最少使用，是一种常用�
 
 ### JDK 中的算法实现
 
-通常不需要我们自己专门实现一个此算法的数据结构，使用 JDK 内置的 LinkedHashMap 稍加改造即可。\
+通常不需要我们自己专门实现此算法的数据结构，使用 JDK 内置的 LinkedHashMap 稍加改造即可。\
 
     public class LRUCache<K, V> extends LinkedHashMap<K, V> {
         private final int MAX_CACHE_SIZE;

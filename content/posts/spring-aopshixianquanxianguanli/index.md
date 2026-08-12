@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/spring-aopshixianquanxianguanli/"]
 categories: ["后端"]
 title: "Spring aop 实现权限管理"
 date: "2017-12-06T19:45:36+08:00"

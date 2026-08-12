@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/fuzayewuxiaxiangmysqldaoru30wantiaoshujudaimayouhuadecaikeng/"]
 categories: ["后端"]
 title: "复杂业务下向 MySQL 导入 30万条数据代码优化的踩坑记录"
 date: "2018-04-23T21:37:17+08:00"

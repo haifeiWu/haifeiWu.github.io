@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/zookeeper-yufenbushisuo/"]
 categories: ["后端"]
 title: "ZooKeeper 与分布式锁"
 date: "2021-01-13T11:15:16+08:00"

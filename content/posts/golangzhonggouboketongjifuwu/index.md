@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/golangzhonggouboketongjifuwu/"]
 categories: ["后端"]
 title: "golang 重构博客统计服务"
 date: "2018-06-25T18:13:12+08:00"

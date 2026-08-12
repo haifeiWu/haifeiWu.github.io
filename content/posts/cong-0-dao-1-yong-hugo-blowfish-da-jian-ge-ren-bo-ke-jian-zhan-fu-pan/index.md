@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/cong-0-dao-1-yong-hugo-blowfish-da-jian-ge-ren-bo-ke-jian-zhan-fu-pan/"]
 categories: ["总结"]
 title: "从 0 到 1：用 Hugo + Blowfish 搭建个人博客（建站复盘）"
 date: "2026-08-12T00:00:00+08:00"

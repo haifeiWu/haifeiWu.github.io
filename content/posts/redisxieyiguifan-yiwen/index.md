@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/redisxieyiguifan-yiwen/"]
 categories: ["后端"]
 title: "Redis 协议规范（译文）"
 date: "2018-08-08T00:57:50+08:00"

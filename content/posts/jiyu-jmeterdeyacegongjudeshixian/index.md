@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/jiyu-jmeterdeyacegongjudeshixian/"]
 categories: ["后端"]
 title: "基于 JMeter 的压测工具的实现"
 date: "2017-11-05T19:54:39+08:00"

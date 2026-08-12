@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/ceshihuanjingfuwuqiyingpansaimanwentipaicha/"]
 categories: ["后端"]
 title: "测试环境服务器硬盘塞满问题排查"
 date: "2018-03-12T18:06:57+08:00"

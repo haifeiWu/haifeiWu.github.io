@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/wolijiedelingkaobei/"]
 categories: ["阅读"]
 title: "我理解的零拷贝"
 date: "2019-11-09T11:19:31+08:00"

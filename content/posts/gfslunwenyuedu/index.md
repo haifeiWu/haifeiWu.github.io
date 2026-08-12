@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/gfslunwenyuedu/"]
 categories: ["后端"]
 title: "GFS 论文阅读"
 date: "2023-03-08T15:32:18+08:00"

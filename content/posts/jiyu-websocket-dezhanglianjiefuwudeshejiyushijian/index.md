@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/jiyu-websocket-dezhanglianjiefuwudeshejiyushijian/"]
 categories: ["后端"]
 title: "基于 WebSocket 的长连接服务的设计与实践"
 date: "2024-06-18T18:29:44+08:00"

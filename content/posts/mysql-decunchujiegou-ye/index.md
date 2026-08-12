@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/mysql-decunchujiegou-ye/"]
 categories: ["后端"]
 title: "MySQL 的存储结构-页"
 date: "2023-12-20T16:05:02+08:00"

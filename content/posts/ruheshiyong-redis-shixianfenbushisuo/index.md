@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/ruheshiyong-redis-shixianfenbushisuo/"]
 categories: ["后端"]
 title: "如何使用 Redis 实现分布式锁"
 date: "2023-12-19T11:18:09+08:00"

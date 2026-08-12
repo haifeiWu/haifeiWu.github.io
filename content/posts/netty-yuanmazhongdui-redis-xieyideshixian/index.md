@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/netty-yuanmazhongdui-redis-xieyideshixian/"]
 categories: ["后端"]
 title: "Netty 源码中对 Redis 协议的实现"
 date: "2018-08-09T08:13:02+08:00"

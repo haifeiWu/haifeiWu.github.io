@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/kafkadereplicajizhi/"]
 categories: ["后端"]
 title: "Kafka 的 Replica 机制"
 date: "2021-05-12T12:19:58+08:00"

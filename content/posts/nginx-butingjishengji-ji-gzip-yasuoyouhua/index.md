@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/nginx-butingjishengji-ji-gzip-yasuoyouhua/"]
 categories: ["后端"]
 title: "Nginx 不停机升级 及 gzip 压缩优化"
 date: "2018-11-14T10:04:53+08:00"

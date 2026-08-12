@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/wolijiede-tcp-lianjie/"]
 categories: ["后端"]
 title: "我理解的 TCP 连接"
 date: "2019-11-27T12:01:51+08:00"

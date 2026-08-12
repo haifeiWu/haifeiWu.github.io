@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/gaoxingnengwusuoduilie-disruptor-chutiyan/"]
 categories: ["后端"]
 title: "高性能无锁队列 Disruptor 初体验"
 date: "2018-08-16T08:26:03+08:00"

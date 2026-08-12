@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/peisongtezhengpingtai/"]
 categories: ["后端"]
 title: "配送特征平台"
 date: "2021-06-21T16:02:12+08:00"

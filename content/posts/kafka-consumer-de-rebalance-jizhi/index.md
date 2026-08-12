@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/kafka-consumer-de-rebalance-jizhi/"]
 categories: ["后端"]
 title: "Kafka Consumer 的 Rebalance 机制"
 date: "2019-11-19T16:22:34+08:00"

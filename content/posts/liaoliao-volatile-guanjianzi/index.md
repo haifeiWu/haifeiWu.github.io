@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/liaoliao-volatile-guanjianzi/"]
 categories: ["后端"]
 title: "聊聊 volatile 关键字"
 date: "2018-10-22T10:07:21+08:00"

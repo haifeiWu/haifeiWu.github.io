@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/xianshang-elk-jiqunjiankangzhi-red-zhuangtaiwentipaichayujie/"]
 categories: ["后端"]
 title: "线上 ELK 集群健康值 red 状态问题排查与解决"
 date: "2018-08-07T12:31:09+08:00"

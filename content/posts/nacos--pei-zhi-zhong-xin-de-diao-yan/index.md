@@ -1,9 +1,10 @@
 ---
+aliases: ["/zh-cn/posts/nacos--pei-zhi-zhong-xin-de-diao-yan/"]
 categories: ["Java"]
 title: "Nacos 配置中心的调研"
 date: "2019-03-15T00:00:00+08:00"
 tags: ["Nacos", "配置中心", "微服务"]
-summary: "进一步减少不必要的重复工作，最近打算在把之前的项目重构成 SpringBoot 项目之后，源于 N 台机器配置的管理甚是麻烦，所以便有了进一步将项目的配置进行统一的管理的需求。  是什么？ Nacos 致力于帮助您发现、配置和管理微服务。N"
+summary: "进一步减少不必要的重复工作，最近打算在把之前的项目重构成 SpringBoot 项目之后，源于 N 台机器配置的管理甚是麻烦，所以便有了进一步将项目的配置进行统一的管理的需求。是什么？Nacos 致力于帮助您发现、配置和管理微服务。N"
 translationKey: "nacos--pei-zhi-zhong-xin-de-diao-yan"
 ---
 
@@ -41,7 +42,7 @@ Nacos 通过下载发行包或者编译源码包来获取。
 ### 启动 Nacos
 
 **Linux/Unix/Mac**\
-启动命令(standalone代表着单机模式运行，非集群模式):\
+启动命令(standalone 代表着单机模式运行，非集群模式):\
 
     sh startup.sh -m standalone
 
@@ -50,11 +51,11 @@ Nacos 通过下载发行包或者编译源码包来获取。
 
     cmd startup.cmd
 
-或者双击startup.cmd运行文件。
+或者双击 startup.cmd 运行文件。
 
 ## Springboot 下使用 Nacos 配置中心
 
-新建 springboot 的 web项目，可以通过 <a href="https://start.spring.io/" target="_blank" rel="noopener">SpringBoot start</a> 来新建。并添加 Nacos 的配置中心依赖。
+新建 springboot 的 web 项目，可以通过 <a href="https://start.spring.io/" target="_blank" rel="noopener">SpringBoot start</a> 来新建。并添加 Nacos 的配置中心依赖。
 
     <dependency>      
         <groupId>com.alibaba.boot</groupId>      

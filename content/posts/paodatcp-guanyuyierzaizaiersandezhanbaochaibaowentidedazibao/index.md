@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/paodatcp-guanyuyierzaizaiersandezhanbaochaibaowentidedazibao/"]
 categories: ["后端"]
 title: "炮打 TCP – 关于一而再再而三的粘包拆包问题的大字报"
 date: "2018-08-10T16:44:00+08:00"

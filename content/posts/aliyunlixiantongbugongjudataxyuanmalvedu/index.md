@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/aliyunlixiantongbugongjudataxyuanmalvedu/"]
 categories: ["后端"]
 title: "阿里云离线同步工具 DataX 源码略读"
 date: "2018-07-06T10:47:57+08:00"

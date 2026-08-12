@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/shuangchongjianchasuodingyudanli/"]
 categories: ["后端"]
 title: "双重检查锁定与单例"
 date: "2019-11-13T14:47:53+08:00"

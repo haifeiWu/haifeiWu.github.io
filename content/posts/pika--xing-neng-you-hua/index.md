@@ -1,19 +1,20 @@
 ---
+aliases: ["/zh-cn/posts/pika--xing-neng-you-hua/"]
 categories: ["Java"]
 title: "Pika 性能优化"
 date: "2019-01-09T00:00:00+08:00"
 tags: ["Redis", "存储", "性能优化"]
-summary: "最近在迁移线上 Redis 到 Pika 的过程中，因为业务需要，需要对项目中原有对 pika 读取操作的代码进行优化，最后结果就是读取百万级的数据由原来的30降低到10分钟左右。  Pika 是什么 Pika 是DBA需求，基础架构组开发"
+summary: "最近在迁移线上 Redis 到 Pika 的过程中，因为业务需要，需要对项目中原有对 pika 读取操作的代码进行优化，最后结果就是读取百万级的数据由原来的 30 降低到 10分钟左右。Pika 是什么 Pika 是 DBA 需求，基础架构组开发"
 translationKey: "pika--xing-neng-you-hua"
 ---
 
 > 📌 本文原发布于代码星冰乐：[Pika 性能优化](https://changhuin.github.io/article/2019/5b7c/)
 
-最近在迁移线上 Redis 到 Pika 的过程中，因为业务需要，需要对项目中原有对 pika 读取操作的代码进行优化，最后结果就是读取百万级的数据由原来的30降低到10分钟左右。\
+最近在迁移线上 Redis 到 Pika 的过程中，因为业务需要，需要对项目中原有对 pika 读取操作的代码进行优化，最后结果就是读取百万级的数据由原来的 30 降低到 10分钟左右。\
 
 ## Pika 是什么
 
-Pika 是DBA需求，基础架构组开发的大容量、高性能、持久化、支持多数据结构的类Redis存储系统，目前已经开源，最新版本为 Pika 2.2 版本。它所使用的 nemo 引擎本质上是对Rocksdb的改造和封装，使其支持多数据结构的存储，并在 nemo 引擎之上封装redis接口，使其完全支持 Redis 协议。Pika 兼容 string、hash、list、zset、set 等多数据结构，使用磁盘而非内存存储数据解决了 Redis 由于存储数据量巨大而导致内存不够用的容量瓶颈。这段话摘自官网，感兴趣的小伙伴请转 <a href="https://github.com/Qihoo360/pika" target="_blank" rel="noopener">pika</a>
+Pika 是 DBA 需求，基础架构组开发的大容量、高性能、持久化、支持多数据结构的类 Redis 存储系统，目前已经开源，最新版本为 Pika 2.2 版本。它所使用的 nemo 引擎本质上是对 Rocksdb 的改造和封装，使其支持多数据结构的存储，并在 nemo 引擎之上封装 Redis 接口，使其完全支持 Redis 协议。Pika 兼容 string、hash、list、zset、set 等多数据结构，使用磁盘而非内存存储数据解决了 Redis 由于存储数据量巨大而导致内存不够用的容量瓶颈。这段话摘自官网，感兴趣的小伙伴请转 <a href="https://github.com/Qihoo360/pika" target="_blank" rel="noopener">pika</a>
 
 ## 为什么要进行优化
 

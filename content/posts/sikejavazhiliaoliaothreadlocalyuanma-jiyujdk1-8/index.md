@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/sikejavazhiliaoliaothreadlocalyuanma-jiyujdk1-8/"]
 categories: ["后端"]
 title: "死磕 Java 之聊聊 ThreadLocal 源码(基于 JDK1.8)"
 date: "2018-05-09T22:15:42+08:00"

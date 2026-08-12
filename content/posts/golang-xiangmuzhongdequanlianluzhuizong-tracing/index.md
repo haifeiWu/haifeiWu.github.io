@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/golang-xiangmuzhongdequanlianluzhuizong-tracing/"]
 categories: ["后端"]
 title: "golang 项目中的全链路追踪（tracing）"
 date: "2024-03-30T18:01:24+08:00"

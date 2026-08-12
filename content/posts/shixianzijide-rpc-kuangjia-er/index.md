@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/shixianzijide-rpc-kuangjia-er/"]
 categories: ["后端"]
 title: "实现自己的 RPC 框架（二）"
 date: "2019-08-06T14:13:41+08:00"

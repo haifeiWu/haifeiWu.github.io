@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/hadoop-mapreduce-yigeshinianhuiguyuweilaiqushi-lunwenzongshu/"]
 categories: ["后端"]
 title: "Hadoop MapReduce：一个十年回顾与未来趋势（论文综述）"
 date: "2024-06-18T18:32:24+08:00"

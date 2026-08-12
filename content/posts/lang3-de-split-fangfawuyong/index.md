@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/lang3-de-split-fangfawuyong/"]
 categories: ["后端"]
 title: "lang3 的 split 方法误用"
 date: "2019-08-07T13:53:17+08:00"

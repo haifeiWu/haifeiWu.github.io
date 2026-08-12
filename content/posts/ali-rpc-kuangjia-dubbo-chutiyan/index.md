@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/ali-rpc-kuangjia-dubbo-chutiyan/"]
 categories: ["后端"]
 title: "阿里 RPC 框架 Dubbo 初体验"
 date: "2018-06-07T23:11:29+08:00"

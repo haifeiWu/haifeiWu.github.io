@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/shishishujubingfaxieru-redis-youhua/"]
 categories: ["后端"]
 title: "实时数据并发写入 Redis 优化"
 date: "2019-11-12T10:57:02+08:00"

@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/docker-kuaisushangshouzhinan/"]
 categories: ["后端"]
 title: "Docker 快速上手指南"
 date: "2018-12-03T14:09:51+08:00"

@@ -1,4 +1,5 @@
 ---
+aliases: ["/zh-cn/posts/classpath-he-classpathshiyongyudaodewenti/"]
 categories: ["后端"]
 title: "classpath* 和 classpath 使用遇到的问题"
 date: "2018-05-24T22:00:41+08:00"

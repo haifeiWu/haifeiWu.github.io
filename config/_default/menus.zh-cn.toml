@@ -12,12 +12,12 @@
 
 [[main]]
   name = "博客"
-  pageRef = "posts"
+  url = "/posts/"
   weight = 30
 
 [[main]]
   name = "标签"
-  pageRef = "tags"
+  url = "/tags/"
   weight = 40
 
 [[main]]
@@ -42,5 +42,5 @@
 
 [[footer]]
   name = "标签"
-  pageRef = "tags"
+  url = "/tags/"
   weight = 10
