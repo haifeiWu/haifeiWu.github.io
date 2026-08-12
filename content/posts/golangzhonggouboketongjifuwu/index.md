@@ -9,7 +9,7 @@ translationKey: "golangzhonggouboketongjifuwu"
 
 > 📌 本文原发布于掘金社区：[golang 重构博客统计服务](https://juejin.cn/post/6844903624972173325)
 
-作为一个后端开发，在 Docker，etcd，k8s 等新技术不断涌现的今天，其背后的功臣 golang 在语言排行榜上持续走高，因此楼主也就开了这次使用 golang 自己开发的基础功能的二次装逼之旅。\
+作为一个后端开发，在 Docker，etcd，k8s 等新技术不断涌现的今天，其背后的功臣 golang 在语言排行榜上持续走高，因此楼主也就开了这次使用 golang 自己开发基础功能的二次装逼之旅。\
 <span id="user-content-more"></span>
 
 ## [](#源于Spring-Boot "#源于Spring-Boot")源于 Spring Boot
@@ -19,7 +19,7 @@ translationKey: "golangzhonggouboketongjifuwu"
 ## [](#实现redis存储逻辑 "#实现redis存储逻辑")实现 Redis 存储逻辑
 
 选择 Redis 而没选择数据库的原因是 Redis 提供了丰富的数据结构与数据持久化策略，另外 Redis 是基于内存的，相对于数据库来说，快了不止一个数量级。而统计阅读次数的场景对接口处理的速度还是有一定的要求的，因此楼主选择了 Redis 作为阅读次数统计的 db。\
-下面就是 Redis 操作的基础代码，比较简单楼主贴一下代码，不做进一步的阐述\
+下面就是 Redis 操作的基础代码，比较简单，楼主贴一下代码，不做进一步的阐述\
 Redis 操作的工具类
 
     func initRedisPool() {
@@ -94,7 +94,7 @@ Redis 操作的工具类
 
 ## [](#博客阅读次数统计接口实现 "#博客阅读次数统计接口实现")博客阅读次数统计接口实现
 
-博客阅读次数统计的基本业务逻辑就是，对应每篇博客的 blogId 作为 Redis 的 key，而访问次数就是这个 key 所对应的 value，每访问一次该接口就要将对应的 blogId 自增一次，并返回对应的 value。这里楼主选择的 Redis 的数据结构是 Redis 的 Stirng，下面是楼主实现该逻辑的主要代码：
+博客阅读次数统计的基本业务逻辑就是，将每篇博客对应的 blogId 作为 Redis 的 key，而访问次数就是这个 key 所对应的 value，每访问一次该接口就要将对应的 blogId 自增一次，并返回对应的 value。这里楼主选择的 Redis 的数据结构是 String，下面是楼主实现该逻辑的主要代码：
 
     package main
 
@@ -206,7 +206,7 @@ Redis 操作的工具类
 
 ### [](#问题解决 "#问题解决")问题解决
 
-最终楼主通过各种姿势的排查，发现是结构体定义有问题，当定义结构体时首字母必须大写才能序列化成功，这个特点在 golang 里面很是明显，在函数调用时首字母小写的函数在其他文件里面是调不到的。下面给出正确的结构体定义\
+最终楼主通过各种姿势的排查，发现是结构体定义有问题，当定义结构体时首字母必须大写才能序列化成功，这个特点在 golang 里面很是明显，首字母小写的函数在其他文件里面是调不到的。下面给出正确的结构体定义\
 
     type ResultCode struct {
         Msg  string `json:"msg"`
@@ -216,11 +216,11 @@ Redis 操作的工具类
 
 ## [](#小结 "#小结")小结
 
-目前很多大佬都写过关于 golang web 的教程，如有雷同，请略过不看，本文通过自己的亲身实战以及楼主自己踩到的坑完成的，另外本文是基于 go 内置的**net/http**库实现的 web 服务。
+目前很多大佬都写过关于 golang web 的教程，如有雷同，请略过不看，本文是通过自己的亲身实战以及楼主自己踩到的坑完成的，另外本文是基于 go 内置的**net/http**库实现的 web 服务。
 
 ## [](#号外 "#号外")号外
 
-楼主造了一个轮子，LIGHTCONF 是一个基于 Netty 实现的一个配置管理平台，其核心设计目标是“为业务提供统一的配置管理服务”，可以做到开箱即用。感兴趣的给个 star 支持一下。
+楼主造了一个轮子，LIGHTCONF 是一个基于 Netty 实现的配置管理平台，其核心设计目标是“为业务提供统一的配置管理服务”，可以做到开箱即用。感兴趣的给个 star 支持一下。
 
 - <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Flightconf" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/lightconf">基于 Netty 实现的轻量级分布式应用配置中心</a>
 

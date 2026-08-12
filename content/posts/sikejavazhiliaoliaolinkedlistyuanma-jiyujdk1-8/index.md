@@ -11,12 +11,12 @@ translationKey: "sikejavazhiliaoliaolinkedlistyuanma-jiyujdk1-8"
 
 工作快一年了，近期打算研究一下 JDK 的源码，也就因此有了死磕 Java 系列
 
-- LinkedList 是一个继承于 AbstractSequentialList 的双向链表，链表不需要 capacity 的设定，它也可以被当作堆栈、队列或双端队列进行操作。
+- LinkedList 是一个继承于 AbstractSequentialList 的双向链表，链表不需要 capacity 的设定，它也可以被当作堆栈、队列或双端队列来使用。
 - LinkedList 实现 List 接口，能对它进行队列操作，提供了相关的添加、删除、修改、遍历等功能。
 - LinkedList 实现 Deque 接口，即能将 LinkedList 当作双端队列使用。<span id="user-content-more"></span>
 - LinkedList 实现了 Cloneable 接口，即覆盖了函数 clone()，能克隆。
 - LinkedList 实现 java.io.Serializable 接口，这意味着 LinkedList 支持序列化，能通过序列化去传输，包括网络传输与本地文件序列化。
-- LinkedList 是非同步的，如若要在并发情况下使用建议选取 java.util.concurrent 包下的集合类型。
+- LinkedList 是非同步的，如若要在并发情况下使用，建议选取 java.util.concurrent 包下的集合类型。
 
 ## [](#LinkedList的UML图 "#LinkedList的UML图")LinkedList 的 UML 图
 
@@ -80,7 +80,7 @@ translationKey: "sikejavazhiliaoliaolinkedlistyuanma-jiyujdk1-8"
 
 ## [](#聊聊LinkedList的主要方法实现 "#聊聊LinkedList的主要方法实现")聊聊 LinkedList 的主要方法实现
 
-我们主要看研究一下下面的几个方法，LinkedList 其他方法都是通过调用这几个方法来实现功能，包括 LinkedList 的双端队列的方法也是。
+我们主要研究一下下面的几个方法，LinkedList 其他方法都是通过调用这几个方法来实现功能，包括 LinkedList 的双端队列的方法。
 
                                                     
 
@@ -421,10 +421,10 @@ translationKey: "sikejavazhiliaoliaolinkedlistyuanma-jiyujdk1-8"
 
 ## [](#动手实现LinkedList "#动手实现LinkedList")动手实现 LinkedList
 
-由于代码过长，故不在此处一一贴出来，感兴趣的小伙伴可以到我的 github 查看\[github\]: <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Finterview-collect%2Ftree%2Fmaster%2Fsrc%2Fmain%2Fjava%2Fcom%2Fhaifeiwu%2Finterview%2Fstructure%2Flist" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/interview-collect/tree/master/src/main/java/com/haifeiwu/interview/structure/list">github.com/haifeiWu/in…</a>
+由于代码过长，故不在此处一一贴出来，感兴趣的小伙伴可以到我的 github 查看：<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Finterview-collect%2Ftree%2Fmaster%2Fsrc%2Fmain%2Fjava%2Fcom%2Fhaifeiwu%2Finterview%2Fstructure%2Flist" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/interview-collect/tree/master/src/main/java/com/haifeiwu/interview/structure/list">github.com/haifeiWu/in…</a>
 
 ## [](#小结 "#小结")小结
 
-- 与 ArrayList 相比，LinkedList 的长处在于当频繁的增加或者删除元素时效率会很高，但是 LinkedList 空间占用比较大，是一种典型的用空间换时间方案，在我们平时做代码优化时这也不失是种折中的方案。
+- 与 ArrayList 相比，LinkedList 的长处在于当频繁地增加或者删除元素时效率会很高，但是 LinkedList 空间占用比较大，是一种典型的用空间换时间方案，在我们平时做代码优化时，这也不失为一种折中的方案。
 
-- LinkedList 并发插入时节点覆盖的问题，就是当多个线程同时获取到相同的尾节点的时候，然后多个线程同时在此尾节点后面插入数据的时候会出现数据覆盖的问题，因此在并发量大的情况下应该使用 Java 的加锁机制，或者采用 java.util.concurrent 包下的集合类型。
+- LinkedList 并发插入时节点覆盖的问题，就是当多个线程同时获取到相同的尾节点，并同时在此尾节点后面插入数据时，会出现数据覆盖的问题，因此在并发量大的情况下应该使用 Java 的加锁机制，或者采用 java.util.concurrent 包下的集合类型。

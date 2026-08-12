@@ -9,7 +9,7 @@ translationKey: "shixianzijide-rpc-kuangjia-er"
 
 > 📌 本文原发布于掘金社区：[实现自己的 RPC 框架（二）](https://juejin.cn/post/6844903907190112264)
 
-前段时间自己搞了个 RPC 的轮子，不过相对来说比较简单，最近在原来的基础上加以改造，使用 ZooKeeper 实现了 provider 自动寻址以及消费者的简单负载均衡，对之前的感兴趣的请转 <a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fb674%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/b674/">造个轮子---RPC 动手实现</a>。
+前段时间自己搞了个 RPC 的轮子，不过相对来说比较简单，最近在原来的基础上加以改造，使用 ZooKeeper 实现了 provider 自动寻址以及消费者的简单负载均衡，对之前的文章感兴趣的请转 <a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fb674%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/b674/">造个轮子---RPC 动手实现</a>。
 
 ## RPC 模型
 
@@ -21,7 +21,7 @@ translationKey: "shixianzijide-rpc-kuangjia-er"
 
 ## 怎么用
 
-话不多说，我们来看下如何发布和引用服务。服务端我们将服务的 IP 和端口号基础信息注册到 ZooKeeper 上。
+话不多说，我们来看下如何发布和引用服务。服务端我们将服务的 IP 和端口号等基础信息注册到 ZooKeeper 上。
 
 ``` java
 /**
@@ -89,7 +89,7 @@ public class ZookeeperClientMainTest {
 
 ## 服务的发布与订阅
 
-楼主在原来代码的基础上添加了 ZooKeeper 的注册的逻辑，原来的代码相关介绍请转 <a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fb674%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/b674/">造个轮子---RPC 动手实现</a>。
+楼主在原来代码的基础上添加了 ZooKeeper 的注册逻辑，原来代码的相关介绍请转 <a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fb674%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/b674/">造个轮子---RPC 动手实现</a>。
 
 ### 服务的发布
 
@@ -184,7 +184,7 @@ private void subscribe() {
 }
 ```
 
-上面代码比较简单，就是在原来直连的基础上添加 zk 的操作，在发布服务的时候将 provider 的 IP 和端口号基础信息注册到 zk 上，在引用服务的时候使用随机算法从 zk 上选取可用的 provider 信息，然后进行 invoke 调用。
+上面代码比较简单，就是在原来直连的基础上添加 zk 的操作，在发布服务的时候将 provider 的 IP 和端口号等基础信息注册到 zk 上，在引用服务的时候使用随机算法从 zk 上选取可用的 provider 信息，然后进行 invoke 调用。
 
 ## 小结
 

@@ -36,11 +36,11 @@ translationKey: "golang-xiangmuzhongdequanlianluzhuizong-tracing"
 
 ### **OpenTelemetry**
 
-OpenTelemetry 为我们在系统中更轻量化的接入 tracing 提供了标准协议，让我们在系统中接入 tracing 更简单，基本可以实现自动或者半自动的 tracing 埋点。
+OpenTelemetry 为我们在系统中更轻量化地接入 tracing 提供了标准协议，让我们在系统中接入 tracing 更简单，基本可以实现自动或者半自动的 tracing 埋点。
 
 <img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f8a1272ed1334b21afd1c68067e1fae5~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=3923&amp;h=1317&amp;s=1703598&amp;e=png&amp;b=fefdfd" loading="lazy" />
 
-如上图所示，tracing 实现链路追踪是通过 Trace 的“父子关系”来构造出来，而这个关系主要有 Trace 的组成 Span 而来（Trace Span 的概念最早来自于 <a href="https://link.juejin.cn?target=https%3A%2F%2Fresearch.google.com%2Fpubs%2Fpub36356.html" target="_blank" data-ref="nofollow noopener noreferrer" title="https://research.google.com/pubs/pub36356.html">Google 的 Dapper</a> ）。
+如上图所示，tracing 实现链路追踪是通过 Trace 的“父子关系”来构造的，而这个关系主要由组成 Trace 的 Span 而来（Trace Span 的概念最早来自于 <a href="https://link.juejin.cn?target=https%3A%2F%2Fresearch.google.com%2Fpubs%2Fpub36356.html" target="_blank" data-ref="nofollow noopener noreferrer" title="https://research.google.com/pubs/pub36356.html">Google 的 Dapper</a> ）。
 
 - Trace 记录了整个请求的生命周期，本身由一组 Span 组成，Span 代表其中的一条调用链
 
@@ -49,20 +49,18 @@ Span 具有“父子关系”，这个父子关系由 SpanID 和 ParentSpanID �
 - 当调用传播到下一层时，原来的 SpanID 就变成了 ParentSpanID，随后会生成一个新的 SpanID。
 - Span 的传播可能会跨进程、跨主机，因此需要有一个传递 TraceID、SpanID 的途径，这个途径叫做 Trace Propagation，Trace Propagation 需要保证上下游的服务都能够支持一样的协议才行，否则传播到下一层时，因为服务无法识别，Trace 会断掉。
 - 由于系统中可能具有多个服务，还有队列、数据库、ServiceMesh 等中间件，因此 Trace Propagation 需要遵循某个国际化标准，这个标准需要尽可能的通用。
-- 最早在出现的国际化标准是 OpenTracing，随后还有 Google 发起的 OpenCensus 项目。
+- 最早出现的国际化标准是 OpenTracing，随后还有 Google 发起的 OpenCensus 项目。
 - 而目前 OpenTracing 项目和 OpenCensus 项目已经合并成为 OpenTelemetry，OpenTelemetry 已经成为 Trace 领域的唯一国际化标准。
 
-而 OpenTelemetry 标准带来的好处不仅仅是解决各个系统之间的 Trace 互通问题，还有统一的 SDK、自动化埋点方案、数据采集、Traces/Metrics/Logs 互通等等好处。感兴趣的同学可以异步：<a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.aliyun.com%2Farticle%2F766070" target="_blank" data-ref="nofollow noopener noreferrer" title="https://developer.aliyun.com/article/766070">OpenTelemetry 介绍</a>。
+而 OpenTelemetry 标准带来的好处不仅仅是解决各个系统之间的 Trace 互通问题，还有统一的 SDK、自动化埋点方案、数据采集、Traces/Metrics/Logs 互通等等好处。感兴趣的同学可以移步：<a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.aliyun.com%2Farticle%2F766070" target="_blank" data-ref="nofollow noopener noreferrer" title="https://developer.aliyun.com/article/766070">OpenTelemetry 介绍</a>。
 
 ### **SLS**
 
-基于阿里云的 sls 提供的基于标准的 OpenTelemetry 协议的 tracing 采集方案。
+基于阿里云的 sls 提供的基于标准 OpenTelemetry 协议的 tracing 采集方案。
 
 <img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7d651a938d6e43d5a3efb651221f90dc~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=2857&amp;h=1964&amp;s=2038246&amp;e=png&amp;b=fffefe" loading="lazy" />
 
-如上图所示：sls 支持的采集方式有多种，主要是下面几种，
-
-日志服务支持如下接入方案。
+如上图所示：sls 支持的采集方式有多种，日志服务支持如下接入方案。
 
 - 使用 OpenTelemetry、Jaeger（目前仅支持 https、grpc 方式）、Zipkin、OpenCensus 等直接将 Trace 数据接入到日志服务。
 - 使用 OpenTelemetry Collector 转发 OpenTelemetry、Jaeger（全协议支持）、Zipkin、OpenCensus、AWS X-Ray、SignalFX（Splunk）等平台上的 Trace 数据到日志服务。
@@ -85,7 +83,7 @@ Span 具有“父子关系”，这个父子关系由 SpanID 和 ParentSpanID �
     accessKeySecret = ""
 ```
 
-上面的配置信息是测环境的，配置完成后可以本地调试，同时可以在下面 sls 看板上看到数据
+上面的配置信息是测环境的，配置完成后可以本地调试，同时可以在下面的 sls 看板上看到数据
 
 **provider 初始化代码块：**
 
@@ -143,7 +141,7 @@ func main() {
 
 ### **gin 接入 tracing**
 
-gin 官方提供了官方支持的 采集方案，侵入性很低，基本上一行代码可以搞定
+gin 提供了官方支持的采集方案，侵入性很低，基本上一行代码可以搞定
 
 引入采集 tracing 的组件：
 
@@ -164,7 +162,7 @@ func main() {
 
 ### **Redis 接入 tracing**
 
-go-redis 组件提供了官方的支持 OpenTelemetry 协议的采集方案，侵入性很低，一行代码搞定。
+go-redis 组件提供了官方支持的 OpenTelemetry 协议的采集方案，侵入性很低，一行代码搞定。
 
 引入 redisotel 组件：
 
@@ -194,7 +192,7 @@ gorm 官方也提供了支持 OpenTelemetry 协议的采集方案，侵入性很
 go get "gorm.io/plugin/opentelemetry/tracing"
 ```
 
-在初始化 db-cli 的地方添如下代码即可：
+在初始化 db-cli 的地方添加如下代码即可：
 
 ``` go
  func NewDB(conf *conf.Data, logger log.Logger, zapLogger *zap.Logger) *gorm.DB {

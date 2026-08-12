@@ -10,7 +10,7 @@ translationKey: "lang3-de-split-fangfawuyong"
 > 📌 本文原发布于掘金社区：[lang3 的 split 方法误用](https://juejin.cn/post/6844903907877978125)
 
 <a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2019%2Fade9%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2019/ade9/">lang3 的 split 方法误用-原文链接</a>\
-apache 的 lang3 是我们开发常用到的三方工具包，然而对这个包不甚了解的话，会产生莫名其秒的 bug，在这里做下记录。
+apache 的 lang3 是我们开发中常用到的三方工具包，然而对这个包不甚了解的话，会产生莫名其妙的 bug，在这里做下记录。
 
 ## 误用示例
 
@@ -155,4 +155,4 @@ public class TestDemo {
 
 ## 小结
 
-平时只知道调用 API，在使用三方包的时候，没有认真查看 API 文档，对于三方包的方法，使用处于想当然的状态，这里应该做好反省。
+平时只知道调用 API，在使用三方包的时候，没有认真查看 API 文档，对于三方包的方法，使用上处于想当然的状态，这里应该做好反省。

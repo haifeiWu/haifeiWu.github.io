@@ -9,7 +9,7 @@ translationKey: "sikejavazhiliaoliaothreadlocalyuanma-jiyujdk1-8"
 
 > 📌 本文原发布于掘金社区：[死磕 Java 之聊聊 ThreadLocal 源码(基于 JDK1.8)](https://juejin.cn/post/6844903603979845645)
 
-记得在一次面试中被问到 ThreadLocal，答得马马虎虎，所以打算研究一下 ThreadLocal 的源码
+记得在一次面试中被问到 ThreadLocal，答得马马虎虎，所以打算研究一下 ThreadLocal 的源码。
 
 面试官：用过 ThreadLocal 吗？
 
@@ -114,7 +114,7 @@ translationKey: "sikejavazhiliaoliaothreadlocalyuanma-jiyujdk1-8"
 
 ## [](#ThreadLocal主要的代码实现 "#ThreadLocal主要的代码实现")ThreadLocal 主要的代码实现
 
-下面代码时楼主认为 ThreadLocal 中比较重要的，还是比较容易看懂的，就不在一一细说
+下面代码是楼主认为 ThreadLocal 中比较重要的，也比较容易看懂的，就不再一一细说
 
                                                     
 
@@ -318,7 +318,7 @@ translationKey: "sikejavazhiliaoliaothreadlocalyuanma-jiyujdk1-8"
                                                 
 
 本示例创建一个传递给两个不同线程的 MyRunnable 实例。两个线程都执行 run（）方法，从而在 ThreadLocal 实例上设置不同的值。如果对 set（）调用的访问已经同步，并且它不是 ThreadLocal 对象，则第二个线程将覆盖第一个线程设置的值。\
-但是，由于它是一个 ThreadLocal 对象，因此两个线程无法看到对方的值。因此，他们设定并获得不同的价值观。
+但是，由于它是一个 ThreadLocal 对象，因此两个线程无法看到对方的值。因此，它们设定并获得不同的值。
 
 ## [](#小结 "#小结")小结
 
@@ -338,7 +338,7 @@ translationKey: "sikejavazhiliaoliaothreadlocalyuanma-jiyujdk1-8"
 有人认为 ThreadLocal 会导致内存泄露，原因如下
 
 > 首先 ThreadLocal 实例被线程的 ThreadLocalMap 实例持有，也可以看成被线程持有。\
-> 如果应用使用了线程池，那么之前的线程实例处理完之后出于复用的目的依然存活\
+> 如果应用使用了线程池，那么之前的线程实例处理完之后出于复用的目的依然存活。\
 > 所以，ThreadLocal 设定的值被持有，导致内存泄露。
 
 上面的逻辑是清晰的，然而 Java 的设计者早已经想到了这个问题，ThreadLocal 并不会产生内存泄露，因为 ThreadLocalMap 在选择 key 的时候，\

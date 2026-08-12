@@ -9,12 +9,12 @@ translationKey: "alilixianshujutongbugongju-datax-caikengjilu"
 
 > 📌 本文原发布于掘金社区：[阿里离线数据同步工具 DataX 踩坑记录](https://juejin.cn/post/6844903633545330702)
 
-最近在做一些数据迁移相关工作，调研了一些工具，发现 DataX 是个不错的东西，所以安利给大家。那么 DataX 是什么呢？DataX 是阿里巴巴集团内被广泛使用的离线数据同步工具，实现包括 MySQL、SQL Server、Oracle、PostgreSQL 等各种异构数据源之间高效的数据同步功能。\
+最近在做一些数据迁移相关工作，调研了一些工具，发现 DataX 是个不错的东西，所以安利给大家。那么 DataX 是什么呢？DataX 是阿里巴巴集团内被广泛使用的离线数据同步工具，支持 MySQL、SQL Server、Oracle、PostgreSQL 等各种异构数据源之间高效的数据同步。\
 <span id="user-content-more"></span>
 
 ## [](#主要功能 "#主要功能")主要功能
 
-DataX 本身作为数据同步框架，将不同数据源的同步抽象为从源头数据源读取数据的 Reader 插件，以及向目标端写入数据的 Writer 插件，理论上 DataX 框架可以支持任意数据源类型的数据同步工作。同时 DataX 插件体系作为一套生态系统，每接入一套新数据源该新加入的数据源即可实现和现有的数据源互通。具体介绍请移步<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Falibaba%2FDataX%2Fblob%2Fmaster%2Fintroduction.md" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/alibaba/DataX/blob/master/introduction.md">DataX 介绍</a>
+DataX 本身作为数据同步框架，将不同数据源的同步抽象为从源头数据源读取数据的 Reader 插件，以及向目标端写入数据的 Writer 插件，理论上 DataX 框架可以支持任意数据源类型的数据同步工作。同时 DataX 插件体系作为一套生态系统，每接入一套新数据源，即可实现与现有数据源的互通。具体介绍请移步<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Falibaba%2FDataX%2Fblob%2Fmaster%2Fintroduction.md" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/alibaba/DataX/blob/master/introduction.md">DataX 介绍</a>
 
 ## [](#系统要求 "#系统要求")系统要求
 
@@ -68,8 +68,8 @@ DataX 本身作为数据同步框架，将不同数据源的同步抽象为从�
 
       python datax.py -r oraclereader -w mysqlwriter > oracle2mysql2.json
 
-  在 {DataX_source_code_home} 目录下的 plugin 目录下有 DataX 支持的所有 reader 与 writer\
-  通过命令生成的配置模板如下所示，楼主生成的 reader 与 writer 是对应的是从 oracle 读取数据，向 MySQL 写数据。
+  在 {DataX_source_code_home} 的 plugin 目录下有 DataX 支持的所有 reader 与 writer\
+  通过命令生成的配置模板如下所示，楼主生成的 reader 与 writer 对应的是从 oracle 读取数据，向 MySQL 写数据。
 
       {
       "job": {
@@ -129,6 +129,6 @@ DataX 本身作为数据同步框架，将不同数据源的同步抽象为从�
 
 ## [](#小结 "#小结")小结
 
-相对来说 DataX 上手使用起来还是比较容易的，但是令楼主比较犯难就是不能在同一个配置文件里面同时写入不同的数据库的表，要想读取多张表并写入就只能单独配置。但是也解决了楼主一些问题。
+相对来说 DataX 上手使用起来还是比较容易的，但是令楼主比较犯难的就是不能在同一个配置文件里面同时写入不同数据库的表，要想读取多张表并写入就只能单独配置。但是也解决了楼主一些问题。
 
 作 者：haifeiWu 原文链接：<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F4928%2Farticle%2F2018%2F4928%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/4928/article/2018/4928/">www.hchstudio.cn/article/201…</a>版权声明：非特殊声明均为本站原创作品，转载时请注明作者和原文链接。

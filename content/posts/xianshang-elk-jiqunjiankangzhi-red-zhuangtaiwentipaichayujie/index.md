@@ -13,13 +13,13 @@ translationKey: "xianshang-elk-jiqunjiankangzhi-red-zhuangtaiwentipaichayujie"
 > 博客地址：<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Ff023%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/f023/?_ref=juejin">www.hchstudio.cn</a>\
 > 欢迎转载，转载请注明作者及出处，谢谢！
 
-之前一直运行正常的数据分析平台，最近一段时间没有注意发现日志索引数据一直未生成，大概持续了 n 多天，当前状态：单台机器，Elasticsearch（下面称 ES）单节点(空集群),1000+shrads, 约 200G 大小。
+之前一直运行正常的数据分析平台，最近一段时间没有注意到日志索引数据一直未生成，大概持续了 n 多天，当前状态：单台机器，Elasticsearch（下面称 ES）单节点(空集群),1000+ shards, 约 200G 大小。
 
 ## 问题排查
 
 ### 服务器内存，CPU 状态检查
 
-使用 `top` 查看服务器 `cpu`，内存等占用情况，如下图示（当时楼主的服务器 ES 应用的 CPU 占用在 90%以上，肯定有问题）
+使用 `top` 查看服务器 `cpu`，内存等占用情况，如下图所示（当时楼主的服务器 ES 应用的 CPU 占用在 90%以上，肯定有问题）
 
 <figure>
 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/8/7/16512a56d09216c9~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" alt="top" />
@@ -106,7 +106,7 @@ red    open   jr-2016.12.27    3   0
 
 ## 问题解决
 
-通过以上排查大概知道是历史索引数据处于 open 状态过多，从而导致 ES 的 CPU，内存占用过高导致的不可用。
+通过以上排查大概知道是历史索引数据处于 open 状态过多，从而导致 ES 的 CPU，内存占用过高而不可用。
 
 ``` bash
 #关闭不需要的索引，减少内存占用
@@ -115,7 +115,7 @@ curl -XPOST "http://localhost:9200/index_name/_close"
 
 ### 小插曲
 
-关闭非热点索引数据后，楼主的 ES 集群的健康值依然是 red 状态，楼主最后联想到索引的 red 状态可能会影响 ES 的状态，果不其然如下所示
+关闭非热点索引数据后，楼主的 ES 集群的健康值依然是 red 状态，楼主最后联想到索引的 red 状态可能会影响 ES 的状态，果不其然，如下所示
 
 ``` bash
 curl GET http://10.252.148.85:9200/_cluster/health?level=indices
@@ -151,7 +151,7 @@ curl GET http://10.252.148.85:9200/_cluster/health?level=indices
 }
 ```
 
-解决方法，删除这条索引数据（这条数据是楼主排查问题期间产生的脏数据，索引直接删除）
+解决方法：删除这条索引数据（这条数据是楼主排查问题期间产生的脏数据，直接删除即可）
 
 ``` bash
 curl -XDELETE 'http://10.252.148.85:9200/jr-2018.08.06'

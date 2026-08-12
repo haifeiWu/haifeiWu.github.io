@@ -29,7 +29,7 @@ Filter 在设计模式里面被称为责任链设计模式，顾名思义，我�
 
 ## 怎么用 Filter 项目中的代码实现逻辑
 
-定义 Filter 接口，接口中定义进行数据处理的方法。
+定义 Filter 接口，接口中定义数据处理的方法。
 
 ``` java
 public interface IDataHandlerFilter {

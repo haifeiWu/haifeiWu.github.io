@@ -37,7 +37,7 @@ translationKey: "sanliebiao"
 
 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> 是散列表装满程度的标志因子。由于表长是定值，<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> 与“填入表中的元素个数”成正比，所以，<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> 越大，表明填入表中的元素越多，产生冲突的可能性就越大；反之，<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> 越小，表明填入表中的元素越少，产生冲突的可能性就越小。实际上，散列表的平均查找长度是载荷因子 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> 的函数，只是不同处理冲突的方法有不同的函数。
 
-对于开放定址法，荷载因子是特别重要因素，应严格限制在 `0.7-0.8` 以下。超过 `0.8`，查表时的 CPU 缓存不命中（`cache missing`）按照指数曲线上升。因此，一些采用开放定址法的 `hash` 库，如 `Java` 的系统库限制了荷载因子为 `0.75`，超过此值将 `resize` 散列表。
+对于开放定址法，装载因子是特别重要因素，应严格限制在 `0.7-0.8` 以下。超过 `0.8`，查表时的 CPU 缓存不命中（`cache missing`）按照指数曲线上升。因此，一些采用开放定址法的 `hash` 库，如 `Java` 的系统库限制了装载因子为 `0.75`，超过此值将 `resize` 散列表。
 
 ### 散列冲突：
 
@@ -53,19 +53,19 @@ translationKey: "sanliebiao"
 
 1，直接定址法：取关键字或关键字的某个线性函数值为散列地址。即<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle hash(k)=k}`$</span></span></span>或<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle hash(k)=a\cdot k+b}`$</span></span></span>，其中 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle a\,b}`$</span></span></span> 为常数。
 
-2，数字分析法：数字分析法通常适合处理散列表中可能出现的关键字都是事先知道的，例如我们现在要存储某家公司员工登记表，如果用手机号作为关键字，那么我们发现抽取后面的四位数字作为散列地址是不错的选择，同理存储身份证号码时，也可以采用这样的逻辑。
+2，数字分析法：数字分析法通常适用于散列表中可能出现的关键字都是事先知道的情况，例如我们现在要存储某家公司员工登记表，如果用手机号作为关键字，那么我们发现抽取后面的四位数字作为散列地址是不错的选择，同理存储身份证号码时，也可以采用这样的逻辑。
 
-3，平方去中法：平方取中法是将关键字平方之后取中间若干位数字作为散列地址。这种方法适用于不知道关键字的分布，且数值的位数又不是很大的情况。
+3，平方取中法：平方取中法是将关键字平方之后取中间若干位数字作为散列地址。这种方法适用于不知道关键字的分布，且数值的位数又不是很大的情况。
 
-3，随机数法：选择一个随机数，取关键字的随机函数值为它的散列地址，<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`f(key) = random(key)`$</span></span></span>
+4，随机数法：选择一个随机数，取关键字的随机函数值为它的散列地址，<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`f(key) = random(key)`$</span></span></span>
 
-4，除留取余法：取关键字被某个不大于散列表表长 `m` 的数 `p` 除后所得的余数为散列地址。即 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle hash(k)=k\,{\bmod {\,}}p}, {\displaystyle p\leq m}`$</span></span></span> `p`为小于 m 的最大质数，所谓素数就是指只能被 `1` 与它本身整除的数。
+5，除留取余法：取关键字被某个不大于散列表表长 `m` 的数 `p` 除后所得的余数为散列地址。即 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle hash(k)=k\,{\bmod {\,}}p}, {\displaystyle p\leq m}`$</span></span></span> `p`为小于 m 的最大质数，所谓素数就是指只能被 `1` 与它本身整除的数。
 
 ### 主要的散列冲突的解决办法
 
 #### 开放寻址法：
 
-所谓的开放定址法就是一旦发生了冲突，就去寻找下一个空的散列地址，只要散列表足够大，空的散列地址总能找到，并将记录存入。
+所谓的开放定址法就是一旦发生了冲突，就去寻找下一个空的散列地址，只要散列表足够大，空的散列地址总能找到，并将记录存入其中。
 
 主要是有**线性探查** <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`fi(key) = (f(key)+di) MOD m (di=1,2,…,m-1)`$</span></span></span> **平方探查** <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`fi(key) = (f(key)+di) MOD m (di=1²,-1²,2²,-2²…,q²,-q²,q<=m/1)`$</span></span></span>
 
@@ -215,7 +215,7 @@ int SearchHash(HashTable H, int key, int *addr)
 
 ## 小结
 
-最近在学习数据结构的时候，复习了一下散列表的基本概念，因为散列表在我们敲代码的时候用的比较多，所以打好基础还是有必要的。
+最近在学习数据结构的时候，复习了一下散列表的基本概念，因为散列表在我们敲代码的时候用得比较多，所以打好基础还是有必要的。
 
 ## 参考链接
 

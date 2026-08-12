@@ -14,12 +14,12 @@ translationKey: "i-teambokedegitlab-runnerchixujichengshijian"
 
 ## [](#持续集成工具-gitlab-runner-介绍 "#持续集成工具-gitlab-runner-介绍")持续集成工具 gitlab-runner 介绍
 
-gitlab-ci 全称是 GitLab continuous integration 的意思，也就是持续集成。中心思想是当每一次 push 到 GitLab 的时候，都会触发一次脚本执行，然后脚本的内容包括了测试，编译，部署等一系列自定义的内容。而 gitlab-runner 是 GitLab 提供的持续集成工具。
+gitlab-ci 的全称是 GitLab continuous integration，也就是持续集成。中心思想是每当 push 到 GitLab 的时候，都会触发一次脚本执行，然后脚本的内容包括了测试，编译，部署等一系列自定义内容。而 gitlab-runner 是 GitLab 提供的持续集成工具。
 
-简单的说，要让 CI 工作可总结为以下几点：
+简单地说，要让 CI 工作，可总结为以下几点：
 
 - 在仓库根目录创建一个名为.gitlab-ci.yml 的文件。
-- 为该项目配置一个 runner 服务，楼主这里使用的是使用 GitLab 提供代码厂库，在自己的腾讯云服务器上运行 gitlab-runner 服务。
+- 为该项目配置一个 runner 服务，楼主这里是使用 GitLab 提供的代码仓库，在自己的腾讯云服务器上运行 gitlab-runner 服务。
 - 完成上面的步骤后，每次 push 代码到 Git 仓库，runner 就会自动开始 pipeline。
 
 gitlab-ci 的具体部署流程如下图所示（图来自网络，侵权删）\
@@ -31,7 +31,7 @@ gitlab-ci 的具体部署流程如下图所示（图来自网络，侵权删）\
 
 其实每个 nodejs 工程根目录下都有一个 package.json 文件，里面都包含了我们所用的插件信息，只需要我们在安装插件的时候注意加上–save，就会自动把插件信息保存到 package.json 中。
 
-如果目录下没有 package.json 文件也不要紧，在跟目录命令行中运行 npm init 即可生成。
+如果目录下没有 package.json 文件也不要紧，在根目录命令行中运行 npm init 即可生成。
 
 ### [](#博客环境安装 "#博客环境安装")博客环境安装
 
@@ -99,13 +99,13 @@ gitlab-ci 的具体部署流程如下图所示（图来自网络，侵权删）\
     shell
     Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
 
-在注册过程中有两个比较重要的参数一个是 GitLab 的 URL，另一个就是注册的 token，这两个参数可以在 GitLab 上找到，过程是**Settings\>CI/CD\>Runners settings\>Specific Runners**，如下图所示\
+在注册过程中有两个比较重要的参数，一个是 GitLab 的 URL，另一个就是注册的 token，这两个参数可以在 GitLab 上找到，过程是**Settings\>CI/CD\>Runners settings\>Specific Runners**，如下图所示\
 <a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2Fgitlab-runner-settings2.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/gitlab-runner-settings2.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/6/10/163ea55d461aec7d~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" alt="gitlab-runner-settings" /></a>gitlab-runner-settings
 
 另外还需要打开\
 <a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2Fgitlab-autoDEVOPs.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/gitlab-autoDEVOPs.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/6/10/163ea55d463f4929~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" alt="gitlab-runner-settings" /></a>gitlab-runner-settings
 
-要是自己注册的 gitlab-runner 生效还需要禁用**Shared Runners**
+要让自己注册的 gitlab-runner 生效，还需要禁用**Shared Runners**
 
 以上过程是楼主在 centos 上操作的，其他版本请移步<a href="https://link.juejin.cn?target=https%3A%2F%2Fdocs.gitlab.com%2Frunner%2Fregister%2Findex.html" target="_blank" data-ref="nofollow noopener noreferrer" title="https://docs.gitlab.com/runner/register/index.html">gitlab-runner 注册到 GitLab</a>
 

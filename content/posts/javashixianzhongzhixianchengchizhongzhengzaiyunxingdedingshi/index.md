@@ -110,7 +110,7 @@ ThreadPoolUtils.getInstance().getThreadPool().scheduleAtFixedRate(interruptThrea
 
 既然我有这样的需求，那就 Google 一下吧，找了大半圈，愣是没找到相关资料，都是一些关于 Java 线程池的深入分析。或者是全局变量啥的，并没有找到令楼主满意的解决方案。
 
-既然没有线程的那就扒一下 scheduleAtFixedRate 的底层源码看看是什么东西吧，果不其然我在源码中看到了 scheduleAtFixedRate 方法的具体实现，发现他的返回值是 ScheduledFuture。
+既然没有现成的那就扒一下 scheduleAtFixedRate 的底层源码看看是什么东西吧，果不其然我在源码中看到了 scheduleAtFixedRate 方法的具体实现，发现它的返回值是 ScheduledFuture。
 
 ``` bash
  public ScheduledFuture<?> scheduleAtFixedRate(Runnable command,
