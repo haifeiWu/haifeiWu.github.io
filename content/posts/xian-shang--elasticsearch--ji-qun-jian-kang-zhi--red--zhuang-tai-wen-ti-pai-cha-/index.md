@@ -9,7 +9,7 @@ translationKey: "xian-shang--elasticsearch--ji-qun-jian-kang-zhi--red--zhuang-ta
 
 > 📌 本文原发布于代码星冰乐：[线上 Elasticsearch 集群健康值 red 状态问题排查与解决](https://changhuin.github.io/article/2018/f023/)
 
-之前一直运行正常的数据分析平台，最近一段时间没有注意发现日志索引数据一直未生成，大概持续了 n 多天，当前状态：单台机器，Elasticsearch（下面称 ES）单节点(空集群),1000+shrads, 约 200G 大小。\
+之前一直运行正常的数据分析平台，最近一段时间没有注意发现日志索引数据一直未生成，大概持续了 n 多天，当前状态：单台机器，Elasticsearch（下面称 ES）单节点(空集群),1000+shards, 约 200G 大小。\
 
 ## 问题排查
 
@@ -88,7 +88,7 @@ translationKey: "xian-shang--elasticsearch--ji-qun-jian-kang-zhi--red--zhuang-ta
 
 ## 问题解决
 
-通过以上排查大概知道是历史索引数据处于 open 状态过多，从而导致 ES 的 CPU，内存占用过高导致的不可用。
+通过以上排查大概知道是历史索引数据中处于 open 状态的过多，导致 ES 的 CPU，内存占用过高而不可用。
 
     #关闭不需要的索引，减少内存占用
     curl -XPOST "https://localhost:9200/index_name/_close"

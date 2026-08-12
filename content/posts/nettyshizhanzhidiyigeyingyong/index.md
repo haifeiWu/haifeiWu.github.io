@@ -18,12 +18,12 @@ translationKey: "nettyshizhanzhidiyigeyingyong"
 
 - Java NIO 又称 Non-blocking IO,NIO 可以让你非阻塞地使用 IO,例如：当线程从通道读取数据到缓冲区时，线程还可以做其他事情。当数据被写入到缓冲区时，线程可以继续处理它。从缓冲区写入通道也类似。
 
-- Java NIO 主要由 Channels，Buffers，Selectors 组成，虽然 Java NIO 中除此之外还有很多类和组件，但总体来说，Channel,Buffer 和 Selector 构成了核心的 API。其他组件和类主要是围绕这三者进行的。对 NIO 感兴趣的小伙伴请移步<a href="https://link.juejin.cn?target=http%3A%2F%2Fifeve.com%2Fjava-nio-all%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://ifeve.com/java-nio-all/">Java NIO 系列教程</a>
+- Java NIO 主要由 Channels，Buffers，Selectors 组成，虽然 Java NIO 中除此之外还有很多类和组件，但总体来说，Channel,Buffer 和 Selector 构成了核心的 API。其他组件和类主要是围绕这三者展开的。对 NIO 感兴趣的小伙伴请移步<a href="https://link.juejin.cn?target=http%3A%2F%2Fifeve.com%2Fjava-nio-all%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://ifeve.com/java-nio-all/">Java NIO 系列教程</a>
 
 ## [](#Netty快速入门 "#Netty快速入门")Netty 快速入门
 
 一般楼主在学习一项新技术时，首先得来个“Hello，World”暖暖场。当然 Netty 也不例外，这里楼主实现一个 echo 服务器，那么 echo 是什么呢？\
-就是先启动客户端，然后建立一个连接并发送一个或多个消息到服务器，其中每条相呼应的消息返回给客户端。当然，这个应用程序没多大意义。但也可以帮助我们理解 Netty,以及学习 Netty 的模板代码。
+就是先启动客户端，然后建立一个连接并发送一个或多个消息到服务器，其中每条消息都会被服务器原样返回给客户端。当然，这个应用程序没多大意义。但也可以帮助我们理解 Netty,以及学习 Netty 的模板代码。
 
 ### [](#添加maven依赖 "#添加maven依赖")添加 Maven 依赖
 
@@ -37,7 +37,7 @@ translationKey: "nettyshizhanzhidiyigeyingyong"
 
 ### [](#代码实现 "#代码实现")代码实现
 
-Echo 的服务端代码实现，下面代码实现的主要逻辑是绑定端口号，启动服务，是 Netty 中常见的模板代码。\
+Echo 的服务端代码实现如下，下面代码的主要逻辑是绑定端口号，启动服务，是 Netty 中常见的模板代码。\
 
     public class EchoServer {
         private final int port;
