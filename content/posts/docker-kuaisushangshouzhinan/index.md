@@ -1,4 +1,5 @@
 ---
+aliases: ["/posts/docker-kuaisushangshouzhinan-2/"]
 categories: ["后端"]
 title: "Docker 快速上手指南"
 date: "2018-12-03T14:09:51+08:00"
@@ -9,7 +10,7 @@ translationKey: "docker-kuaisushangshouzhinan"
 
 > 📌 本文原发布于掘金社区：[Docker 快速上手指南](https://juejin.cn/post/6844903729708154893)
 
-当前浏览器不支持播放音乐或语音，请在微信或其他浏览器中播放 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/12/3/16772b00735e133e~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" /> <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/12/3/16772b007c0c5e99~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" /> <span id="user-content-qqmusic_home_449205_0">稻香 周杰伦 - 魔杰座 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/12/3/16772b00734c7795~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" /></span> Docker 听其大名已久，但总是疏于操练，今天准备好好搞一下。
+Docker 听其大名已久，但总是疏于操练，今天准备好好搞一下。
 
 <figure>
 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/12/3/16772b00735d9c0c~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" title="docker" data-src="https://mmbiz.qpic.cn/mmbiz_png/0I2EEYqhgI2xPCws8tGYeHhgmQAJibmbzzic8KfsQrwBUuib5FLSmZVrJxklMEzY0nhK3oemCAmx3jkgoTialVZsYA/640?wx_fmt=png" data-type="png" loading="lazy" />
