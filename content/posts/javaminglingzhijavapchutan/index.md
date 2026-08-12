@@ -11,7 +11,7 @@ translationKey: "javaminglingzhijavapchutan"
 
 <a href="https://link.juejin.cn?target=http%3A%2F%2Fblog.csdn.net%2Fgithub_36379934%2Farticle%2Fdetails%2F79375883" target="_blank" data-ref="nofollow noopener noreferrer" title="http://blog.csdn.net/github_36379934/article/details/79375883">原博客地址</a>
 
-> javap 是 jdk 自带的一个工具在 jdk 安装目录的/bin 下面可以找到，可以对代码反编译，也可以查看 Java 编译器生成的字节码，对代码的执行过程进行分析，了解 jvm 内部的工作。
+> javap 是 jdk 自带的一个工具，在 jdk 安装目录的/bin 下面可以找到，可以对代码反编译，也可以查看 Java 编译器生成的字节码，对代码的执行过程进行分析，了解 jvm 内部的工作。
 
 下面列举 javap 命令的常用 options 及其功能描述，更多功能的使用请自行 Google，楼主不做赘述。
 
@@ -32,7 +32,7 @@ translationKey: "javaminglingzhijavapchutan"
 
 ### 实例分析
 
-javap 命令分解一个 class 文件，它根据 options 来决定到底输出什么。如果没有使用 options,那么 javap 将会输出该 class 文件中的包，类里的 protected 和 public 域以及类里的所有方法。javap 将会把它们输出在标准输出上。来看这个例子，先编译(javac)下面这个类。
+javap 命令分解一个 class 文件，它根据 options 来决定到底输出什么。如果没有使用 options,那么 javap 将会输出该 class 文件中的包，类里的 protected 和 public 域以及类里的所有方法。javap 将会把它们输出到标准输出上。来看这个例子，先编译(javac)下面这个类。
 
 ``` bash
 package com.thundersoft.metadata.test.kafka;
@@ -142,10 +142,10 @@ public class com.thundersoft.metadata.test.kafka.KafkaTest {
       15: return
 ```
 
-如上面代码所，iconst_2 与 iconst_3分别代表常量 2，3。istore_1，istore_2 分别代表定义两个普通变量，iload_1，iload_2 分别表示加载 istore_1，istore_2 两个变量到数据栈中，imul 表示两个变量做乘法运算，结果赋值给变量 istore_3，最后将结果输出，程序返回。
+如上面代码所示，iconst_2 与 iconst_3分别代表常量 2，3。istore_1，istore_2 分别代表定义两个普通变量，iload_1，iload_2 分别表示加载 istore_1，istore_2 两个变量到数据栈中，imul 表示两个变量做乘法运算，结果赋值给变量 istore_3，最后将结果输出，程序返回。
 
 在分析这段简单代码的过程中，楼主发现了一个 jvm 编译命令的网站，分享出来<a href="https://link.juejin.cn?target=https%3A%2F%2Fcs.au.dk%2F~mis%2FdOvs%2Fjvmspec%2Fref-Java.html" target="_blank" data-ref="nofollow noopener noreferrer" title="https://cs.au.dk/~mis/dOvs/jvmspec/ref-Java.html">jvm 指令</a>。
 
 ### 总结
 
-楼主在上面做了一个简单的代码分析的过程，希望可以帮助到有缘人。javap 可以用于反编译和查看编译器编译后的字节码。一般用到的不多，不过平时用 javap -c 比较多，该命令用于列出每个方法所执行的 JVM 指令，用来解决比较棘手的逻辑出错的 bug 是个不错的选择。另外通过字节码和源代码的对比，深入分析 Java 的编译原理及代码执行过程，解决各种 Java 原理级别的问题。
+楼主在上面做了一个简单的代码分析的过程，希望可以帮助到有缘人。javap 可以用于反编译和查看编译器编译后的字节码。一般用到的不多，不过平时用 javap -c 比较多，该命令用于列出每个方法所执行的 JVM 指令，用来解决比较棘手的逻辑错误是个不错的选择。另外通过字节码和源代码的对比，深入分析 Java 的编译原理及代码执行过程，解决各种 Java 原理级别的问题。
