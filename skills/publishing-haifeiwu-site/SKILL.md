@@ -7,7 +7,7 @@ description: Use when publishing to or updating the haifeiWu personal site (haif
 
 ## Overview
 
-The site is a **Hugo + Blowfish** single-language **Chinese (zh-cn)** blog + portfolio at `haifeiWu.github.io`, source in `/Users/chenzhiyun/work/haifeiWu.github.io`. Flow: **edit content → local build → commit (as haifeiWu) → push to main (SSH) → GitHub Actions deploys → verify live**.
+The site is a **Hugo + Blowfish** blog + portfolio: **Chinese (zh-cn) default** with an English (en) variant for static pages. **Posts/articles are Chinese-only** — no /en/ article URLs, no language switcher on post pages at `haifeiWu.github.io`, source in `/Users/chenzhiyun/work/haifeiWu.github.io`. Flow: **edit content → local build → commit (as haifeiWu) → push to main (SSH) → GitHub Actions deploys → verify live**.
 
 ## When to Use
 
@@ -51,12 +51,12 @@ GIT_SSH_COMMAND="ssh -o ConnectTimeout=30 -o ServerAliveInterval=15" git push or
    ---
    ```
 3. **Body**: Chinese content, `##` sections. Migrated posts start with `> 📌 本文原发布于<来源>：[标题](url)`
-4. **Single file only** — the site is Chinese-only: one `index.md` per post, no zh-cn stub, no `translationKey`. There is no `/zh-cn/` prefix anywhere.
+4. **Single file per post** — posts are Chinese-only (no en variant, no `translationKey`). Article URLs: `/posts/{slug}/`. Static pages (home `/`, `/about/`, `/projects/`, `/tags/`) are bilingual: Chinese at root, English at `/en/` — keep both `index.md` (zh-cn) and `index.en.md` in sync
 5. Build locally, confirm `/posts/{slug}/` renders
 6. Commit + push (see Quick Reference)
 7. Poll deploy: `https://api.github.com/repos/haifeiWu/haifeiWu.github.io/actions/runs?per_page=1` until `completed|success` (~2-4 min), then verify the live URL returns 200
 
-> **Site language history:** the site was bilingual (en + zh-cn) until 2026-08, when it became single-language zh-cn (all pages render Chinese chrome at root paths: `/`, `/posts/`, `/tags/`, `/about/`, `/projects/`). Do NOT recreate language configs, zh-cn stubs, translationKey, or `/zh-cn/` paths.
+> **Language model (2026-08):** `defaultContentLanguage = "zh-cn"`; `languages.en.toml` + `menus.en.toml` give static pages an English variant at `/en/`. The en menu points Blog/Tags at the shared `/posts/` `/tags/` (absolute `url`), not `/en/` paths. Posts live only in zh-cn so the theme renders NO language switcher on them (`translations.html` gates on `.IsTranslated`). Do NOT recreate `/zh-cn/` paths or zh-cn stubs — that system is retired. The tags taxonomy auto-generates an English list page (`/en/tags/`) with no articles — harmless, leave it.
 
 ## Image Conventions
 
