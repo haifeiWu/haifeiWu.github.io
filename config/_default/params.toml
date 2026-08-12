@@ -158,12 +158,7 @@ fingerprintAlgorithm = "sha512" # Valid values are "sha512" (default), "sha384",
   # token = "XXXXXX"
   # enableTrackEvent = false
 
-[buymeacoffee]
-  identifier = "nunocoracao"
-  globalWidget = true
-  globalWidgetMessage = ""
-  globalWidgetColor = "#FFDD00"
-  globalWidgetPosition = "right"
+# 已移除主题作者的 Buy Me a Coffee 组件，改为自定义微信收款码弹窗（layouts/partials/extend-footer.html）
 
 [verification]
   # google = ""
