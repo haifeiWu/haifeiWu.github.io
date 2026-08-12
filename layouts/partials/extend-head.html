@@ -1,2 +1,12 @@
+{{/* 站点级 SEO/GEO 增强（context = .Site） */}}
+
 {{/* 掘金图床有 Referer 防盗链，禁用 Referer 以保证文章图片可加载 */}}
 <meta name="referrer" content="no-referrer">
+
+{{/* 百度站长平台验证（Blowfish 原生不支持，此处渲染） */}}
+{{ with site.Params.verification.baidu }}
+  <meta name="baidu-site-verification" content="{{ . }}">
+{{ end }}
+
+{{/* hreflang x-default（多语言站点默认语言） */}}
+<link rel="alternate" hreflang="x-default" href="{{ site.Home.Permalink }}">

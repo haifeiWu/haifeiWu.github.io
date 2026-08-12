@@ -1,0 +1,35 @@
+# haifeiWu
+
+> from coder to master……
+
+haifeiWu 的个人网站：作品集 + 技术博客（GitHub Pages 托管，Hugo + Blowfish 构建，中英双语）。Backend developer in Beijing, passionate about distributed systems, middleware and AI engineering. Main languages: Go / Java / Rust.
+
+博客文章以中文为主，共 64 篇原创（迁移自掘金社区），覆盖：分布式系统与架构、消息中间件（Kafka / Netty / Redis / MySQL）、自研 RPC 框架、单元测试、性能优化、云原生与 AI/LLM 工程（MCP）等。
+
+## Key links
+- Homepage / Portfolio: https://haifeiWu.github.io/
+- About: https://haifeiWu.github.io/about/
+- Open source projects: https://haifeiWu.github.io/projects/
+- Blog posts (EN): https://haifeiWu.github.io/posts/
+- Blog posts (中文): https://haifeiWu.github.io/zh-cn/posts/
+- RSS feed: https://haifeiWu.github.io/index.xml
+- GitHub: https://github.com/haifeiWu
+- Juejin (掘金): https://juejin.cn/user/1574156379896103/posts
+- Email: whfstudio@163.com
+
+## Featured open source projects
+- lightconf: 轻量级分布式配置中心 (Netty-based) — https://github.com/haifeiWu/lightconf
+- child-rpc: 自研 RPC 框架 — https://github.com/haifeiWu/child-rpc
+- disruptor-learn: Disruptor 并发框架学习 — https://github.com/haifeiWu/disruptor-learn
+- mcp-gitlab-server: MCP GitLab 服务（86 个工具）— https://github.com/haifeiWu/mcp-gitlab-server
+- TrendRadar: 趋势雷达 — https://github.com/haifeiWu/TrendRadar
+- ai-gateway: AI 网关 — https://github.com/haifeiWu/ai-gateway
+
+## Blog topics
+后端, 分布式系统, 微服务, 系统架构, Go, Java, Rust, Kafka, Netty, Redis, MySQL, RPC, Disruptor, 单元测试, 性能优化, 云原生, AI 工程, MCP
+
+## Notable posts
+- golang 项目中的全链路追踪（tracing）— https://haifeiWu.github.io/posts/golang-xiangmuzhongdequanlianluzhuizong-tracing/
+- 千万级消息推送系统的设计与实践 — https://haifeiWu.github.io/posts/qianwanjixiaoxituisongxitongdeshejiyushijian/
+- 实现自己的 RPC 框架（二）— https://haifeiWu.github.io/posts/shixianzijide-rpc-kuangjia-er/
+- Kafka Consumer 的 Rebalance 机制 — https://haifeiWu.github.io/posts/kafka-consumer-de-rebalance-jizhi/
