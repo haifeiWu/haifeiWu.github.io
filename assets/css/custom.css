@@ -30,3 +30,22 @@
 .dark\:hover\:bg-neutral-700:is(.dark *):hover { background-color: rgba(var(--color-neutral-700), 1); }
 .dark\:hover\:text-primary-400:is(.dark *):hover { color: rgba(var(--color-primary-400), 1); }
 .dark\:hover\:text-neutral-100:is(.dark *):hover { color: rgba(var(--color-neutral-100), 1); }
+
+/* ===== 页面 Hero 背景（文章/列表页） =====
+   替换默认 background.svg：柔和渐变 + 点阵纹理，明暗主题自适应（类 Linear/Vercel 风格） */
+.single_hero_background {
+  background-color: #f8fafc;
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(99, 102, 241, 0.12), transparent 42%),
+    radial-gradient(circle at 82% 68%, rgba(14, 165, 233, 0.10), transparent 40%),
+    radial-gradient(rgba(100, 116, 139, 0.09) 1px, transparent 1.5px);
+  background-size: auto, auto, 26px 26px;
+}
+.dark .single_hero_background {
+  background-color: #0f172a;
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(99, 102, 241, 0.20), transparent 42%),
+    radial-gradient(circle at 82% 68%, rgba(56, 189, 248, 0.14), transparent 40%),
+    radial-gradient(rgba(148, 163, 184, 0.10) 1px, transparent 1.5px);
+  background-size: auto, auto, 26px 26px;
+}

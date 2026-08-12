@@ -24,7 +24,8 @@ disableImageOptimizationMD = false
 disableTextInHeader = false
 # backgroundImageWidth = 1200
 
-defaultBackgroundImage = "/img/background.svg"
+# 背景改为纯 CSS 渐变（custom.css 中的 .single_hero_background），不再使用图片
+# defaultBackgroundImage = "/img/background.svg"
 # 文章无封面时不显示默认图（已移除，列表卡片更干净）
 # defaultFeaturedImage = "/img/featured.svg"
 defaultSocialImage = "img/og.png"
