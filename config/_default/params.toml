@@ -14,6 +14,9 @@ enableSearch = true
 enableCodeCopy = true
 enableStructuredBreadcrumbs = true
 
+# 页脚版权：{ year } 会被替换为当前年份
+copyright = "© 2016～{ year } haifeiWu"
+
 replyByEmail = false
 
 mainSections = ["posts"]
