@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/go--bing-fa-bian-cheng/"]
 categories: ["go"]
 title: "go 并发编程"
 date: "2020-07-01T00:00:00+08:00"

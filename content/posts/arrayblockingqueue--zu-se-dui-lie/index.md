@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/arrayblockingqueue--zu-se-dui-lie/"]
 categories: ["Java"]
 title: "ArrayBlockingQueue 阻塞队列"
 date: "2019-01-27T00:00:00+08:00"

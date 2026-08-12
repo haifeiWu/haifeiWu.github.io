@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/qianwanjixiaoxituisongxitongdeshejiyushijian/"]
 categories: ["后端"]
 title: "千万级消息推送系统的设计与实践"
 date: "2024-06-17T20:40:01+08:00"

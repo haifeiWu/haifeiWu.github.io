@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/kafka-de-ri-zhi-fu-zhi-ji-zhi/"]
 categories: ["Java"]
 title: "Kafka 的日志复制机制"
 date: "2021-01-14T00:00:00+08:00"

@@ -11,7 +11,7 @@ haifeiWu 的个人网站：作品集 + 技术博客（GitHub Pages 托管，Hugo
 - About: https://haifeiWu.github.io/about/
 - Open source projects: https://haifeiWu.github.io/projects/
 - Blog posts (EN): https://haifeiWu.github.io/posts/
-- Blog posts (中文): https://haifeiWu.github.io/zh-cn/posts/
+- Blog posts (中文): https://haifeiWu.github.io/posts/
 - RSS feed: https://haifeiWu.github.io/index.xml
 - GitHub: https://github.com/haifeiWu
 - Juejin (掘金): https://juejin.cn/user/1574156379896103/posts

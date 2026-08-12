@@ -1,31 +1,31 @@
 ---
-title: "About"
-description: "About me"
+title: "关于"
+description: "关于我"
 showDate: false
 showReadingTime: false
 showWordCount: false
 showPagination: false
 ---
 
-## Hi, I'm haifeiWu 👋
+## 你好，我是 haifeiWu 👋
 
 > **from coder to master……**
 
-Backend developer based in Beijing, passionate about **distributed systems, middleware and AI engineering**. Currently diving deep into **Go & Rust**.
+北京后端开发者，专注于 **分布式系统、中间件与 AI 工程**，正在深入学习 **Go 与 Rust**。
 
-### What I do
+### 我在做什么
 
-- 🛠️ Building distributed middleware: config centers, RPC frameworks, message push platforms
-- 🧠 Learning & sharing: Go, Rust, Netty, Kafka, Redis, system design
-- 🤖 Exploring AI engineering: MCP servers, AI gateways, sentiment monitoring tools
-- ✍️ Writing on [Juejin](https://juejin.cn/user/1574156379896103/posts) (64+ articles) about my practice and learning
+- 🛠️ 构建分布式中间件：配置中心、RPC 框架、消息推送平台
+- 🧠 学习与分享：Go、Rust、Netty、Kafka、Redis、系统设计
+- 🤖 探索 AI 工程：MCP Server、AI 网关、舆情监控工具
+- ✍️ 在[掘金](https://juejin.cn/user/1574156379896103/posts)持续写作（60+ 篇），记录实践与思考
 
-### Languages & Tools
+### 技术栈
 
 Go · Java · Python · Rust · TypeScript · Netty · Kafka · Redis · MySQL · Docker
 
-### Get in touch
+### 联系我
 
-- 📧 Email: [whfstudio@163.com](mailto:whfstudio@163.com)
-- 🐙 GitHub: [github.com/haifeiWu](https://github.com/haifeiWu)
-- ✍️ Juejin: [juejin.cn/user/1574156379896103](https://juejin.cn/user/1574156379896103/posts)
+- 📧 邮箱：[whfstudio@163.com](mailto:whfstudio@163.com)
+- 🐙 GitHub：[github.com/haifeiWu](https://github.com/haifeiWu)
+- ✍️ 掘金：[juejin.cn/user/1574156379896103](https://juejin.cn/user/1574156379896103/posts)

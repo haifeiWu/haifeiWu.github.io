@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/i-team-bokequanwenjiansuo-elasticsearch-shizhan/"]
 categories: ["后端"]
 title: "I-team 博客全文检索 Elasticsearch 实战"
 date: "2018-07-12T16:26:02+08:00"

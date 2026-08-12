@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/er-fen-cha-zhao-suan-fa-xi-jie-xiang-jie/"]
 categories: ["Java"]
 title: "二分查找算法细节详解"
 date: "2019-09-01T00:00:00+08:00"

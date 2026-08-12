@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/sikejavazhiliaoliaohashmapyuanma-jiyujdk1-8/"]
 categories: ["后端"]
 title: "死磕 Java 之聊聊 HashMap 源码(基于 JDK1.8)"
 date: "2018-06-04T23:07:24+08:00"

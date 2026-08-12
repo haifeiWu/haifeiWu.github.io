@@ -1,6 +1,6 @@
 ---
 title: "child-rpc"
-description: "Lightweight RPC framework built with Netty ⭐20"
+description: "Netty 实现的轻量级 RPC 框架 ⭐20"
 externalUrl: "https://github.com/haifeiWu/child-rpc"
 tags: ["Java", "Netty", "RPC"]
 showDate: false

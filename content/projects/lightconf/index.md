@@ -1,8 +1,8 @@
 ---
 title: "lightconf"
-description: "Lightweight distributed config center based on Netty ⭐84"
+description: "基于 Netty 的轻量级分布式配置中心 ⭐84"
 externalUrl: "https://github.com/haifeiWu/lightconf"
-tags: ["Java", "Netty", "Distributed"]
+tags: ["Java", "Netty", "分布式"]
 showDate: false
 showReadingTime: false
 showWordCount: false

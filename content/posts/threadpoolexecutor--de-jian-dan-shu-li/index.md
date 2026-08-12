@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/threadpoolexecutor--de-jian-dan-shu-li/"]
 categories: ["ThreadPoolExecutor"]
 title: "ThreadPoolExecutor 的简单梳理"
 date: "2020-01-19T00:00:00+08:00"

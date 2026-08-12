@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/an-quan-xian-che/"]
 categories: ["Java"]
 title: "安全闲扯"
 date: "2018-10-22T00:00:00+08:00"

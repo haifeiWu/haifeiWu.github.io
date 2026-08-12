@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/tcp-zhanbaowentiqianxijiqijiejuefangan/"]
 categories: ["后端"]
 title: "TCP 粘包问题浅析及其解决方案"
 date: "2018-07-16T18:58:07+08:00"

@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/duoyingyongpeizhiguanlipingtailightconf/"]
 categories: ["后端"]
 title: "多应用配置管理平台 LIGHTCONF"
 date: "2018-05-07T20:42:14+08:00"

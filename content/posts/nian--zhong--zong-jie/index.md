@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/nian--zhong--zong-jie/"]
 categories: ["总结"]
 title: "年 zhong 总结"
 date: "2018-12-26T00:00:00+08:00"

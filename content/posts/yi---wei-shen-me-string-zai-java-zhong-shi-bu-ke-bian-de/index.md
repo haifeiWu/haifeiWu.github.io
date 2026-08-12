@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/yi---wei-shen-me-string-zai-java-zhong-shi-bu-ke-bian-de/"]
 categories: ["Java"]
 title: "[译] 为什么 String 在 Java 中是不可变的"
 date: "2019-07-08T00:00:00+08:00"

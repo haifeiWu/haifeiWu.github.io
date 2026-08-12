@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/mapreduce--de-jian-dan-shi-xian/"]
 categories: ["MapReduce"]
 title: "MapReduce 的简单实现"
 date: "2020-01-18T00:00:00+08:00"

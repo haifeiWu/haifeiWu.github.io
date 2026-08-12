@@ -1,6 +1,6 @@
 ---
 title: "ai-gateway"
-description: "AI Gateway"
+description: "AI 网关"
 externalUrl: "https://github.com/haifeiWu/ai-gateway"
 tags: ["Go", "AI"]
 showDate: false

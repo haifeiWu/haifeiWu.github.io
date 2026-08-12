@@ -1,10 +1,10 @@
 ---
-title: "Projects"
-description: "Selected open-source projects"
+title: "项目"
+description: "精选开源项目"
 showDate: false
 showReadingTime: false
 showWordCount: false
 cardView: true
 ---
 
-Selected open-source projects I've built.
+我开发的精选开源项目。

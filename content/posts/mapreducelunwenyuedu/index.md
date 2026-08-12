@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/mapreducelunwenyuedu/"]
 categories: ["后端"]
 title: "MapReduce 论文阅读"
 date: "2023-03-08T15:33:34+08:00"

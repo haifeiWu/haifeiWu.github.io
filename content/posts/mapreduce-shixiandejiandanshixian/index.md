@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/mapreduce-shixiandejiandanshixian/"]
 categories: ["后端"]
 title: "MapReduce 实现的简单实现"
 date: "2020-01-18T23:37:50+08:00"

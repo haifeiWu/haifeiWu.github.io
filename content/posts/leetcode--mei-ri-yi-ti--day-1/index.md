@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/leetcode--mei-ri-yi-ti--day-1/"]
 categories: ["Java"]
 title: "LeetCode 每日一题（day 1）"
 date: "2019-02-13T00:00:00+08:00"

@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/socket--zhong-zhan-bao-wen-ti-qian-xi-ji-qi-jie-jue-fang-an/"]
 categories: ["Java"]
 title: "Socket 中粘包问题浅析及其解决方案"
 date: "2018-07-16T00:00:00+08:00"

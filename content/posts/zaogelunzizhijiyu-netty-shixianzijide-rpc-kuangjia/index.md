@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/zaogelunzizhijiyu-netty-shixianzijide-rpc-kuangjia/"]
 categories: ["后端"]
 title: "造个轮子之基于 Netty 实现自己的 RPC 框架"
 date: "2018-09-04T08:31:11+08:00"

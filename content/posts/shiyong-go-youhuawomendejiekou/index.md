@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/shiyong-go-youhuawomendejiekou/"]
 categories: ["后端"]
 title: "使用 Go 优化我们的接口"
 date: "2019-12-30T19:47:34+08:00"

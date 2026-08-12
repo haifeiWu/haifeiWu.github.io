@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/sikejavazhiliaoliaolinkedlistyuanma-jiyujdk1-8/"]
 categories: ["后端"]
 title: "死磕 Java 之聊聊 LinkedList 源码(基于 JDK1.8)"
 date: "2018-05-06T23:09:50+08:00"

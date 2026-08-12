@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/bayibaspring-dom4jshixianmonishixianduquxml/"]
 categories: ["后端"]
 title: "扒一扒 Spring，dom4j 实现模拟实现读取 XML"
 date: "2017-08-23T20:38:56+08:00"

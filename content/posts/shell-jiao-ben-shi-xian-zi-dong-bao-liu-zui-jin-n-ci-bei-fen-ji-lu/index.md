@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/shell-jiao-ben-shi-xian-zi-dong-bao-liu-zui-jin-n-ci-bei-fen-ji-lu/"]
 categories: ["Java"]
 title: "shell 脚本实现自动保留最近 n 次备份记录"
 date: "2017-12-08T00:00:00+08:00"

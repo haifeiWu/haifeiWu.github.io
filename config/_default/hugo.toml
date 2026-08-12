@@ -4,7 +4,7 @@
 
 # theme = "blowfish"  # 使用 Hugo Modules 引入（见下方 [module]）
 baseURL = "https://haifeiWu.github.io/"
-defaultContentLanguage = "en"
+defaultContentLanguage = "zh-cn"
 disableLanguages = [] #to allow translation work requiring shipping to production
 
 # pluralizeListTitles = "true" # hugo function useful for non-english languages, find out more in  https://gohugo.io/getting-started/configuration/#pluralizelisttitles

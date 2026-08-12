@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/yi--raft--xue-sheng-zhi-nan/"]
 categories: ["Raft"]
 title: "【译】Raft 学生指南"
 date: "2020-02-02T00:00:00+08:00"

@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/javaminglingzhijavapchutan/"]
 categories: ["后端"]
 title: "Java 命令之 javap 初探"
 date: "2018-02-26T13:27:15+08:00"

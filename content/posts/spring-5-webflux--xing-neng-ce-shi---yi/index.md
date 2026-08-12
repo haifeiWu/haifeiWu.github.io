@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/spring-5-webflux--xing-neng-ce-shi---yi/"]
 categories: ["Java"]
 title: "Spring 5 WebFlux 性能测试[译]"
 date: "2018-11-11T00:00:00+08:00"

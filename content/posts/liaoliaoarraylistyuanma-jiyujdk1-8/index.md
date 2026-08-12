@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/liaoliaoarraylistyuanma-jiyujdk1-8/"]
 categories: ["后端"]
 title: "聊聊 ArrayList 源码(基于 JDK1.8)"
 date: "2018-05-04T21:44:37+08:00"

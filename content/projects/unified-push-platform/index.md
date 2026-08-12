@@ -1,8 +1,8 @@
 ---
 title: "unified-push-platform"
-description: "Unified push platform for 10M+ messages"
+description: "千万级消息推送平台"
 externalUrl: "https://github.com/haifeiWu/unified-push-platform"
-tags: ["Go", "Messaging", "Distributed"]
+tags: ["Go", "消息推送", "分布式"]
 showDate: false
 showReadingTime: false
 showWordCount: false

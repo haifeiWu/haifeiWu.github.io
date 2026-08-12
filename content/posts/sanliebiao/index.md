@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/sanliebiao/"]
 categories: ["后端"]
 title: "散列表"
 date: "2018-11-23T14:54:25+08:00"

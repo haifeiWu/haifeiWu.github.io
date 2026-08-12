@@ -1,6 +1,6 @@
 ---
 title: "TrendRadar"
-description: "AI hot-topic monitoring across 35 platforms"
+description: "AI 舆情监控分析（35 平台聚合）"
 externalUrl: "https://github.com/haifeiWu/TrendRadar"
 tags: ["Python", "AI", "MCP"]
 showDate: false

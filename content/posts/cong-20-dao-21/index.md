@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/cong-20-dao-21/"]
 categories: ["总结"]
 title: "从 20 到 21"
 date: "2021-01-02T00:00:00+08:00"

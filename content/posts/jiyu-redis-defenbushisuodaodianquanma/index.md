@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/jiyu-redis-defenbushisuodaodianquanma/"]
 categories: ["后端"]
 title: "基于 Redis 的分布式锁到底安全吗？"
 date: "2020-02-11T13:18:42+08:00"

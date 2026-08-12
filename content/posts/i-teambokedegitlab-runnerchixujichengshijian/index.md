@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/i-teambokedegitlab-runnerchixujichengshijian/"]
 categories: ["后端"]
 title: "I-team 博客的 gitlab-runner 持续集成实践"
 date: "2018-06-10T23:34:27+08:00"

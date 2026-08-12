@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/jdk-dingshirenwu-timer-yu-scheduledexecutorservice-paikengji/"]
 categories: ["后端"]
 title: "JDK 定时任务 Timer 与 ScheduledExecutorService 排坑记录"
 date: "2018-07-18T19:12:40+08:00"

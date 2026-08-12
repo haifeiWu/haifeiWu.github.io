@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/alilixianshujutongbugongju-datax-caikengjilu/"]
 categories: ["后端"]
 title: "阿里离线数据同步工具 DataX 踩坑记录"
 date: "2018-07-04T22:33:38+08:00"

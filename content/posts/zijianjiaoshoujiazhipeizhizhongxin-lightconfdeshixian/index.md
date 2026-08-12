@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/zijianjiaoshoujiazhipeizhizhongxin-lightconfdeshixian/"]
 categories: ["后端"]
 title: "自建脚手架之配置中心--LightConf 的实现"
 date: "2018-04-22T18:39:29+08:00"

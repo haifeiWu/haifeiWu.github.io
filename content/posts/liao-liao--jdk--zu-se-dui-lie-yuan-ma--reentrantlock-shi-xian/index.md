@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/liao-liao--jdk--zu-se-dui-lie-yuan-ma--reentrantlock-shi-xian/"]
 categories: ["Java"]
 title: "聊聊 JDK 阻塞队列源码（ReentrantLock 实现）"
 date: "2018-07-31T00:00:00+08:00"

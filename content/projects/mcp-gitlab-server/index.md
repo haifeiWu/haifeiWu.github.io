@@ -1,6 +1,6 @@
 ---
 title: "mcp-gitlab-server"
-description: "Production-grade GitLab MCP server with 86 tools"
+description: "生产级 GitLab MCP Server（86 个工具）"
 externalUrl: "https://github.com/haifeiWu/mcp-gitlab-server"
 tags: ["TypeScript", "MCP", "AI"]
 showDate: false

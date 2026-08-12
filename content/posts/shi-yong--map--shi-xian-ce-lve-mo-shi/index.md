@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/shi-yong--map--shi-xian-ce-lve-mo-shi/"]
 categories: ["Go"]
 title: "使用 Map 实现策略模式"
 date: "2020-01-16T00:00:00+08:00"

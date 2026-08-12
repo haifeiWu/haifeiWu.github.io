@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/shiyongspring-bootshixianboketongjifuwu/"]
 categories: ["后端"]
 title: "使用 Spring Boot 实现博客统计服务"
 date: "2018-06-19T14:53:42+08:00"

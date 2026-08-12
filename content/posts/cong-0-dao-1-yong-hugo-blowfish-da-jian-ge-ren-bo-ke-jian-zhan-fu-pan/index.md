@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/cong-0-dao-1-yong-hugo-blowfish-da-jian-ge-ren-bo-ke-jian-zhan-fu-pan/"]
 categories: ["总结"]
 title: "从 0 到 1：用 Hugo + Blowfish 搭建个人博客（建站复盘）"
 date: "2026-08-12T00:00:00+08:00"
@@ -71,7 +70,7 @@ exampleSite 残留了 7 种语言的 `languages.*.toml` 和 `menus.*.toml`，结
 
 ### 坑 4：文章归属默认语言，中文站一篇都没有
 
-Hugo 多语言站点里，不带语言后缀的 `index.md` 默认归属 en。于是 `/zh-cn/posts/` 一直是空的——明明 87 篇文章都是中文内容。
+Hugo 多语言站点里，不带语言后缀的 `index.md` 默认归属 en。于是 `/posts/` 一直是空的——明明 87 篇文章都是中文内容。
 
 解决方案：给每篇文章生成一个 `index.zh-cn.md` stub（只带 front matter + `translationKey`），再用一个 `include-post` 短代码，在中文页里渲染英文页的内容。文章内容只存一份，两个语言站共用。
 

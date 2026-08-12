@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/nettyshizhanzhidiyigeyingyong/"]
 categories: ["后端"]
 title: "Netty 实战之第一个应用"
 date: "2018-06-21T20:09:37+08:00"

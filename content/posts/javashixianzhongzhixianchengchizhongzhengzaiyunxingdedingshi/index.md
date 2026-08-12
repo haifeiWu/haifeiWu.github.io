@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/javashixianzhongzhixianchengchizhongzhengzaiyunxingdedingshi/"]
 categories: ["后端"]
 title: "Java 实现终止线程池中正在运行的定时任务"
 date: "2018-01-17T20:35:01+08:00"

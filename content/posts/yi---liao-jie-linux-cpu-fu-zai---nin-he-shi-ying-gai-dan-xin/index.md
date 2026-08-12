@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/yi---liao-jie-linux-cpu-fu-zai---nin-he-shi-ying-gai-dan-xin/"]
 categories: ["Linux"]
 title: "【译】了解 Linux CPU 负载-您何时应该担心？"
 date: "2020-06-24T00:00:00+08:00"

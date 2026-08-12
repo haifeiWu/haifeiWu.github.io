@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/pika--xing-neng-you-hua/"]
 categories: ["Java"]
 title: "Pika 性能优化"
 date: "2019-01-09T00:00:00+08:00"

@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/danyuanceshizhigomock/"]
 categories: ["后端"]
 title: "单元测试之 gomock"
 date: "2023-08-08T20:48:49+08:00"

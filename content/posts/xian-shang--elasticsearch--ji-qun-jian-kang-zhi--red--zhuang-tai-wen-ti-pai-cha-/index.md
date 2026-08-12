@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/xian-shang--elasticsearch--ji-qun-jian-kang-zhi--red--zhuang-tai-wen-ti-pai-cha-/"]
 categories: ["Java"]
 title: "线上 Elasticsearch 集群健康值 red 状态问题排查与解决"
 date: "2018-08-07T00:00:00+08:00"

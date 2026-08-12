@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/liaoliao-jdk-feizuseduilieyuanma-casshixian/"]
 categories: ["后端"]
 title: "聊聊 JDK 非阻塞队列源码（CAS 实现）"
 date: "2018-08-02T14:23:33+08:00"

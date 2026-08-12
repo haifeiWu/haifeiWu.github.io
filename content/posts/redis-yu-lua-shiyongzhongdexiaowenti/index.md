@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/redis-yu-lua-shiyongzhongdexiaowenti/"]
 categories: ["后端"]
 title: "Redis 与 Lua 使用中的小问题"
 date: "2019-11-08T13:35:42+08:00"

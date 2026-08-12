@@ -1,8 +1,8 @@
 ---
 title: "disruptor-learn"
-description: "Disruptor learning & practice ⭐13"
+description: "Disruptor 学习与实践 ⭐13"
 externalUrl: "https://github.com/haifeiWu/disruptor-learn"
-tags: ["Java", "Disruptor", "Concurrency"]
+tags: ["Java", "Disruptor", "并发"]
 showDate: false
 showReadingTime: false
 showWordCount: false

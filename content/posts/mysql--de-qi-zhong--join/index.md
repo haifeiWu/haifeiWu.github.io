@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/mysql--de-qi-zhong--join/"]
 categories: ["Java"]
 title: "MySQL 的七种 join"
 date: "2017-02-06T00:00:00+08:00"

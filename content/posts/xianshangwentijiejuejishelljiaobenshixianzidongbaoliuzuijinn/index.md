@@ -1,5 +1,4 @@
 ---
-aliases: ["/zh-cn/posts/xianshangwentijiejuejishelljiaobenshixianzidongbaoliuzuijinn/"]
 categories: ["后端"]
 title: "线上问题解决及 shell 脚本实现自动保留最近 n 次备份记录"
 date: "2017-12-08T20:12:19+08:00"

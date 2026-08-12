@@ -1,8 +1,8 @@
 ---
 title: "haifeiWu"
-description: "Backend developer. Distributed systems, middleware & AI engineering."
+description: "后端开发者，专注分布式系统、中间件与 AI 工程。"
 ---
 
-Backend developer in Beijing, passionate about **distributed systems, middleware and AI engineering**. Currently diving deep into **Go & Rust**.
+北京后端开发者，热爱 **分布式系统、中间件与 AI 工程**，正在深入学习 **Go 与 Rust**。
 
-You can find my articles in the [Blog](/posts/), my open-source work in [Projects](/projects/), and more about me in [About](/about/).
+文章见[博客](/posts/)，开源作品见[项目](/projects/)，更多介绍见[关于](/about/)。
