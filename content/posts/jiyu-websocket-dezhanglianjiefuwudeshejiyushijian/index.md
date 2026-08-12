@@ -25,7 +25,7 @@ translationKey: "jiyu-websocket-dezhanglianjiefuwudeshejiyushijian"
 
 <img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a0f09e50eab24b1da6ceab55fdb82d8a~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1392&amp;h=1186&amp;s=153753&amp;e=png&amp;b=ffffff" loading="lazy" />
 
-在长轮询中，客户端保持连接打开，直到实际有新消息可用或连接超时。一旦客户端收到新消息，它会立即向服务器发送另一个请求，重新启动进程。长轮询有一些缺点：
+在长轮询中，客户端保持连接打开，直到实际有新消息可用或连接超时。一旦客户端收到新消息，它会立即向服务器发送另一个请求，重新开始这一过程。长轮询有一些缺点：
 
 - 发送者和接收者不能连接到同一个聊天服务器。基于 HTTP 的服务器通常是无状态的。如果在分布式的场景下，接收消息的服务器可能与接收消息的客户端没有长轮询连接。
 - 服务器没有很好的方法来判断客户端是否断开连接。
@@ -35,17 +35,17 @@ translationKey: "jiyu-websocket-dezhanglianjiefuwudeshejiyushijian"
 
 <img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e070a1eb520b4a259cd7cbe6fbb601f6~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1954&amp;h=1184&amp;s=230926&amp;e=png&amp;b=ffffff" loading="lazy" />
 
-WebSocket 连接由客户端发起，它是一个全双工的长连接。它以 HTTP 连接开始，并且可以通过一些定义明确的握手“升级”到 WebSocket 连接。通过这种持久连接，服务器可以向客户端发送更新。
+WebSocket 连接由客户端发起，它是一个全双工的长连接。它以 HTTP 连接开始，并且可以通过一次定义明确的握手“升级”到 WebSocket 连接。通过这种持久连接，服务器可以向客户端发送更新。
 
 WebSocket 可以实现实时通信，但是存在的问题是它是长连接，需要连接到具体的实例上，如果是客户端 a 与客户端 b 之间相互通信的话，就需要保证这两个连接在同一个实例上，因此就需要我们维护一套服务发现的机制实现不同长连接之间的通信。
 
 ## 分布式长连接
 
-维持大量的长连接对单台服务器的压力也挺大的，这里也就要求该服务需要可以扩容，也就是分布式地扩展。分布式对于可存储的公共资源有一套完整的解决方案，但对于 WebSocket 来说，操作对象就是每一个连接，它是维持在每一个程序中的。每一个连接不能存储起来共享、不能在不同的程序之间共享。所以我能想到的方案是不同程序之间进行通讯。那么，怎样知道某个连接在哪个应用呢？下面两种方案我们来一一讨论下
+维持大量的长连接对单台服务器的压力也挺大的，这里也就要求该服务需要可以扩容，也就是分布式地扩展。分布式对于可存储的公共资源有一套完整的解决方案，但对于 WebSocket 来说，操作对象就是每一个连接，它是维持在每一个程序中的。每一个连接不能存储起来共享、不能在不同的程序之间共享。所以我能想到的方案是让不同程序之间进行通讯。那么，怎样知道某个连接在哪个应用呢？下面两种方案我们来一一讨论下
 
 ### IP 直连
 
-通过 ip + port 去判断。每个连接都保存在本应用，然后用对称加密加密服务器 IP 和端口，得到的值作为 client id。对指定 client id 进行操作时，只需要解密这个 key，就能得到相应的 IP 和端口。判断是否为本机，不是本机的话进行 RPC 通讯告诉相应的程序。长连接的连接数据不可迁移，程序挂掉了相应的连接也就挂了，在该程序上的连接也就断开了，这时重连的话会找到另一个可用的程序。
+通过 ip + port 去判断。每个连接都保存在本应用，然后用对称加密算法加密服务器 IP 和端口，得到的值作为 client id。对指定 client id 进行操作时，只需要解密这个 key，就能得到相应的 IP 和端口。判断是否为本机，不是本机的话则通过 RPC 通讯告知相应的程序。长连接的连接数据不可迁移，程序挂掉了相应的连接也就挂了，在该程序上的连接也就断开了，这时重连的话会找到另一个可用的程序。
 
 <img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4b251e7562f5408db0e9f6b7014b3b12~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1693&amp;h=1186&amp;s=181776&amp;e=png&amp;b=fbfbfb" loading="lazy" />
 
@@ -59,8 +59,8 @@ WebSocket 可以实现实时通信，但是存在的问题是它是长连接，�
 2.  ws 服务器响应连接请求，通过对称加密服务器 IP 和端口号，得到的值作为 client id，并返回。
 3.  客户端拿到 client id 之后，交给业务系统；
 4.  业务系统拿到 client id 之后，通过 HTTP 发送相关消息，经过 Nginx 负载分配到一台 ws 服务器；
-5.  这台 ws 服务器拿到 clinet id 和消息，解密出对应的服务器 IP 和端口；
-6.  拿到 IP 地址和端口，通过 HTTP/PRC 协议给指定 ws 程序发送信息；
+5.  这台 ws 服务器拿到 client id 和消息，解密出对应的服务器 IP 和端口；
+6.  拿到 IP 地址和端口，通过 HTTP/RPC 协议给指定 ws 程序发送信息；
 7.  该 ws 程序接收到 client id 和信息，给指定的连接发送信息；
 8.  客户端收到信息。
 
@@ -91,9 +91,9 @@ WebSocket 可以实现实时通信，但是存在的问题是它是长连接，�
 <img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/61b6c7f35ff94a52825e24eb831f1c13~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1647&amp;h=1189&amp;s=163315&amp;e=png&amp;b=fffcfc" loading="lazy" />
 
 1.  客户端发送连接请求，连接请求通过 Nginx 负载均衡找到一台 ws 服务器；
-2.  ws 服务器响应连接请求，将用户的 deviceid 或者 uid 与建立长连接的 ws 长连接服务器的 ip+port 存储到 Redis 或者是 nacos 存储中，并将连接升级成 ws 长连接，并返回。
+2.  ws 服务器响应连接请求，将用户的 deviceid 或者 uid 与建立长连接的 ws 长连接服务器的 ip+port 存储到 Redis 或者 nacos 中，并将连接升级成 ws 长连接后返回。
 3.  业务系统就可以通过调用 push-server 的接口发送消息到指定的 deviceid 或者 uid，push-server 收到消息后将消息打包并发送给 mq，并返回发送成功；
-4.  push-consumer 作为一个常驻任务，不停的消费 mq 中的消息，收到消息后，通过 deviceid 或者 uid 查询用户的长连接所在的服务，通过 HTTP 或者 rpc 调用将消息发送到指定的 ws 长连接服务；
+4.  push-consumer 作为一个常驻任务，不停地消费 mq 中的消息，收到消息后，通过 deviceid 或者 uid 查询用户的长连接所在的服务，通过 HTTP 或者 rpc 调用将消息发送到指定的 ws 长连接服务；
 5.  该 ws 程序接收到信息，给指定的连接发送信息；
 6.  客户端收到信息。
 
@@ -103,7 +103,7 @@ WebSocket 可以实现实时通信，但是存在的问题是它是长连接，�
 
 1.  前 2 个步骤跟单发的一样；
 2.  业务系统就可以通过调用 push-server 的接口发送消息到指定的房间 roomid，push-server 收到消息后，通过查询 Redis 获取到房间中的 uid 或者 deviceid，将消息打包并发送给 mq，并返回发送成功；
-3.  push-consumer 作为一个常驻任务，不停的消费 mq 中的消息，收到消息后，通过 deviceid 或者 uid 查询用户的长连接所在的服务，通过 HTTP 或者 rpc 调用将消息发送到指定的 ws 长连接服务；
+3.  push-consumer 作为一个常驻任务，不停地消费 mq 中的消息，收到消息后，通过 deviceid 或者 uid 查询用户的长连接所在的服务，通过 HTTP 或者 rpc 调用将消息发送到指定的 ws 长连接服务；
 4.  该 ws 程序接收到信息，给指定的连接发送信息；
 5.  房间中的所有客户端收到信息。
 

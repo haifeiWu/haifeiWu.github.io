@@ -11,14 +11,14 @@ translationKey: "redis-yu-lua-shiyongzhongdexiaowenti"
 
 ## 问题
 
-在 Redis 里执行 `get` 或 `hget` 不存在的 `key` 或 `field` 时返回值在终端显式的是 `(nil)`，类似于下面这样
+在 Redis 里执行 `get` 或 `hget` 不存在的 `key` 或 `field` 时返回值在终端显示的是 `(nil)`，类似于下面这样
 
 ``` ruby
 127.0.0.1:6379> get test_version
 (nil)
 ```
 
-如果在 Lua 脚本中判断获取到的值是否为空值时，就会产生比较迷惑的问题，以为判断空值的话就用 `nil` 就可以了，然鹅事实却并不是这样的，如下所示：
+如果在 Lua 脚本中判断获取到的值是否为空值时，就会产生比较令人迷惑的问题，以为判断空值的话就用 `nil` 就可以了，然鹅事实却并不是这样的，如下所示：
 
 ``` csharp
 127.0.0.1:6379> get test_version
@@ -36,7 +36,7 @@ translationKey: "redis-yu-lua-shiyongzhongdexiaowenti"
 "boolean"
 ```
 
-通过上面的脚本可以看到，当 Redis 返回的结果为 `(nil)` 时候，其真实的数据类型为 `boolean`，因此我们直接判断 `nil` 是有问题的。
+从上面的脚本可以看出，当 Redis 返回的结果为 `(nil)` 时，其真实的数据类型为 `boolean`，因此我们直接判断 `nil` 是有问题的。
 
 ## Redis 官方文档
 
@@ -62,7 +62,7 @@ translationKey: "redis-yu-lua-shiyongzhongdexiaowenti"
 
 ## 解决方案
 
-通过<a href="https://link.juejin.cn?target=https%3A%2F%2Fredis.io%2Fcommands%2Feval" target="_blank" data-ref="nofollow noopener noreferrer" title="https://redis.io/commands/eval">官方文档</a>，我们知道判断 Lua 脚本返回空值使用，应该直接判断 `true/false`，修改判断脚本如下所示
+通过<a href="https://link.juejin.cn?target=https%3A%2F%2Fredis.io%2Fcommands%2Feval" target="_blank" data-ref="nofollow noopener noreferrer" title="https://redis.io/commands/eval">官方文档</a>，我们知道判断 Lua 脚本返回空值时，应该直接判断 `true/false`，修改判断脚本如下所示
 
 ``` csharp
 127.0.0.1:6379> get test_version

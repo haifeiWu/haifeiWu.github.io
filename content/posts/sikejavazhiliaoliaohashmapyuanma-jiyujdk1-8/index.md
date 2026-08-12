@@ -169,7 +169,7 @@ HashMap 是 Java 程序员使用频率最高的数据结构之一。另外，JDK
 
 ### [](#存储结构-字段 "#存储结构-字段")存储结构-字段
 
-从结构实现来讲，HashMap 是数组+链表+红黑树（JDK1.8 增加了红黑树部分）实现的，如下如所示。
+从结构实现来讲，HashMap 是数组+链表+红黑树（JDK1.8 增加了红黑树部分）实现的，如下图所示。
 
 <a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2FhashMap%25E5%2586%2585%25E5%25AD%2598%25E7%25BB%2593%25E6%259E%2584%25E5%259B%25BE.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/hashMap%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84%E5%9B%BE.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/6/4/163cb56c385ea680~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" title="HashMap的内存结构图" loading="lazy" alt="HashMap的内存结构图" /></a> HashMap 的内存结构图
 
@@ -196,9 +196,9 @@ HashMap 是 Java 程序员使用频率最高的数据结构之一。另外，JDK
 
                                                 
 
-Node 是 HashMap 的一个内部类，实现了 Map.Entry 接口，本质是就是一个映射(键值对)。上图中的每个黑色圆点就是一个 Node 对象。
+Node 是 HashMap 的一个内部类，实现了 Map.Entry 接口，本质就是一个映射(键值对)。上图中的每个黑色圆点就是一个 Node 对象。
 
-\(2\) HashMap 就是使用哈希表来存储的。哈希表为解决冲突，可以采用开放地址法和链地址法等来解决问题，Java 中 HashMap 采用了链地址法。链地址法，简单来说，就是数组加链表的结合。在每个数组元素上都一个链表结构，当数据被 Hash 后，得到数组下标，把数据放在对应下标元素的链表上。例如程序执行下面代码：
+\(2\) HashMap 就是使用哈希表来存储的。哈希表为解决冲突，可以采用开放地址法和链地址法等方式，Java 中 HashMap 采用了链地址法。链地址法，简单来说，就是数组加链表的结合。在每个数组元素上都有一个链表结构，当数据被 Hash 后，得到数组下标，把数据放在对应下标元素的链表上。例如程序执行下面代码：
 
     map.put("name","makefeixiang");
 
@@ -216,12 +216,12 @@ Node 是 HashMap 的一个内部类，实现了 Map.Entry 接口，本质是就�
 
                                                 
 
-当然如果哈希桶数组很大，即便是较差的 hash 算法也会比较分散，有较好的效果，然而，如果哈希桶数组数组很小，即使好的 Hash 算法也会出现较多 hash 碰撞，因此就需要在空间成本和时间成本之间权衡，其实就是在根据实际情况确定哈希桶数组的大小，并在此基础上设计好的 hash 算法减少 Hash 碰撞。那么通过什么方式来控制 map 使得 Hash 碰撞的概率又小，哈希桶数组（Node\[\] table）占用空间又少呢？答案就是好的 Hash 算法和扩容机制。\
-HashMap 的扩容机制就是通过 threshold = length \* Load factor 来做是否进行扩容的决策。也就是说，在数组定义好长度之后，负载因子越大，所能容纳的键值对个数越多。当然，负载因子也不是越大越好，JDK 设计者给出了一个相对来说比较均衡的方案，Load factor 为负载因子(默认值是 0.75)，一般我们不对这个参数做修改。
+当然如果哈希桶数组很大，即便是较差的 hash 算法也会比较分散，有较好的效果，然而，如果哈希桶数组很小，即使好的 Hash 算法也会出现较多 hash 碰撞，因此就需要在空间成本和时间成本之间权衡，其实就是在根据实际情况确定哈希桶数组的大小，并在此基础上设计好的 hash 算法来减少 Hash 碰撞。那么通过什么方式来控制 map 使得 Hash 碰撞的概率又小，哈希桶数组（Node\[\] table）占用空间又少呢？答案就是好的 Hash 算法和扩容机制。\
+HashMap 的扩容机制就是通过 threshold = length \* Load factor 来做是否扩容的决策。也就是说，在数组定义好长度之后，负载因子越大，所能容纳的键值对个数越多。当然，负载因子也不是越大越好，JDK 设计者给出了一个相对来说比较均衡的方案，Load factor 为负载因子(默认值是 0.75)，一般我们不对这个参数做修改。
 
 ### [](#功能实现-方法 "#功能实现-方法")功能实现-方法
 
-HashMap 的内部功能实现很多，本文主要选取从根据 key 获取 HashMap 数组索引、put 方法的执行、扩容、获取 HashMap 对应 key 的值等几个具有代表性的点深入展开讲解。
+HashMap 的内部功能实现很多，本文主要从根据 key 获取 HashMap 数组索引、put 方法的执行、扩容、获取 HashMap 对应 key 的值等几个具有代表性的点深入展开讲解。
 
 #### [](#1-确定哈希桶数组索引位置 "#1-确定哈希桶数组索引位置")1. 确定哈希桶数组索引位置
 
@@ -250,7 +250,7 @@ HashMap 的内部功能实现很多，本文主要选取从根据 key 获取 Has
 ③.判断 table\[i\]的首个元素是否和 key 一样，如果相同直接覆盖 value，否则转向④，这里的相同指的是 hashCode 以及 equals；\
 ④.判断 table\[i\] 是否为 treeNode，即 table\[i\] 是否是红黑树，如果是红黑树，则直接在树中插入键值对，否则转向⑤；\
 ⑤.遍历 table\[i\]，判断链表长度是否大于 8，大于 8 的话把链表转换为红黑树，在红黑树中执行插入操作，否则进行链表的插入操作；遍历过程中若发现 key 已经存在直接覆盖 value 即可；\
-⑥.插入成功后，判断实际存在的键值对数量 size 是否超多了最大容量 threshold，如果超过，进行扩容。
+⑥.插入成功后，判断实际存在的键值对数量 size 是否超过了最大容量 threshold，如果超过，进行扩容。
 
                                                     
     final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
@@ -309,9 +309,9 @@ HashMap 的内部功能实现很多，本文主要选取从根据 key 获取 Has
 
 #### [](#3-扩容机制的实现 "#3-扩容机制的实现")3. 扩容机制的实现
 
-扩容(resize)就是重新计算容量，向 HashMap 对象里不停的添加元素，**当 HashMap 对象内部的数组长度 大于 DEFAULT_LOAD_FACTOR \* DEFAULT_INITIAL_CAPACITY**，HashMap 就需要扩大数组的长度，以便能装入更多的元素。方法是使用一个新的数组代替已有的容量小的数组。
+扩容(resize)就是重新计算容量，向 HashMap 对象里不停地添加元素，**当 HashMap 对象内部的数组长度 大于 DEFAULT_LOAD_FACTOR \* DEFAULT_INITIAL_CAPACITY**，HashMap 就需要扩大数组的长度，以便能装入更多的元素。方法是使用一个新的数组代替已有的容量小的数组。
 
-我们分析下 resize 的源码，鉴于 JDK1.8 融入了红黑树，较复杂，为了便于理解我们仍然使用 JDK1.7 的代码，好理解一些，本质上区别不大，具体区别后文再说。\
+我们分析下 resize 的源码，鉴于 JDK1.8 融入了红黑树，较复杂，为了便于理解我们仍然使用 JDK1.7 的代码，本质上区别不大，具体区别后文再说。\
 
                                                     
     final Node<K,V>[] resize() {
@@ -402,7 +402,7 @@ HashMap 的内部功能实现很多，本文主要选取从根据 key 获取 Has
 
 #### [](#4-HashMap中根据key获取value代码实现 "#4-HashMap中根据key获取value代码实现")4. HashMap 中根据 key 获取 value 代码实现
 
-相比于上面几个，HashMap 中获取 value 相对来说就简单许多，基本逻辑就是根据 key 算出 hash 值定位到哈希桶的索引，当可以就是当前索引的值则直接返回其对于的 value，反之用 key 去遍历 equal 该索引下的 key，直到找到位置。\
+相比于上面几个，HashMap 中获取 value 相对来说就简单许多，基本逻辑就是根据 key 算出 hash 值定位到哈希桶的索引，当 key 就是当前索引的值则直接返回其对应的 value，反之用 key 去遍历 equal 该索引下的 key，直到找到位置。\
 
                                                     
     final Node<K,V> getNode(int hash, Object key) {
@@ -457,17 +457,17 @@ HashMap 的内部功能实现很多，本文主要选取从根据 key 获取 Has
 
                                                 
 
-由于楼主本人才疏学浅，具体过程就不在分析，想要了解的请移步<a href="https://link.juejin.cn?target=https%3A%2F%2Fcoolshell.cn%2Farticles%2F9606.html" target="_blank" data-ref="nofollow noopener noreferrer" title="https://coolshell.cn/articles/9606.html">疫苗：Java HASHMAP 的死循环</a>
+由于楼主本人才疏学浅，具体过程就不再分析，想要了解的请移步<a href="https://link.juejin.cn?target=https%3A%2F%2Fcoolshell.cn%2Farticles%2F9606.html" target="_blank" data-ref="nofollow noopener noreferrer" title="https://coolshell.cn/articles/9606.html">疫苗：Java HASHMAP 的死循环</a>
 
 ## [](#小结 "#小结")小结
 
-\(1\) 扩容是一个特别耗性能的操作，因此初始化 HashMap 的时候给一个数值，避免 map 频繁的扩容情况的额发生。
+\(1\) 扩容是一个特别耗性能的操作，因此初始化 HashMap 的时候给一个数值，避免 map 频繁扩容的情况发生。
 
 \(2\) 负载因子是可以修改的，但是建议一般情况下不要轻易修改。
 
-\(3\) HashMap 是线程不安全的，不要在并发的环境中使用 HashMap，建议使用 ConcurrentHashMap 或者 Collections.synchronizedMap()中的。
+\(3\) HashMap 是线程不安全的，不要在并发的环境中使用 HashMap，建议使用 ConcurrentHashMap 或者 Collections.synchronizedMap()。
 
-\(4\) JDK1.8 引入红黑树在很大程度优化了 HashMap 的性能。
+\(4\) JDK1.8 引入红黑树在很大程度上优化了 HashMap 的性能。
 
 ## [](#参考文章 "#参考文章")参考文章
 

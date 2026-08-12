@@ -53,15 +53,15 @@ sudo yum remove docker \
 
 您可以根据需要以不同方式安装 `Docker CE`：
 
-- 大多数用户设置 `Docker` 的存储库并从中进行安装，以便于安装和升级任务。也是 `Docker` 官方推荐的方法。
+- 大多数用户会设置 `Docker` 的存储库并从中进行安装，以方便安装和升级。也是 `Docker` 官方推荐的方法。
 
-- 有些用户下载 `RPM` 软件包并手动安装并完全手动管理升级。这在诸如在没有访问互联网的气隙系统上安装 `Docker` 的情况下非常有用。
+- 有些用户下载 `RPM` 软件包并手动安装，升级也完全手动管理。这在诸如无法访问互联网的气隙系统上安装 `Docker` 的情况下非常有用。
 
 - 在测试和开发环境中，一些用户选择使用自动便捷脚本来安装 `Docker`。
 
 本文采用的是第一种方法：
 
-在新主机上首次安装 `Docker CE`之前，需要设置 `Docker` 存储库。之后，您可以 从存储库安装和更新 `Docker`。
+在新主机上首次安装 `Docker CE`之前，需要设置 `Docker` 存储库。之后，您可以从存储库安装和更新 `Docker`。
 
 #### 设置 `REPOSITORY`
 
@@ -89,7 +89,7 @@ sudo yum-config-manager \
 sudo yum install docker-ce
 ```
 
-2，要安装特定版本的`Docker CE`，请列出`repo`中的可用版本，然后选择并安装：a. 列出并对您的仓库中可用的版本进行排序。此示例按版本号对结果进行排序，从最高到最低，并被截断：
+2，要安装特定版本的`Docker CE`，请列出`repo`中的可用版本，然后选择并安装：a. 列出仓库中可用的版本并排序。此示例按版本号对结果进行排序，从最高到最低，且结果已被截断：
 
 ``` bash
 yum list docker-ce --showduplicates | sort -r
@@ -99,7 +99,7 @@ docker-ce.x86_64            18.09.0.ce-1.el7.centos             docker-ce-stable
 
 返回的列表取决于启用的存储库，并且特定于您的`CentOS`版本（在此示例中以`.el7`后缀表示）。
 
-b\. 通过其完全限定的包名称安装特定版本，包名称（`docker-ce`）加上版本字符串（第 2 列）直到第一个连字符，用连字符（ - ）分隔，例如，`docker-ce-18.03.0.ce`。
+b\. 通过其完全限定的包名称安装特定版本：包名称（`docker-ce`）加上版本字符串（第 2 列）直到第一个连字符为止，用连字符（ - ）分隔，例如，`docker-ce-18.03.0.ce`。
 
 ``` bash
 sudo yum install docker-ce-<VERSION STRING>
@@ -119,7 +119,7 @@ sudo systemctl start docker
 sudo docker run hello-world
 ```
 
-上面的命令下载测试映像并在容器中运行它。当容器运行时，它会打印一条信息性消息并退出。
+上面的命令下载测试镜像并在容器中运行它。当容器运行时，它会打印一条提示信息并退出。
 
 ## 卸载 `Docker CE`
 
@@ -129,7 +129,7 @@ sudo docker run hello-world
 sudo yum remove docker-ce
 ```
 
-2，主机上的图像，容器，卷或自定义配置文件不会自动删除。要删除所有图像，容器和卷：
+2，主机上的镜像，容器，卷或自定义配置文件不会自动删除。要删除所有镜像，容器和卷：
 
 ``` bash
 sudo rm -rf /var/lib/docker
@@ -185,7 +185,7 @@ sudo rm -rf /var/lib/docker
 </build>
 ```
 
-需要注意的是 `<dockerHost>http://127.0.0.1:2375</dockerHost>`，如果本地有安装 `docker`，直接只用本地默认即可，若未安装，需要是远程的 `docker` 服务时需要在服务器配置 `docker`，具体操作请移步 <a href="https://link.juejin.cn?target=https%3A%2F%2Fcloud.tencent.com%2Fdeveloper%2Farticle%2F1047265" target="_blank" data-ref="nofollow noopener noreferrer" title="https://cloud.tencent.com/developer/article/1047265">Docker 远程连接</a>。
+需要注意的是 `<dockerHost>http://127.0.0.1:2375</dockerHost>`，如果本地有安装 `docker`，直接使用本地默认即可，若未安装，需要使用远程的 `docker` 服务时，需在服务器上配置 `docker`，具体操作请移步 <a href="https://link.juejin.cn?target=https%3A%2F%2Fcloud.tencent.com%2Fdeveloper%2Farticle%2F1047265" target="_blank" data-ref="nofollow noopener noreferrer" title="https://cloud.tencent.com/developer/article/1047265">Docker 远程连接</a>。
 
 #### 添加 `Dockerfile`
 
@@ -201,9 +201,9 @@ COPY ${DEPENDENCY}/BOOT-INF/classes /app
 ENTRYPOINT ["java","-cp","app:app/lib/*","com.whforever.dockerspringboot.DockerSpringbootApplication"]
 ```
 
-### 构建 构建 `Spring Boot` 的 `Docker` 镜像
+### 构建 `Spring Boot` 的 `Docker` 镜像
 
-执行 `maven` 命令，执行构建
+执行 `maven` 命令进行构建
 
 ``` bash
 mvn clean package docker:build

@@ -18,17 +18,17 @@ translationKey: "jiyu-jmeterdeyacegongjudeshixian"
 
 - 项目的内网访问地址：<a href="https://link.juejin.cn?target=http%3A%2F%2F10.2.250.202%3A9099%2FJmeterWEB%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://10.2.250.202:9099/JmeterWEB/">http://10.2.250.202:9099/JmeterWEB/</a>
 
-- 打开链接你会看到，如下界面（请大家尽量使用 chrome 浏览器）：<img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2017/11/5/483c3e82f49c0d6062af8068b7cfbeec~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp#?w=1312&amp;h=768&amp;s=223735&amp;e=png&amp;b=fbfbfb" loading="lazy" alt="image" />
+- 打开链接，你会看到如下界面（请大家尽量使用 chrome 浏览器）：<img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2017/11/5/483c3e82f49c0d6062af8068b7cfbeec~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp#?w=1312&amp;h=768&amp;s=223735&amp;e=png&amp;b=fbfbfb" loading="lazy" alt="image" />
 
 - 在界面中选择对应的选项卡：（目前只支持 HTTP 模板，自定义脚本上传，测试相应结果两个选项卡），HTTP 模板是根据页面选择的参数生成 jmx 文件，自定义脚本是用户直接上传 jmx 脚本。
 
-- 下图是执行脚本的页面，在页面中可以选择在本地执行与在远程机执行（远程机执行是指在 3 台机器上同步执行脚本，比如你的脚本是 10 个线程，选择两台远程机与加上本机就相当于执行 30 个线程）。其他两台远程机器的 IP 是 10.2.250.203:1099，10.2.250.204:1099。<img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2017/11/5/fea4ead27127bc0fb8cb55812abc9ed0~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp#?w=1299&amp;h=680&amp;s=66982&amp;e=png&amp;b=fefefe" loading="lazy" alt="image" />
+- 下图是执行脚本的页面，在页面中可以选择在本地执行与在远程机执行（远程机执行是指在 3 台机器上同步执行脚本，比如你的脚本是 10 个线程，选择两台远程机再加上本机就相当于执行 30 个线程）。其他两台远程机器的 IP 是 10.2.250.203:1099，10.2.250.204:1099。<img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2017/11/5/fea4ead27127bc0fb8cb55812abc9ed0~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp#?w=1299&amp;h=680&amp;s=66982&amp;e=png&amp;b=fefefe" loading="lazy" alt="image" />
 
 - 生成的测试报告如下图所示。<img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2017/11/5/d4ae901fd6ced49a78b49bd528c70101~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp#?w=1301&amp;h=678&amp;s=100016&amp;e=png&amp;b=f9f9f9" loading="lazy" alt="image" />
 
-- 查看 Response，request 的数据 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2017/11/5/09bd7e1e54fcdde712d20f1fb7fa4681~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp#?w=1305&amp;h=679&amp;s=84571&amp;e=png&amp;b=e6eef5" loading="lazy" alt="image" />
+- 查看 Response 和 request 的数据 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2017/11/5/09bd7e1e54fcdde712d20f1fb7fa4681~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp#?w=1305&amp;h=679&amp;s=84571&amp;e=png&amp;b=e6eef5" loading="lazy" alt="image" />
 
-- JMeter3.0 提供一个用于生成 HTML 页面格式图形化报告的扩展模块。该模块支持通过两种方式生成多维度图形化测试报告：在 JMeter 性能测试结束时，自动生成本次测试的 HTML 图形化报告使用一个已有的结果文件(如 CSV 文件)来生成该次结果的 HTML 图形化报告 其默认提供的度量维度包括：
+- JMeter3.0 提供一个用于生成 HTML 页面格式图形化报告的扩展模块。该模块支持通过两种方式生成多维度图形化测试报告：在 JMeter 性能测试结束时，自动生成本次测试的 HTML 图形化报告；使用一个已有的结果文件(如 CSV 文件)来生成该次结果的 HTML 图形化报告。其默认提供的度量维度包括：
 
 1.  APDEX(Application Performance Index)指数
 
@@ -55,25 +55,24 @@ translationKey: "jiyu-jmeterdeyacegongjudeshixian"
     展示响应状态码随时间的分布情况\
     类似于JMeter Plugins在UI上的jp@gc - Response Codes per Second
 
-9.  事务吞吐量时间曲线(TPS)
-
-10. 展示每秒处理的事务数随时间变化情况\
+9.  事务吞吐量时间曲线(TPS)\
+    展示每秒处理的事务数随时间变化情况\
     类似于JMeter Plugins在UI上的jp@gc - Transactions per Second
 
-11. 平均响应时间与每秒请求数的关系图\
+10. 平均响应时间与每秒请求数的关系图\
     展示平均响应时间与每秒请求数(可以理解为QPS)的关系
 
-12. Latency time 与每秒请求数的关系图\
+11. Latency time 与每秒请求数的关系图\
     展示Latency time与每秒请求数的关系
 
-13. 响应时间百分位图\
+12. 响应时间百分位图\
     响应时间的百分位分布图
 
-14. 活动线程数变化曲线\
+13. 活动线程数变化曲线\
     展示测试过程中活动线程数随时间变化情况
 
-15. 平均响应时间与线程数的关系图\
+14. 平均响应时间与线程数的关系图\
     展示平均响应时间与线程数的关系 类似于JMeter Plugins在UI上的jp@gc - Response Times vs Threads
 
-16. 柱状响应时间分布图\
+15. 柱状响应时间分布图\
     展示落在各个平均响应时间区间的请求数情况

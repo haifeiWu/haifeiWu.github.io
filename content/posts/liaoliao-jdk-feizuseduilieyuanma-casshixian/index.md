@@ -9,7 +9,7 @@ translationKey: "liaoliao-jdk-feizuseduilieyuanma-casshixian"
 
 > 📌 本文原发布于掘金社区：[聊聊 JDK 非阻塞队列源码（CAS 实现）](https://juejin.cn/post/6844903650456780807)
 
-正如上篇文章<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F22ff%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/22ff/">聊聊 JDK 阻塞队列源码（ReentrantLock 实现）</a>所说，队列在我们现实生活中队列随处可见，最经典的就是去银行办理业务，超市买东西排队等。今天楼主要讲的就是 JDK 中安全队列的另一种实现使用 CAS 算法实现的安全队列。\
+正如上篇文章<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F22ff%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/22ff/">聊聊 JDK 阻塞队列源码（ReentrantLock 实现）</a>所说，队列在我们现实生活中随处可见，最经典的就是去银行办理业务，超市买东西排队等。今天楼主要讲的就是 JDK 中使用 CAS 算法实现的另一种安全队列。\
 <span id="user-content-more"></span>
 
 ## [](#JDK-中的队列 "#JDK-中的队列")JDK 中的队列
@@ -23,7 +23,7 @@ translationKey: "liaoliao-jdk-feizuseduilieyuanma-casshixian"
 
 ## [](#LinkedTransferQueue-源码分析 "#LinkedTransferQueue-源码分析")LinkedTransferQueue 源码分析
 
-LinkedTransferQueue 的原理就是通过使用原子变量 compare and swap（简称“CAS”）这种不加锁的方式来实现的进行并发控制，LinkedTransferQueue 是一个无界的安全队列，其长度可以无限延伸，当然其带来的问题也是显而易见的。\
+LinkedTransferQueue 的原理就是通过使用原子变量 compare and swap（简称“CAS”）这种不加锁的方式来实现并发控制，LinkedTransferQueue 是一个无界的安全队列，其长度可以无限延伸，当然其带来的问题也是显而易见的。\
 
 ### [](#主要方法源码实现 "#主要方法源码实现")主要方法源码实现
 
@@ -67,7 +67,7 @@ LinkedTransferQueue 的原理就是通过使用原子变量 compare and swap（�
         throw new InterruptedException();
     }
 
-从上面代码中可以看出，这些方法最终都指向了 `xfer` 方法，只不过传入的不同的参数。
+从上面代码中可以看出，这些方法最终都指向了 `xfer` 方法，只不过传入的参数不同。
 
     /**
      * Implements all queuing methods. See above for explanation.
@@ -155,7 +155,7 @@ LinkedTransferQueue 的原理就是通过使用原子变量 compare and swap（�
 
 ## [](#ConcurrentLinkedQueue-源码分析 "#ConcurrentLinkedQueue-源码分析")ConcurrentLinkedQueue 源码分析
 
-与 `LinkedTransferQueue` 一样，ConcurrentLinkedQueue 一样是采用原子变量实现的并发控制，`ConcurrentLinkedQueue` 是一个基于链接节点的无界线程安全队列，它采用先进先出的规则对节点进行排序，当我们添加一个元素的时候，它会添加到队列的尾部，当我们获取一个元素时，它会返回队列头部的元素。它采用了“wait－free”算法来实现。
+与 `LinkedTransferQueue` 一样，ConcurrentLinkedQueue 也是采用原子变量实现的并发控制，`ConcurrentLinkedQueue` 是一个基于链接节点的无界线程安全队列，它采用先进先出的规则对节点进行排序，当我们添加一个元素的时候，它会将该元素添加到队列的尾部，当我们获取一个元素时，它会返回队列头部的元素。它采用了“wait－free”算法来实现。
 
 ### [](#主要方法源码实现-1 "#主要方法源码实现-1")主要方法源码实现
 
@@ -292,7 +292,7 @@ LinkedTransferQueue 的原理就是通过使用原子变量 compare and swap（�
 
 ## [](#小结 "#小结")小结
 
-本文主要介绍了两种 CAS 算法实现的安全队列，然而稳定性要较高的系统中，为了防止生产者速度过快，导致内存溢出，通常是不建议选择无界队列的。当然楼主水平有限，文章中不免有纰漏，望小伙伴谅解并指出，在技术的道路上一起成长。
+本文主要介绍了两种 CAS 算法实现的安全队列，然而在稳定性要求较高的系统中，为了防止生产者速度过快，导致内存溢出，通常是不建议选择无界队列的。当然楼主水平有限，文章中不免有纰漏，望小伙伴谅解并指出，在技术的道路上一起成长。
 
 ## [](#参考链接 "#参考链接")参考链接
 

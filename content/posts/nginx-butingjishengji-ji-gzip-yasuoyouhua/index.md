@@ -13,7 +13,7 @@ translationKey: "nginx-butingjishengji-ji-gzip-yasuoyouhua"
 > 博客地址：<a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fca%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/ca/?_ref=juejin">www.hchstudio.cn</a>\
 > 欢迎转载，转载请注明作者及出处，谢谢！
 
-好久不写博客手都生了，不过这个习惯不能丢，仅以一篇水文记录一下 Nginx 不停机版本升级及配置 gzip 压缩优化网站访问体验过程。
+好久不写博客手都生了，不过这个习惯不能丢，仅以一篇水文记录一下 Nginx 不停机版本升级及配置 gzip 压缩优化网站访问体验的过程。
 
 ## 缘起
 
@@ -46,13 +46,13 @@ make
 
 **3. 备份原来的 `nginx` 脚本，替换成编译新生成的**
 
-备份完原来的数据之后，执行下面脚本，覆盖 `ngxin` 可执行程序。
+备份完原来的数据之后，执行下面的脚本，覆盖 `ngxin` 可执行程序。
 
 ``` bash
 cp -rfp objs/nginx /usr/local/nginx/sbin/
 ```
 
-**3. 执行升级**
+**4. 执行升级**
 
 下面的命令应该在最开始的 `make` 的目录下执行。
 

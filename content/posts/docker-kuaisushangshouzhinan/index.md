@@ -20,13 +20,13 @@ translationKey: "docker-kuaisushangshouzhinan"
 
 **Docker 属于 Linux 容器的一种封装，提供简单易用的容器使用接口。** 它是目前最流行的 Linux 容器解决方案。
 
-Docker 将应用程序与该程序的依赖，打包在一个文件里面。运行这个文件，就会生成一个虚拟容器。程序在这个虚拟容器里运行，就好像在真实的物理机上运行一样。有了 Docker，就不用担心环境问题。
+Docker 将应用程序与该程序的依赖打包在一个文件里面。运行这个文件，就会生成一个虚拟容器。程序在这个虚拟容器里运行，就好像在真实的物理机上运行一样。有了 Docker，就不用担心环境问题。
 
 总体来说，Docker 的接口相当简单，用户可以方便地创建和使用容器，把自己的应用放入容器。容器还可以进行版本管理、复制、分享、修改，就像管理普通的代码一样。
 
 ## \`Docker\` 怎么用？
 
-本文安装 `Docker` 是基于  `CentOS7` ，其他系统的小伙伴请直接转官网的 quick start.
+本文安装 `Docker` 是基于  `CentOS7` ，其他系统的小伙伴请直接转到官网的 quick start.
 
 ### 卸载旧版本的 \`Docker\`
 
@@ -38,9 +38,9 @@ Docker 将应用程序与该程序的依赖，打包在一个文件里面。运�
 
 您可以根据需要以不同方式安装 `Docker CE` ：
 
-- 大多数用户设置 `Docker` 的存储库并从中进行安装，以便于安装和升级任务。也是 `Docker` 官方推荐的方法。
+- 大多数用户设置 `Docker` 的存储库并从中进行安装，以便于安装和升级。这也是 `Docker` 官方推荐的方法。
 
-- 有些用户下载 `RPM` 软件包并手动安装并完全手动管理升级。这在诸如在没有访问互联网的气隙系统上安装 `Docker`的情况下非常有用。
+- 有些用户下载 `RPM` 软件包并手动安装，升级也完全手动管理。这在无法访问互联网的气隙系统上安装 `Docker`时非常有用。
 
 - 在测试和开发环境中，一些用户选择使用自动便捷脚本来安装 `Docker`。
 
@@ -68,9 +68,9 @@ Docker 将应用程序与该程序的依赖，打包在一个文件里面。运�
 
     yum list docker-ce --showduplicates | sort -rdocker-ce.x86_64            18.09.0.ce-1.el7.centos             docker-ce-stable
 
-返回的列表取决于启用的存储库，并且特定于您的`CentOS`版本（在此示例中以 `.el7`后缀表示）。
+返回的列表取决于启用的存储库，并且与您的`CentOS`版本相关（在此示例中以 `.el7`后缀表示）。
 
-b\. 通过其完全限定的包名称安装特定版本，包名称（`docker-ce`）加上版本字符串（第 2 列）直到第一个连字符，用连字符（ - ）分隔，例如，`docker-ce-18.03.0.ce`。
+b\. 通过其完全限定的包名称安装特定版本，包名称（`docker-ce`）加上版本字符串（第 2 列），直到第一个连字符为止，用连字符（ - ）分隔，例如，`docker-ce-18.03.0.ce`。
 
     sudo yum install docker-ce-<VERSION STRING>
 
@@ -84,7 +84,7 @@ b\. 通过其完全限定的包名称安装特定版本，包名称（`docker-ce
 
     sudo docker run hello-world
 
-上面的命令下载测试映像并在容器中运行它。当容器运行时，它会打印一条信息性消息并退出。
+上面的命令下载测试镜像并在容器中运行它。当容器运行时，它会打印一条提示信息并退出。
 
 ## 卸载 \`Docker CE\`
 
@@ -92,7 +92,7 @@ b\. 通过其完全限定的包名称安装特定版本，包名称（`docker-ce
 
     sudo yum remove docker-ce
 
-2，主机上的图像，容器，卷或自定义配置文件不会自动删除。要删除所有图像，容器和卷：
+2，主机上的镜像，容器，卷或自定义配置文件不会自动删除。要删除所有镜像，容器和卷：
 
     sudo rm -rf /var/lib/docker
 
@@ -106,7 +106,7 @@ b\. 通过其完全限定的包名称安装特定版本，包名称（`docker-ce
 
     <build>    <plugins>        <plugin>            <groupId>org.springframework.boot</groupId>            <artifactId>spring-boot-maven-plugin</artifactId>        </plugin>        <!-- tag::plugin[] -->        <plugin>            <groupId>com.spotify</groupId>            <artifactId>dockerfile-maven-plugin</artifactId>            <version>1.3.6</version>            <configuration>                <!--suppress UnresolvedMavenProperty -->                <repository>${docker.image.prefix}/${project.artifactId}</repository>            </configuration>        </plugin>        <!-- end::plugin[] -->        <plugin>            <groupId>com.spotify</groupId>            <artifactId>docker-maven-plugin</artifactId>            <!--<version>0.4.12</version>-->            <configuration>                <!-- 注意imageName一定要是符合正则[a-z0-9-_.]的，否则构建不会成功 -->                <!-- 详见：https://github.com/spotify/docker-maven-plugin    Invalid repository name ... only [a-z0-9-_.] are allowed-->                <dockerHost>http://127.0.0.1:2375</dockerHost>                <imageName>docker-springboot</imageName>                <baseImage>java</baseImage>                <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>                <resources>                    <resource>                        <targetPath>/</targetPath>                        <directory>${project.build.directory}</directory>                        <include>${project.build.finalName}.jar</include>                    </resource>                </resources>            </configuration>        </plugin>    </plugins></build>
 
-需要注意的是 `<dockerHost>http://127.0.0.1:2375</dockerHost>`，如果本地有安装  `docker` ，直接只用本地默认即可，若未安装，需要是远程的 `docker` 服务时需要在服务器配置  `docker` ，具体操作请移步 Docker 远程连接。
+需要注意的是 `<dockerHost>http://127.0.0.1:2375</dockerHost>`，如果本地有安装  `docker` ，直接使用本地默认即可，若未安装，需要使用远程的 `docker` 服务时，需要在服务器配置  `docker` ，具体操作请移步 Docker 远程连接。
 
 #### 添加 \`Dockerfile\`
 
@@ -114,9 +114,9 @@ b\. 通过其完全限定的包名称安装特定版本，包名称（`docker-ce
 
     FROM openjdk:8-jdk-alpineVOLUME /tmpARG DEPENDENCY=target/dependencyCOPY ${DEPENDENCY}/BOOT-INF/lib /app/libCOPY ${DEPENDENCY}/META-INF /app/META-INFCOPY ${DEPENDENCY}/BOOT-INF/classes /appENTRYPOINT ["java","-cp","app:app/lib/*","com.whforever.dockerspringboot.DockerSpringbootApplication"]
 
-### 构建 构建 \`Spring Boot\` 的 \`Docker\` 镜像
+### 构建 \`Spring Boot\` 的 \`Docker\` 镜像
 
-执行 `maven` 命令，执行构建
+执行 `maven` 命令，进行构建
 
     mvn clean package docker:build
 

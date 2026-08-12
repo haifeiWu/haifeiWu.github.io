@@ -9,7 +9,7 @@ translationKey: "shiyongspring-bootshixianboketongjifuwu"
 
 > 📌 本文原发布于掘金社区：[使用 Spring Boot 实现博客统计服务](https://juejin.cn/post/6844903622145212429)
 
-作为一个后端开发，在微服务，server mesh 等概念满天飞的时代，持续学习能力是不能丢的，因此楼主最近也研究好多 RPC，Netty，Spring Boot 等技术。此外，楼主博客的阅读统计功能是用的是与 HEXO 相匹配的第三方的数量统计功能，也就诞生了楼主这次更换成自己开发的基础功能的装逼之旅。\
+作为一个后端开发，在微服务，server mesh 等概念满天飞的时代，持续学习能力是不能丢的，因此楼主最近也研究好多 RPC，Netty，Spring Boot 等技术。此外，楼主博客的阅读统计功能用的是与 HEXO 相匹配的第三方的数量统计功能，也就诞生了楼主这次更换成自己开发的基础功能的装逼之旅。\
 <span id="user-content-more"></span>
 
 ## [](#通过SPRING-INITIALIZR生成工程 "#通过SPRING-INITIALIZR生成工程")通过 SPRING INITIALIZR 生成工程
@@ -117,7 +117,7 @@ translationKey: "shiyongspring-bootshixianboketongjifuwu"
 ## [](#实现redis存储逻辑 "#实现redis存储逻辑")实现 Redis 存储逻辑
 
 选择 Redis 而没选择数据库的原因是 Redis 提供了丰富的数据结构与数据持久化策略，另外 Redis 是基于内存的，相对于数据库来说，快了不止一个数量级。而统计阅读次数的场景对接口处理的速度还是有一定的要求的，因此楼主选择了 Redis 作为阅读次数统计的 db。\
-下面就是 Redis 操作的基础代码，比较简单楼主贴一下代码，不做进一步的阐述
+下面就是 Redis 操作的基础代码，比较简单，楼主贴一下代码，不做进一步的阐述
 
 - Redis 的接口类
 
@@ -180,7 +180,7 @@ translationKey: "shiyongspring-bootshixianboketongjifuwu"
 
 ## [](#博客阅读次数统计接口实现 "#博客阅读次数统计接口实现")博客阅读次数统计接口实现
 
-博客阅读次数统计的基本业务逻辑就是，对应每篇博客的 blogId 作为 Redis 的 key，而访问次数就是这个 key 所对应的 value，每访问一次该接口就要将对应的 blogId 自增一次，并返回对应的 value。这里楼主选择的 Redis 的数据结构是 Redis 的 Stirng，下面是楼主实现该逻辑的主要代码：
+博客阅读次数统计的基本业务逻辑就是，每篇博客对应的 blogId 作为 Redis 的 key，而访问次数就是这个 key 所对应的 value，每访问一次该接口就要将对应的 blogId 自增一次，并返回对应的 value。这里楼主选择的 Redis 的数据结构是 Redis 的 String，下面是楼主实现该逻辑的主要代码：
 
     /**
      * 统计博客阅读次数.
@@ -254,6 +254,6 @@ Spring Boot 应用默认的应用访问的 path 还是 “/“，楼主在这里
 
 ## [](#号外 "#号外")号外
 
-楼主造了一个轮子，LIGHTCONF 是一个基于 Netty 实现的一个配置管理平台，其核心设计目标是“为业务提供统一的配置管理服务”，可以做到开箱即用。感兴趣的给个 star 支持一下。
+楼主造了一个轮子，LIGHTCONF 是一个基于 Netty 实现的配置管理平台，其核心设计目标是“为业务提供统一的配置管理服务”，可以做到开箱即用。感兴趣的给个 star 支持一下。
 
 - <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Flightconf" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/lightconf">基于 Netty 实现的轻量级分布式应用配置中心</a>

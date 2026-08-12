@@ -37,7 +37,7 @@ SETNX key value
 SET key value [expiration EX seconds|PX milliseconds] [NX|XX]
 ```
 
-> NX - 仅在 key 不存在时执行赋值操作。<a href="https://link.juejin.cn?target=https%3A%2F%2Fredis.io%2Fcommands%2Fset" target="_blank" data-ref="nofollow noopener noreferrer" title="https://redis.io/commands/set">命令描述文档</a> 而如下文所述，通过 SET 的 NX 选项使用，可同时使用其它选项，如 EX/PX 设置超时时间，是更好的方式。
+> NX - 仅在 key 不存在时执行赋值操作。<a href="https://link.juejin.cn?target=https%3A%2F%2Fredis.io%2Fcommands%2Fset" target="_blank" data-ref="nofollow noopener noreferrer" title="https://redis.io/commands/set">命令描述文档</a> 而如下文所述，通过 SET 的 NX 选项，可同时使用其它选项，如 EX/PX 设置超时时间，是更好的方式。
 
 ## SETNX 实现分布式锁
 
@@ -80,11 +80,11 @@ delete lock_a
 
 此方案通过 set 的 NX/PX 选项，将加锁、设置超时两个步骤合并为一个原子操作，从而解决方案 1、2 的问题。(PX 与 EX 选项的语义相同，差异仅在单位。) 此方案目前大多数 sdk、Redis 部署方案都支持，因此是推荐使用的方式。但此方案也有如下问题：
 
-如果锁被错误的释放（如超时），或被错误的抢占，或因 Redis 问题等导致锁丢失，无法很快的感知到。
+如果锁被错误地释放（如超时），或被错误地抢占，或因 Redis 问题等导致锁丢失，无法很快地感知到。
 
 ### 方案 4：SET key randomvalue NX PX
 
-方案 4 在 3 的基础上，增加对 value 的检查，只解除自己加的锁。类似于 CAS，不过是 compare-and-delete。此方案 Redis 原生命令不支持，为保证原子性，需要通过 lua 脚本实现：。
+方案 4 在 3 的基础上，增加对 value 的检查，只解除自己加的锁。类似于 CAS，不过是 compare-and-delete。此方案 Redis 原生命令不支持，为保证原子性，需要通过 lua 脚本实现：
 
 伪代码如下：
 
@@ -94,7 +94,7 @@ SET lock_a random_value NX PX 10000
 eval "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end" 1 lock_a random_value
 ```
 
-此方案更严谨：即使因为某些异常导致锁被错误的抢占，也能部分保证锁的正确释放。并且在释放锁时能检测到锁是否被错误抢占、错误释放，从而进行特殊处理。
+此方案更严谨：即使因为某些异常导致锁被错误地抢占，也能部分保证锁的正确释放。并且在释放锁时能检测到锁是否被错误抢占、错误释放，从而进行特殊处理。
 
 ## 注意事项
 
@@ -102,15 +102,15 @@ eval "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[
 
 从上述描述可看出，超时时间是一个比较重要的变量：
 
-超时时间不能太短，否则在任务执行完成前就自动释放了锁，导致资源暴露在锁保护之外。超时时间不能太长，否则会导致意外死锁后长时间的等待。除非人为接入处理。因此建议是根据任务内容，合理衡量超时时间，将超时时间设置为任务内容的几倍即可。如果实在无法确定而又要求比较严格，可以采用定期 setex/expire 更新超时时间实现。
+超时时间不能太短，否则在任务执行完成前就自动释放了锁，导致资源暴露在锁保护之外。超时时间不能太长，否则会导致意外死锁后长时间的等待。除非人为介入处理。因此建议是根据任务内容，合理衡量超时时间，将超时时间设置为任务内容的几倍即可。如果实在无法确定而又要求比较严格，可以采用定期 setex/expire 更新超时时间实现。
 
 ### 重试
 
-如果拿不到锁，建议根据任务性质、业务形式进行轮询等待。等待次数需要参考任务执行时间。
+如果拿不到锁，建议根据任务性质、业务形式轮询等待。等待次数需要参考任务执行时间。
 
 ### 与 Redis 事务的比较
 
-setnx 使用更为灵活方案。multi/exec 的事务实现形式更为复杂。且部分 Redis 集群方案(如 codis)，不支持 multi/exec 事务。
+setnx 方案使用更为灵活。multi/exec 的事务实现形式更为复杂。且部分 Redis 集群方案(如 codis)，不支持 multi/exec 事务。
 
 ## 关注我们
 

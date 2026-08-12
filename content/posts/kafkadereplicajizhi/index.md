@@ -9,9 +9,9 @@ translationKey: "kafkadereplicajizhi"
 
 > 📌 本文原发布于掘金社区：[Kafka 的 Replica 机制](https://juejin.cn/post/6961253310233837599)
 
-Kafka 是一个分布式的发布-订阅消息系统。它最初是在 LinkedIn 开发的，2011年7月成为一个 Apache 项目。今天，Kafka 被 LinkedIn、Twitter 和 Square 用于日志聚合、队列、实时监控和事件处理等应用程序。在下面的文章中，我们将讨论下 Kafka 的 replication 设计。
+Kafka 是一个分布式的发布-订阅消息系统。它最初是在 LinkedIn 开发的，2011年7月成为一个 Apache 项目。今天，Kafka 被 LinkedIn、Twitter 和 Square 用于日志聚合、队列、实时监控和事件处理等应用程序。下面我们来讨论一下 Kafka 的 replication 设计。
 
-replication 的目的是为了提供服务的高可用，即使有些节点出现了失败，Producer 可以继续发布消息，Consumer 可以继续接收消息。
+replication 的目的是为了保证服务的高可用，即使有些节点失败，Producer 可以继续发布消息，Consumer 可以继续接收消息。
 
 ## 保证数据一致性的方式
 
@@ -19,11 +19,11 @@ replication 的目的是为了提供服务的高可用，即使有些节点出�
 
 ### 多数复制
 
-基于多数提交的方式。leader 要等到大多数 fellower 接收到数据之后才认为数据是可提交的状态。在 leader 失败的情况下，通过多数 fellower 的协调选出新的 leader。这种方式的算法有 raft、paxos 等算法，比如 ZooKeeper、Google Spanner、etcd 等。这种方式在有 2n + 1 个节点的情况下，最多可以容忍 n 个节点失败。
+基于多数提交的方式。leader 要等到大多数 follower 接收到数据之后才认为数据是可提交的。在 leader 失败的情况下，通过多数 follower 的协调选出新的 leader。这种方式的算法有 raft、paxos 等算法，比如 ZooKeeper、Google Spanner、etcd 等。这种方式在有 2n + 1 个节点的情况下，最多可以容忍 n 个节点失败。
 
 ### 主从复制
 
-基于主从复制的方式。需要等 leader 和 fellower 都写入成功才算消息接收成功，在有 n 个节点的情况下，最多可以容忍 n-1 节点失败。
+基于主从复制的方式。需要等 leader 和 follower 都写入成功才算消息接收成功，在有 n 个节点的情况下，最多可以容忍 n-1 个节点失败。
 
 Kafka 使用的是主从复制的方式来实现集群之间的日志复制。原因如下：
 
@@ -37,21 +37,21 @@ Kafka 使用的是主从复制的方式来实现集群之间的日志复制。�
 
 <img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1176ac165a9642148c5c7a3fdcb787bf~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp" style="width:100.0%" loading="lazy" alt="kafka_replication_diagram.png" />
 
-如上图所示当 producer 将消息发布到 topic 的某个 partition 时，该消息首先被转发到该 partition 的 leader 副本，并追加到其日志中。fellower 的副本不断地从 leader 那里获取新的信息。一旦有足够多的副本接收到消息，leader 就提交消息。有个问题就是说 leader 如何决定到什么程度是足够的。leader 不能总是等待所有副本的写操作完成。这样为了保证数据一致性而降低我们服务的可用性是不可行的，这是因为任何跟随者副本可以失败和领导者不能无限地等待。那么如何解决这个问题呢？Kafka 为了解决这种情况下出现的问题，提出了一种新的解决方案 ISR，下面是 ISR 的详细介绍。
+如上图所示，当 producer 将消息发布到 topic 的某个 partition 时，该消息首先被转发到该 partition 的 leader 副本，并追加到其日志中。follower 的副本不断地从 leader 那里获取新的信息。一旦有足够多的副本接收到消息，leader 就提交消息。有个问题就是 leader 如何决定到什么程度才算足够。leader 不能总是等待所有副本的写操作完成。这样为了保证数据一致性而降低我们服务的可用性是不可行的，这是因为任何跟随者副本都可能失败，而领导者不能无限地等待。那么如何解决这个问题呢？Kafka 为了解决这种情况下出现的问题，提出了一种新的解决方案 ISR，下面是 ISR 的详细介绍。
 
 ## Kafka 的 ISR 模型
 
-为了解决上面提出的问题，Kafka 采用了一种折中的方案，引入了 ISR 的概念。ISR 是 in-sync replicas 的简写。ISR 的副本保持和 leader 的同步，当然 leader 本身也在 ISR 中。初始状态所有的副本都处于 ISR 中，当一个消息发送给 leader 的时候，leader 会等待 ISR 中所有的副本告诉它已经接收了这个消息，如果一个副本失败了，那么它会被移除 ISR。下一条消息来的时候，leader 就会将消息发送给当前的 ISR 中节点了。
+为了解决上面提出的问题，Kafka 采用了一种折中的方案，引入了 ISR 的概念。ISR 是 in-sync replicas 的简写。ISR 的副本保持和 leader 的同步，当然 leader 本身也在 ISR 中。初始状态所有的副本都处于 ISR 中，当一条消息发送给 leader 的时候，leader 会等待 ISR 中所有的副本告诉它已经接收了这个消息，如果一个副本失败了，那么它会被移出 ISR。下一条消息来的时候，leader 就会将消息发送给当前 ISR 中的节点了。
 
-同时，leader 还维护着 HW(high watermark)，这是一个分区的最后一条消息的 offset。leader 会持续的将 HW 发送给 fellower，broker 可以将它写入到磁盘中以便将来恢复。
+同时，leader 还维护着 HW(high watermark)，这是一个分区的最后一条消息的 offset。leader 会持续地将 HW 发送给 follower，broker 可以将它写入到磁盘中以便将来恢复。
 
-当一个失败的副本重启的时候，它首先恢复磁盘中记录的 HW，然后将它的消息同步到 HW 这个 offset。这是因为 HW 之后的消息不保证已经 commit。这时它变成了一个 fellower，从 HW 开始从 Leader 中同步数据，一旦追上 leader，它就可以重新加入到 ISR 中。
+当一个失败的副本重启的时候，它首先恢复磁盘中记录的 HW，然后将它的消息同步到 HW 这个 offset。这是因为 HW 之后的消息不保证已经 commit。这时它变成了一个 follower，从 HW 开始，从 Leader 中同步数据，一旦追上 leader，它就可以重新加入到 ISR 中。
 
 Kafka 使用 ZooKeeper 实现 leader 选举。如果 leader 失败，controller 会从 ISR 选出一个新的 leader。leader 选举的时候可能会有数据丢失，但是已经提交的消息保证不会丢失。
 
 ## 数据一致性与服务可用性的权衡
 
-为了保证数据的一致性，Kafka 提出了 ISR，在同步日志到 fellower 的时候为了提高服务的可用性，fellow 在将 leader 同步的日志写入内存后就返回给 leader 日志写入成功的标志。然后这些操作都是可以通过 Kafka 的配置来实现的。
+为了保证数据的一致性，Kafka 提出了 ISR，在同步日志到 follower 的时候为了提高服务的可用性，follower 在将 leader 同步的日志写入内存后，就将日志写入成功的标志返回给 leader。然后这些操作都是可以通过 Kafka 的配置来实现的。
 
 ## 参考文档
 

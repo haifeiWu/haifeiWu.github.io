@@ -51,7 +51,7 @@ public class DataEvent {
 }
 ```
 
-为了让 Disruptor 为我们预先分配这些事件，我们需要构造一个 EventFactory 来执行构造
+为了让 Disruptor 为我们预先分配这些事件，我们需要构造一个 EventFactory
 
 ``` java
 
@@ -152,9 +152,9 @@ public class EventMain {
 }
 ```
 
-上面代码具体感兴趣的小伙伴请移步 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Fdisruptor-learn" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/disruptor-learn">github.com/haifeiWu/di…</a>
+对上面代码具体感兴趣的小伙伴请移步 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Fdisruptor-learn" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/disruptor-learn">github.com/haifeiWu/di…</a>
 
-然后我们可以看到控制台打印出来的数据
+然后我们看下控制台打印出来的数据
 
 <figure>
 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/8/15/1653e2ed992ba123~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" alt="console" />
@@ -164,7 +164,7 @@ public class EventMain {
 
 Disruptor 通过精巧的无锁设计实现了在高并发情形下的高性能。
 
-另外在 Log4j 2 中的异步模式采用了 Disruptor 来处理。在这里楼主遇到一个小问题，就是在使用 Log4j 2 通过 TCP 模式往 logstash 发日志数据的时候，由于网络问题导致链接中断，从而导致 Log4j 2 不停的往 ringbuffer 中写数据，ringbuffer 数据没有消费者，导致服务器内存跑满。解决方案是设置 Log4j 2 中 Disruptor 队列有界，或者换成 UDP 模式来写日志数据（如果数据不重要的话）。
+另外在 Log4j 2 中的异步模式采用了 Disruptor 来处理。在这里楼主遇到一个小问题，就是在使用 Log4j 2 通过 TCP 模式往 logstash 发日志数据的时候，由于网络问题导致连接中断，从而导致 Log4j 2 不停地往 ringbuffer 中写数据，ringbuffer 数据没有消费者，导致服务器内存跑满。解决方案是设置 Log4j 2 中 Disruptor 队列有界，或者换成 UDP 模式来写日志数据（如果数据不重要的话）。
 
 ## 参考链接
 

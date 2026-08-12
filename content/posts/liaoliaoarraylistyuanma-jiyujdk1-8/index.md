@@ -13,7 +13,7 @@ translationKey: "liaoliaoarraylistyuanma-jiyujdk1-8"
 
 - ArrayList 是一个数组队列，相当于动态数组。与 Java 中的数组相比，它的容量能动态增长。它继承于 AbstractList，实现了 List, RandomAccess, Cloneable, java.io.Serializable 这些接口。
 - ArrayList 继承了 AbstractList，实现了 List。它是一个数组队列，提供了相关的添加、删除、修改、遍历等功能。
-- ArrayList 实现了 RandmoAccess 接口，即提供了随机访问功能。RandmoAccess 是 Java 中用来被 List 实现，为 List 提供快速访问功能的。在 ArrayList 中，我们即可以通过元素的序号快速获取元素对象；这就是快速随机访问。<span id="user-content-more"></span>
+- ArrayList 实现了 RandomAccess 接口，即提供了随机访问功能。RandomAccess 是 Java 中供 List 实现、为 List 提供快速访问功能的接口。在 ArrayList 中，我们就可以通过元素的序号快速获取元素对象；这就是快速随机访问。<span id="user-content-more"></span>
 - ArrayList 实现了 Cloneable 接口，即覆盖了函数 clone()，能被克隆。
 - ArrayList 实现 java.io.Serializable 接口，这意味着 ArrayList 支持序列化，能通过序列化去传输，包括网络传输与本地文件序列化。
 - 和 Vector 不同，ArrayList 中的操作不是线程安全的！所以，建议在单线程中才使用 ArrayList，而在多线程中建议选择 CopyOnWriteArrayList，当然 Vector 也可以，但不建议使用。
@@ -259,11 +259,11 @@ translationKey: "liaoliaoarraylistyuanma-jiyujdk1-8"
 
 关于 ArrayList 的源码，给出几点比较重要的总结：
 
-1、注意其三个不同的构造方法。无参构造方法构造的 ArrayList 的容量默认为 10，带有 Collection 参数的构造方法，将 Collection 转化为数组赋给 ArrayList 的实现数组 elementData。
+1、注意其三个不同的构造方法。无参构造方法构造的 ArrayList 的容量默认为 10，带有 Collection 参数的构造方法，将 Collection 转化为数组并赋给 ArrayList 的实现数组 elementData。
 
-2、注意扩充容量的方法 ensureCapacity。ArrayList 在每次增加元素（可能是 1 个，也可能是一组）时，都要调用该方法来确保足够的容量。当容量不足以容纳当前的元素个数时，就设置新的容量为旧的容量的 1.5 倍，如果设置后的新容量还不够，则直接新容量设置为传入的参数（也就是所需的容量），而后用 Arrays.copyof()方法将元素拷贝到新的数组（见下面的第 3点）。从中可以看出，当容量不够时，每次增加元素，都要将原来的元素拷贝到一个新的数组中，非常耗时，所以建议在事先能确定元素数量的情况下，使用 ArrayList
+2、注意扩充容量的方法 ensureCapacity。ArrayList 在每次增加元素（可能是 1 个，也可能是一组）时，都要调用该方法来确保足够的容量。当容量不足以容纳当前的元素个数时，就将新容量设置为旧容量的 1.5 倍，如果设置后的新容量还不够，则直接将新容量设置为传入的参数（也就是所需的容量），而后用 Arrays.copyof()方法将元素拷贝到新的数组（见下面的第 3点）。从中可以看出，当容量不够时，每次增加元素，都要将原来的元素拷贝到一个新的数组中，非常耗时，所以建议在事先能确定元素数量的情况下，使用 ArrayList
 
-3、ArrayList 的实现中大量地调用了 Arrays.copyof()和 System.arraycopy()方法。我们有必扒一下这两个方法的代码实现。
+3、ArrayList 的实现中大量地调用了 Arrays.copyof()和 System.arraycopy()方法。我们有必要扒一下这两个方法的代码实现。
 
                                                     
     public static <T> T[] copyOf(T[] original, int newLength) {
@@ -291,8 +291,8 @@ translationKey: "liaoliaoarraylistyuanma-jiyujdk1-8"
                                                 
 
 从代码里面可以看出，copyOf 方法实际上是在其内部又创建了一个长度为 newlength 的数组，然后调用 System.arraycopy()方法，将原来数组中的元素复制到了新的数组中。\
-下面来看 System.arraycopy()方法。该方法被标记了 native，调用了系统的 C/C++代码，在 JDK 中是看不到的，在这里就不再做更深入的了解，不过按照 JDK 的一贯做法，使用系统的 C/C++代码来复制数组效率上来说肯定是没问题的。
+下面来看 System.arraycopy()方法。该方法被标记了 native，调用了系统的 C/C++代码，在 JDK 中是看不到的，在这里就不再做更深入的了解，不过按照 JDK 的一贯做法，使用系统的 C/C++代码来复制数组，从效率上来说肯定是没问题的。
 
 4、ArrayList 基于数组实现，可以通过下标索引直接查找到指定位置的元素，因此查找效率高，但每次插入或删除元素，就要大量地移动元素，插入删除元素的效率低。
 
-5、在查找给定元素索引值等的方法中，源码都将该元素的值分为 null 和不为 null 两种情况处理，因此看来，ArrayList 中是允许元素为 null。
+5、在查找给定元素索引值等方法中，源码都将该元素的值分为 null 和不为 null 两种情况处理，因此看来，ArrayList 中是允许元素为 null。

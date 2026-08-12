@@ -18,11 +18,11 @@ translationKey: "jdk-dingshirenwu-timer-yu-scheduledexecutorservice-paikengji"
 
 ### [](#Timer-存在的问题 "#Timer-存在的问题")Timer 存在的问题
 
-Timer 的主要问题在于，如果 TimerTask 抛出未检查的异常，Timer 将会产生无法预料的行为。Timer 线程并不捕获异常，所以 TimerTask 抛出的未检查的异常会终止 timer 线程，这种情况下，Timer 也不会再重新恢复线程的执行了；它错误的认为整个 Timer 都被取消了。此时，已经被安排但尚未执行的 TimerTask 永远不会再执行了，新的任务也不能被调度了。
+Timer 的主要问题在于，如果 TimerTask 抛出未检查的异常，Timer 将会产生无法预料的行为。Timer 线程并不捕获异常，所以 TimerTask 抛出的未检查的异常会终止 timer 线程，这种情况下，Timer 也不会再恢复线程的执行了；它错误地认为整个 Timer 都被取消了。此时，已经被安排但尚未执行的 TimerTask 永远不会再执行了，新的任务也不能被调度了。
 
 ### [](#使用-ScheduledExecutorService "#使用-ScheduledExecutorService")使用 ScheduledExecutorService
 
-ScheduledExecutorService 是 JDK 1.5 之后 concurrent 包下提供的 API。ScheduledExecutorService 妥善地处理了这个异常的任务，所以说在 JDK1.5 或更高的 JDK 中，楼主不建议使用 Timer。关于 ScheduledExecutorService 楼主的另一篇文章也有提到，感兴趣的小伙伴请移步<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fcc2a%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/cc2a/">Java 实现终止线程池中正在运行的定时任务</a>
+ScheduledExecutorService 是 JDK 1.5 之后 concurrent 包下提供的 API。ScheduledExecutorService 妥善地处理了抛出异常的任务，所以说在 JDK1.5 或更高的 JDK 中，楼主不建议使用 Timer。关于 ScheduledExecutorService 楼主的另一篇文章也有提到，感兴趣的小伙伴请移步<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fcc2a%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/cc2a/">Java 实现终止线程池中正在运行的定时任务</a>
 
 ## [](#产生的问题 "#产生的问题")产生的问题
 
@@ -135,7 +135,7 @@ ScheduledExecutorService 是 JDK 1.5 之后 concurrent 包下提供的 API。Sch
 
      
 
-通过 jstack 日志并没有发现线程死锁，并且也看到楼主开启的 ScheduledThreadPoolExecutor 也在正常运行，并没有发现问题。
+通过 jstack 日志并没有发现线程死锁，并且看到楼主开启的 ScheduledThreadPoolExecutor 也在正常运行，并没有发现问题。
 
                                                     
     "pool-5-thread-1" prio=10 tid=0x00007f5bec4ba800 nid=0x1df6 waiting on condition [0x00007f5be89b3000]
@@ -155,7 +155,7 @@ ScheduledExecutorService 是 JDK 1.5 之后 concurrent 包下提供的 API。Sch
 
 ### [](#扒源码 "#扒源码")扒源码
 
-因为出问题的是定时任务没有执行，所以楼主打算看一下 ScheduledExecutorService 下 scheduleAtFixedRate 代码
+因为出问题的是定时任务没有执行，所以楼主打算看一下 ScheduledExecutorService 中 scheduleAtFixedRate 的代码
 
                                                     
 
@@ -200,7 +200,7 @@ ScheduledExecutorService 是 JDK 1.5 之后 concurrent 包下提供的 API。Sch
 
 ## [](#复盘 "#复盘")复盘
 
-根据楼主上面的分析过程，可以知道导致出问题的原因就是代码中抛出了非受检异常，下面是楼主的测试代码，代码很简单就是使用 ScheduledExecutorService 启动两个定时任务，其中一个抛出空指针异常线程不捕获。
+根据楼主上面的分析过程，可以知道出问题的原因就是代码中抛出了非受检异常，下面是楼主的测试代码，代码很简单，就是使用 ScheduledExecutorService 启动两个定时任务，其中一个抛出空指针异常，线程不捕获。
 
                                                     
 
@@ -290,7 +290,7 @@ ScheduledExecutorService 是 JDK 1.5 之后 concurrent 包下提供的 API。Sch
 
 ## [](#小结 "#小结")小结
 
-总的来看这个问题也比较简单，相对来说比较隐蔽一些。当然，跟自己平时编码规范关系很大。
+总的来看这个问题也比较简单，相对来说比较隐蔽一些。当然，这跟自己平时的编码规范有很大关系。
 
 作 者：haifeiWu\
 原文链接：<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fb903%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/b903/">www.hchstudio.cn/article/201…</a>\

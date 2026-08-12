@@ -63,6 +63,6 @@ translationKey: "classpath-he-classpathshiyongyudaodewenti"
 
 ## [](#号外 "#号外")号外
 
-楼主造了一个轮子，LIGHTCONF 是一个基于 Netty 实现的一个配置管理平台，其核心设计目标是“为业务提供统一的配置管理服务”，可以做到开箱即用。
+楼主造了一个轮子，LIGHTCONF 是一个基于 Netty 实现的配置管理平台，其核心设计目标是“为业务提供统一的配置管理服务”，可以做到开箱即用。
 
 - <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Flightconf" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/lightconf">基于 Netty 实现的轻量级分布式应用配置中心</a>

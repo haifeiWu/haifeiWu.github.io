@@ -9,7 +9,7 @@ translationKey: "aliyunlixiantongbugongjudataxyuanmalvedu"
 
 > 📌 本文原发布于掘金社区：[阿里云离线同步工具 DataX 源码略读](https://juejin.cn/post/6844903634195447821)
 
-最近在做一些数据迁移相关工作，并最终采用了 DataX，楼主也本着知其然，也要知其所以然的精神粗略的看一看 Datax 的源码。\
+最近在做一些数据迁移相关工作，并最终采用了 DataX，楼主也本着知其然，也要知其所以然的精神粗略地看一看 Datax 的源码。\
 <span id="user-content-more"></span>
 
 ## [](#代码下载 "#代码下载")代码下载
@@ -27,7 +27,7 @@ translationKey: "aliyunlixiantongbugongjudataxyuanmalvedu"
 <a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2FdataX-struct.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/dataX-struct.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/7/6/1646d7d4549eca4c~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" title="DataX结构图" loading="lazy" alt="DataX结构图" /></a>DataX 结构图
 
 - 设计理念\
-  为了解决异构数据源同步问题，DataX 将复杂的网状的同步链路变成了星型数据链路，DataX 作为中间传输载体负责连接各种数据源。当需要接入一个新的数据源的时候，只需要将此数据源对接到 DataX，便能跟已有的数据源做到无缝数据同步。
+  为了解决异构数据源同步问题，DataX 将复杂的网状同步链路变成了星型数据链路，DataX 作为中间传输载体负责连接各种数据源。当需要接入一个新的数据源的时候，只需要将此数据源对接到 DataX，便能跟已有的数据源做到无缝数据同步。
 
 - 当前使用现状\
   DataX 在阿里巴巴集团内被广泛使用，承担了所有大数据的离线同步业务，并已持续稳定运行了 6年之久。目前每天完成同步 8w 多道作业，每日传输数据量超过 300TB。
@@ -38,7 +38,7 @@ translationKey: "aliyunlixiantongbugongjudataxyuanmalvedu"
 
 <a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2Fdatax-source.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/datax-source.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/7/6/1646d7d44a370e42~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" title="DataX结构图" loading="lazy" alt="DataX结构图" /></a>DataX 结构图
 
-根据我们代码习惯，这个就该是 DataX 的入口代码，如下所示，代码是删除异常处理的代码，很简单就三行，我们接着看 entry 这个方法
+根据我们的代码习惯，这个就该是 DataX 的入口代码，如下所示，代码是删除异常处理的代码，很简单，就三行，我们接着看 entry 这个方法
 
     public static void main(String[] args) throws Exception {
           int exitCode = 0;
@@ -226,6 +226,6 @@ translationKey: "aliyunlixiantongbugongjudataxyuanmalvedu"
 
 ## [](#小结 "#小结")小结
 
-这次楼主只是大概的梳理了一下 DataX 的代码，水平有点水，相信热爱学习的楼主，可以 day day up
+这次楼主只是大概地梳理了一下 DataX 的代码，水平有点水，相信热爱学习的楼主，可以 day day up
 
 作 者：haifeiWu 原文链接：<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fd91b%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/d91b/">www.hchstudio.cn/article/201…</a>版权声明：非特殊声明均为本站原创作品，转载时请注明作者和原文链接。

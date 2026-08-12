@@ -9,7 +9,7 @@ translationKey: "liaoliaohashsetyuanma"
 
 > 📌 本文原发布于掘金社区：[聊聊 HashSet 源码](https://juejin.cn/post/6844903614285086727)
 
-今天聊一下 HashSet 源码，HashSet 内部基本使用 HashMap 来实现，本博客将通过一下几个方向讲解。
+今天聊一下 HashSet 源码，HashSet 内部基本使用 HashMap 来实现，本博客将通过以下几个方向讲解。
 
 <span id="user-content-more"></span>
 
@@ -48,10 +48,10 @@ HashSet 内部使用 HashMap 来实现，HashMap 的 key 为要存储的元素�
         map = new LinkedHashMap<E,Object>(initialCapacity, loadFactor);  
     }
 
-这里举例列举了三种构造函数
+这里列举了三种构造函数
 
-1.  第一种构造一个包含指定 collection 中的元素的新 set，容器大小为 collection 大小的 4/3 倍，和 16 的最大值
-2.  第二种传入初始容量和加载因子，构造一个空的 HashSetLinkedHashMap，
+1.  第一种构造一个包含指定 collection 中的元素的新 set，容器大小为 collection 大小的 4/3 倍与 16 中的最大值
+2.  第二种传入初始容量和加载因子，构造一个空的 HashMap，
 3.  第三种传入初始容量、加载因子和标记，构造一个空的 LinkedHashMap，此构造函数为包访问权限，不对外公开，实际只是对 LinkedHashSet 的支持。
 
 ## [](#聊聊HashSet的主要方法实现 "#聊聊HashSet的主要方法实现")聊聊 HashSet 的主要方法实现
@@ -62,7 +62,7 @@ HashSet 内部使用 HashMap 来实现，HashMap 的 key 为要存储的元素�
         return map.keySet().iterator();  
     }
 
-返回对此 set 中元素进行迭代的迭代器。返回元素的顺序并不是特定的。底层实际调用底层 HashMap 的 keySet 来返回所有的 key，可见 HashSet 中的元素，只是存放在了底层 HashMap 的 key 上。
+返回对此 set 中元素进行迭代的迭代器。返回元素的顺序并不是特定的。底层实际调用 HashMap 的 keySet 来返回所有的 key，可见 HashSet 中的元素，只是存放在了底层 HashMap 的 key 上。
 
 ### [](#增加元素 "#增加元素")增加元素
 
@@ -70,7 +70,7 @@ HashSet 内部使用 HashMap 来实现，HashMap 的 key 为要存储的元素�
         return map.put(e, PRESENT)==null;  
     }
 
-底层实际将将该元素作为 key 放入 HashMap。由于 HashMap 的 put()方法添加 key-value 对时，当新放入 HashMap 的 Entry 中 key，与集合中原有 Entry 的 key 相同（hashCode()返回值相等，通过 equals 比较也返回 true）,新添加的 Entry 的 value 会将覆盖原来 Entry 的 value，但 key 不会有任何改变，因此如果向 HashSet 中添加一个已经存在的元素时，新添加的集合元素将不会被放入 HashMap 中，原来的元素也不会有任何改变，这也就满足了 Set 中元素不重复的特性。
+底层实际将该元素作为 key 放入 HashMap。由于 HashMap 的 put()方法在添加 key-value 对时，如果新放入的 Entry 的 key 与集合中原有 Entry 的 key 相同（hashCode()返回值相等，通过 equals 比较也返回 true）,新添加的 Entry 的 value 会覆盖原来 Entry 的 value，但 key 不会有任何改变，因此如果向 HashSet 中添加一个已经存在的元素时，新添加的集合元素将不会被放入 HashMap 中，原来的元素也不会有任何改变，这也就满足了 Set 中元素不重复的特性。
 
 ### [](#删除元素 "#删除元素")删除元素
 
@@ -96,7 +96,7 @@ HashSet 内部使用 HashMap 来实现，HashMap 的 key 为要存储的元素�
 
 ## [](#聊聊HashSet与HashMap的关系 "#聊聊HashSet与HashMap的关系")聊聊 HashSet 与 HashMap 的关系
 
-从上面的源码可以看出来，HashSet 与 HashMap 的关系不可谓不密切，以至于不敢相信上面的 UML 是对的。因此，对于 HashSet 而言，它是基于 HashMap 实现的，HashSet 底层使用 HashMap 来保存所有元素，因此 HashSet 源码的实现比较简单，相关 HashSet 的操作，都是直接调用底层 HashMap 的相关方法来完成。
+从上面的源码可以看出来，HashSet 与 HashMap 的关系不可谓不密切，以至于不敢相信上面的 UML 是对的。因此，对于 HashSet 而言，它是基于 HashMap 实现的，HashSet 底层使用 HashMap 来保存所有元素，因此 HashSet 源码的实现比较简单，HashSet 的相关操作，都是直接调用底层 HashMap 的相关方法完成的。
 
 ## [](#特性小结 "#特性小结")特性小结
 
@@ -104,7 +104,7 @@ HashSet 内部使用 HashMap 来实现，HashMap 的 key 为要存储的元素�
 
 2.  对于 HashSet 中保存的对象，请注意正确重写其 equals 和 hashCode 方法，以保证放入的对象的唯一性。
 
-3.  Set 是利用底层的 Map 对于重复的 key 不放入的特性来保证元素的不重复的。
+3.  Set 是利用底层 Map 不放入重复 key 的特性来保证元素不重复的。
 
 4.  HashSet 没有提供 get()方法，原因是同 HashMap 一样，Set 内部是无序的，只能通过迭代的方式获得。
 
