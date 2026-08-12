@@ -9,7 +9,7 @@ translationKey: "spring-5-webflux--xing-neng-ce-shi---yi"
 
 > 📌 本文原发布于代码星冰乐：[Spring 5 WebFlux 性能测试[译]](https://changhuin.github.io/article/2018/b971/)
 
-`Java` 世界对反应式编程抱有很高的期望。根据 <a href="https://www.reactivemanifesto.org/" target="_blank" rel="noopener">官方文档</a> 的描述，它使程序员能够构建更具弹性，弹性，响应和消息驱动的应用程序。简而言之，它是一种更好，更快，更现代的模型，可以防止应用程序空闲。
+`Java` 世界对反应式编程抱有很高的期望。根据 <a href="https://www.reactivemanifesto.org/" target="_blank" rel="noopener">官方文档</a> 的描述，它使程序员能够构建更具韧性，弹性，响应和消息驱动的应用程序。简而言之，它是一种更好，更快，更现代的模型，可以防止应用程序空闲。
 
 `Spring 5` 通过结合基于 <a href="https://projectreactor.io/" target="_blank" rel="noopener">Project Reactor</a>的 `Spring` 反应计划，引入了一种新的响应式编程模型。但它能完成这项工作吗？
 
@@ -23,11 +23,11 @@ Spring 框架引入了很多新功能。其中最重要的是反应式编程。
 
 ## Spring MVC and Spring WebFlux
 
-可能仍然有一些人可能试图用旧的 `Spring 4` 技术进行反应式编程，如果你这样做，那么你肯定可能会遇到一些麻烦。`Spring 5` 提供了一个易于使用的新模块：`spring-webflux`。它与它的兄弟 `spring-mvc` 做同样的事情，但是它是一种响应式编程模型。让我们看看它是如何工作的吧。
+可能仍然有一些人试图用旧的 `Spring 4` 技术进行反应式编程，如果你这样做，那么你很有可能会遇到一些麻烦。`Spring 5` 提供了一个易于使用的新模块：`spring-webflux`。它与它的兄弟 `spring-mvc` 做同样的事情，但是它是一种响应式编程模型。让我们看看它是如何工作的吧。
 
 `WebFlux` 主要围绕两个 `Project Reactor` 的类：`Mono` 和 `Flux`。
 
-`Mono` 是 `CompletableFuture` 类型的反应等价物，允许以反应方式处理单个对象。`Flux` 是多个对象的等价物。它们像 `Stream` 一样处理（准备好使用 `lambda` 表达式）。因此，你可能会看到如下所示的代码：
+`Mono` 是 `CompletableFuture` 类型的反应等价物，允许以反应方式处理单个对象。`Flux` 是多个对象的等价物。它们可以像 `Stream` 一样被处理（可以直接配合 `lambda` 表达式使用）。因此，你可能会看到如下所示的代码：
 
     reactiveService.getResults()
         .mergeWith(Flux.interval(100))
@@ -35,7 +35,7 @@ Spring 框架引入了很多新功能。其中最重要的是反应式编程。
         .doOnNext(Service1::someObserver)
         .doAfterTerminate(Service2::incrementTerminate);
 
-它们都是 `Reactive Streams` 规范的 `Publisher` 接口的实现，因此它们需要注册到订阅服务器以便数据开始流动。
+它们都是 `Reactive Streams` 规范的 `Publisher` 接口的实现，因此它们需要注册到订阅者，以便数据开始流动。
 
 幸运的是，基于注解的编程模型仍然是最新的，与 `Spring MVC` 的唯一区别是 `REST` 层的方法现在返回 `Mono` 或 `Flux`：
 
@@ -51,7 +51,7 @@ Spring 框架引入了很多新功能。其中最重要的是反应式编程。
 
 关于与数据库的通信，`Spring 5` 支持 `Cassandra`，`CouchBase`，`MongoDB`和 `Redis` 的反应驱动程序，它们可以跟 `Spring Data` 一起使用。
 
-下面是操作 `MongoDB` 代码例子
+下面是操作 `MongoDB` 的代码例子
 
     @Repository
     public interface BankAccountRepository extends ReactiveMongoRepository<BankAccount,String> {
@@ -64,30 +64,30 @@ Spring 框架引入了很多新功能。其中最重要的是反应式编程。
 
 ### Why?
 
-反应式编程现在正在流行，当然，`Pivotal` 决定在逻辑上将其集成到 `Spring` 框架中，并承诺提供更好的性能和可扩展性。可悲的是，没有给出任何性能测试数据……
+反应式编程现在正在流行，当然，`Pivotal` 决定顺理成章地将其集成到 `Spring` 框架中，并承诺提供更好的性能和可扩展性。可悲的是，没有给出任何性能测试数据……
 
 ### How?
 
-我们通过在生产模式下对不同的 `JHipster` 生成的应用程序（`MySQL`，`Mongo`，`Model`……）进行压力测试（使用`Gatling`）。
+我们通过在生产模式下对不同的由 `JHipster` 生成的应用程序（`MySQL`，`Mongo`，`Model`……）进行压力测试（使用`Gatling`）。
 
 这些应用程序中的每一个都经过多次复制和修改，以确保我们的测试有丰富的测试数据，从而确保测试的正确性。
 
 例如，对于 MySQL 应用程序，我们创建了四个类似的应用程序：
 
-- 使用 `Spring 4`（因为你可以使用 `JHipster` 实际生成）
+- 使用 `Spring 4`（因为你实际可以使用 `JHipster` 生成）
 - 使用 `Spring 5`（仅迁移）
 - 使用 `Spring 5` 和反应式编程（在 `REST` 层上）
 - 使用 `Spring 5` 和反应式编程（仅在一个实体的 `RestController` 类上）
 
 对于具有异步驱动程序的 Mongo，我们创建了应用程序：
 
-- 使用`Spring 4`（因为你可以使用`JHipster`实际生成）
+- 使用`Spring 4`（因为你实际可以使用`JHipster`生成）
 - 使用`Spring 5`（仅迁移）
 - 使用`Spring 5`和反应式编程（在`REST`层上）
 - 使用`Spring 5`和反应式编程（仅在一个实体的`RestController`类上）
 - 使用`Spring 5`和实体上的反应式编程一直到存储库。
 
-`Spring`允许程序员配置自己的调度程序（处理被动调用的线程池）。因此，当使用反应式编程时，仅在 `REST` 层（而不是实体）上，我们尝试了不同的调度程序：`Schedulers.parallel()`每个 CPU 核心使用一个线程，而`Schedulers.elastic()`动态创建线程。
+`Spring`允许程序员配置自己的调度程序（处理反应式调用的线程池）。因此，当使用反应式编程时，仅在 `REST` 层（而不是实体）上，我们尝试了不同的调度程序：`Schedulers.parallel()`每个 CPU 核心使用一个线程，而`Schedulers.elastic()`动态创建线程。
 
 每个测试包括同时启动 `Gatling 5000/10000/15000` 用户，每个用户执行场景中描述的操作：
 
@@ -153,7 +153,7 @@ Spring 框架引入了很多新功能。其中最重要的是反应式编程。
 （注意：下面的结果不包括场景中的暂停。）\
 > 📷 图注：MySQL-based
 
-当用户在他的 Gatling 场景中出现错误时，他的模拟将停止。因此，如果存在一些错误，则请求服务器的用户较少，因此负载较低且时间更改。
+当用户在他的 Gatling 场景中出错时，他的模拟将停止。因此，如果存在一些错误，则请求服务器的用户较少，因此负载较低且耗时也会变化。
 
 错误可以有几种：超时，达到数据库连接的阈值，使用 Spring 创建/销毁 bean 的并发问题，……
 
@@ -170,7 +170,7 @@ Spring 框架引入了很多新功能。其中最重要的是反应式编程。
 
 我们可以看到，总体而言，`Reactive` 应用程序比“经典” `Spring` 应用程序慢。
 
-对于 MySQL，它是可预测的，因为数据库在使用过程中设置了所有锁，并且没有官方的响应/异步驱动程序。
+对于 MySQL，这是可以预见的，因为数据库在使用过程中设置了所有锁，并且没有官方的响应/异步驱动程序。
 
 对于`Mongo`，有一堆完整的反应组件（驱动程序，存储库，……），但即便如此，性能也会更差。
 
@@ -186,9 +186,9 @@ Spring 框架引入了很多新功能。其中最重要的是反应式编程。
 ## Conclusion
 
 - 我们的反应式应用程序没有观察到速度的提高（`Gatling` 的结果甚至略差）。
-- 关于用户友好性，反应式编程不会添加大量新代码，但它肯定是一种更复杂的编码（和调试……）方式。可能需要快速 `Java 8` 复习。
-- 目前的主要问题是缺乏文件。这是我们生成测试应用程序的最大障碍，因此我们可能错过了一个关键点。
-- 因此，我们建议不要在反应式编程上跳得太快并等待更多反馈。`Spring WebFlux` 尚未证明其优于 `Spring MVC` 的优势。
+- 关于用户友好性，反应式编程不会添加大量新代码，但它肯定是一种更复杂的编码（和调试……）方式。可能需要快速复习一下 `Java 8`。
+- 目前的主要问题是缺乏文档。这是我们生成测试应用程序的最大障碍，因此我们可能遗漏了一个关键点。
+- 因此，我们建议不要过快投入反应式编程，并等待更多反馈。`Spring WebFlux` 尚未证明其相对于 `Spring MVC` 的优势。
 
 你可以在此存储库中找到我们的代码：<a href="https://github.com/jhipster/webflux-jhipster" target="_blank" rel="noopener">jhipster / webflux-jhipster</a>。
 

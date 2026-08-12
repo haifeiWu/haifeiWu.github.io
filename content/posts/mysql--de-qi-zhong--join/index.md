@@ -9,11 +9,11 @@ translationKey: "mysql--de-qi-zhong--join"
 
 > 📌 本文原发布于代码星冰乐：[MySQL 的七种 join](https://changhuin.github.io/article/2017/56cd/)
 
-对于 SQL 的 Join，在学习起来可能是比较乱的。我们知道，SQL 的 Join 语法有很多 inner 的，有 outer 的，有 left 的，有时候，对于 Select 出来的结果集是什么样子有点不是很清楚。Coding Horror 上有一篇文章（实在不清楚为什么 Coding Horror 也被墙）通过 文氏图 Venn diagrams 解释了 SQL 的 Join。\
+对于 SQL 的 Join，学习起来可能是比较乱的。我们知道，SQL 的 Join 语法有很多 inner 的，有 outer 的，有 left 的，有时候，对于 Select 出来的结果集是什么样子有点不是很清楚。Coding Horror 上有一篇文章（实在不清楚为什么 Coding Horror 也被墙）通过 文氏图 Venn diagrams 解释了 SQL 的 Join。\
 
 ## 建表
 
-在这里呢我们先来建立两张有外键关联的张表。
+在这里呢我们先来建立两张有外键关联的表。
 
     CREATE DATABASE db0206;
     USE db0206;

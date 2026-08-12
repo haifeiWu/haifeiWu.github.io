@@ -1,0 +1,24 @@
+locale = "en"
+label = "English"
+weight = 1
+title = "haifeiWu"
+
+[params]
+  displayName = "English"
+  isoCode = "en"
+  rtl = false
+  dateFormat = "2 January 2006"
+  logo = "img/avatar.png"
+  description = "Backend developer. Distributed systems, middleware & AI engineering."
+
+[params.author]
+  name = "haifeiWu"
+  email = "whfstudio@163.com"
+  image = "img/avatar.png"
+  headline = "from coder to master……"
+  bio = "Backend developer in Beijing, passionate about distributed systems, middleware and AI engineering. Currently diving deep into Go & Rust."
+  links = [
+    { github = "https://github.com/haifeiWu" },
+    { email = "mailto:whfstudio@163.com" },
+    { link = "https://juejin.cn/user/1574156379896103/posts" },
+  ]
