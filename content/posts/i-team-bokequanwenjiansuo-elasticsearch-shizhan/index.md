@@ -14,15 +14,15 @@ translationKey: "i-team-bokequanwenjiansuo-elasticsearch-shizhan"
 
 ## [](#全文检索工具选型 "#全文检索工具选型")全文检索工具选型
 
-众所周知，支持全文检索的工具有很多，像 Lucene，solr，Elasticsearch 等，相比于其他的工具，显然 Elasticsearch 社区更加活跃，遇到问题相对来说也比较好解决，另外 Elasticsearch 提供的 restful 接口操作起来还是比较方便的，这也是楼主选择 Elasticsearch 的重要原因，当然 Elasticsearch 占据的内存相对来说比较大一点，楼主 2G 的云服务器跑起来也是捉襟见肘。
+众所周知，支持全文检索的工具有很多，像 Lucene，solr，Elasticsearch 等，相比于其他的工具，显然 Elasticsearch 社区更加活跃，遇到问题相对来说也比较好解决，另外 Elasticsearch 提供的 restful 接口操作起来还是比较方便的，这也是楼主选择 Elasticsearch 的重要原因，当然 Elasticsearch 占据的内存相对来说比较大，楼主 2G 的云服务器跑起来也是捉襟见肘。
 
 ## [](#数据迁移，从-MySQL-到-Elasticsearch "#数据迁移，从-MySQL-到-Elasticsearch")数据迁移，从 MySQL 到 Elasticsearch
 
-这个功能相对来说比较简单，就是定时从 MySQL 更新数据到 Elasticsearch 中，本来楼主打算自己写一个数据迁移的工具，但是想起之前楼主做数据迁移时用到的 DataX 很是不错，看了写官方文档还是支持的，但是楼主硬是没有跑起来，原因就是楼主 2G 内存的云服务器不够使啊，DataX 光是跑起来就要 1G 多的内存，所以楼主只能另谋它法。对 DataX 感兴趣的小伙伴可以看看楼主的另一篇文章<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F4928%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/4928/">阿里离线数据同步工具 DataX 踩坑记录</a>。
+这个功能相对来说比较简单，就是定时从 MySQL 更新数据到 Elasticsearch 中，本来楼主打算自己写一个数据迁移的工具，但是想起之前楼主做数据迁移时用到的 DataX 很是不错，看了下官方文档还是支持的，但是楼主硬是没有跑起来，原因就是楼主 2G 内存的云服务器不够使啊，DataX 光是跑起来就要 1G 多的内存，所以楼主只能另谋它法。对 DataX 感兴趣的小伙伴可以看看楼主的另一篇文章<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F4928%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/4928/">阿里离线数据同步工具 DataX 踩坑记录</a>。
 
-说起可以省内存的语言，小伙伴可能会想到最近比较火的 golang，没错楼主也想到了。最后楼主使用的就是一个叫 go-mysql-elasticsearch 的工具，就是使用 golang 实现的从 MySQL 将数据迁移到 Elasticsearch 的工具。具体搭建过程楼主不在这里细说，感兴趣的小伙伴请移步<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fsiddontang%2Fgo-mysql-elasticsearch" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/siddontang/go-mysql-elasticsearch">go-mysql-elasticsearch</a>，另外 Elasticsearch 环境的搭建，需要注意的就是安装 Elasticsearch 的机器内存应该大于或者等于 2G，否则可能会出现起不起来的情况，楼主也不在这里赘述了，比较简单，请小伙伴们自行 google。
+说起可以省内存的语言，小伙伴可能会想到最近比较火的 golang，没错楼主也想到了。最后楼主使用的就是一个叫 go-mysql-elasticsearch 的工具，它是使用 golang 实现的从 MySQL 将数据迁移到 Elasticsearch 的工具。具体搭建过程楼主不在这里细说，感兴趣的小伙伴请移步<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fsiddontang%2Fgo-mysql-elasticsearch" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/siddontang/go-mysql-elasticsearch">go-mysql-elasticsearch</a>，另外 Elasticsearch 环境的搭建，需要注意的就是安装 Elasticsearch 的机器内存应该大于或者等于 2G，否则可能会出现启动不起来的情况，楼主也不在这里赘述了，比较简单，请小伙伴们自行 google。
 
-另外需要注意的是，在使用 go-mysql-elasticsearch 的时候应该开启 MySQL 的 binlog 功能，go-mysql-elasticsearch 的实现同步数据的思想就是将自己作为 MySQL 的一个 slave 挂载在 MySQL 上，这样就可以很轻松的将数据实时同步到 Elasticsearch 中，在启动 go-mysql-elasticsearch 的机器上最少应该有 MySQL client 工具，否则会启动报错。楼主的建议是根 MySQL 部署在同一台机器上，因为 golang 耗费内存极少，并不会有太大影响。下面给出楼主同步数据时 go-mysql-elasticsearch 的配置文件：
+另外需要注意的是，在使用 go-mysql-elasticsearch 的时候应该开启 MySQL 的 binlog 功能，go-mysql-elasticsearch 实现数据同步的思想就是将自己作为 MySQL 的一个 slave 挂载在 MySQL 上，这样就可以很轻松地将数据实时同步到 Elasticsearch 中，在启动 go-mysql-elasticsearch 的机器上最少应该有 MySQL client 工具，否则会启动报错。楼主的建议是跟 MySQL 部署在同一台机器上，因为 golang 耗费内存极少，并不会有太大影响。下面给出楼主同步数据时 go-mysql-elasticsearch 的配置文件：
 
     # MySQL address, user and password
     # user must have replication privilege in MySQL.
@@ -130,7 +130,7 @@ translationKey: "i-team-bokequanwenjiansuo-elasticsearch-shizhan"
         return resultCode;
     }
 
-service 代码实现，这里代码主要功能就是调用 es 的工具类，对博客描述，作者，博客标题，博客内容进行全文检索。
+service 代码实现，这里的代码主要功能就是调用 es 的工具类，对博客描述，作者，博客标题，博客内容进行全文检索。
 
     @Override
     public ResultCode<List<ContentsWithBLOBs>> getContentListFromEs(String searchParam) {
@@ -328,7 +328,7 @@ service 代码实现，这里代码主要功能就是调用 es 的工具类，�
 
 ## [](#小结 "#小结")小结
 
-整个过程相对来说比较简单，当然楼主通过这个功能的实现，也对 es 有了一个相对的认识，学习了一项新的技能，可能有的小伙伴对楼主的整个工程的代码比较感兴趣，暂时先不能透露，等楼主完善好了一并贡献出来。
+整个过程相对来说比较简单，当然楼主通过这个功能的实现，也对 es 有了一个相对的认识，学习了一项新的技能，可能有的小伙伴对楼主的整个工程的代码比较感兴趣，暂时不能透露，等楼主完善好了一并贡献出来。
 
 ## [](#参考文章 "#参考文章")参考文章
 

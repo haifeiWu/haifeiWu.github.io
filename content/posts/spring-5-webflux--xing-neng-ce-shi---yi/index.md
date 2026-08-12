@@ -142,8 +142,7 @@ Spring框架引入了很多新功能 。其中最重要的是反应式编程。
 - 机器1用作 `Spring Boot` 服务器和本地数据库：`i7-4790K 4GHz - 16Go - SSD - Ubuntu 16.04 64bits`
 - 机器2用作加特林客户端：`i7-4790K 4GHz - 16Go - SSD - Ubuntu 16.04 64bits`
 - `Cisco SG100-24 24` 端口千兆交换机
-
-![configuration](https://img.hchstudio.cn/configuration.jpg)
+> 📷 图注：configuration
 
 ## Results
 
@@ -152,24 +151,20 @@ Spring框架引入了很多新功能 。其中最重要的是反应式编程。
 ### With a MySQL-based JHipster application:
 
 （注意：下面的结果不包括场景中的暂停。）\
-![MySQL-based](https://img.hchstudio.cn/mysql2.png)
+> 📷 图注：MySQL-based
 
 当用户在他的Gatling场景中出现错误时，他的模拟将停止。 因此，如果存在一些错误，则请求服务器的用户较少，因此负载较低且时间更改。
 
 错误可以有几种：超时，达到数据库连接的阈值，使用Spring创建/销毁bean的并发问题，……
 
 这些图表显示了用户运行Gatling场景所需的总时间。\
-![MySQL-based2](https://img.hchstudio.cn/mysql3.png)
-
-![MySQL-based3](https://img.hchstudio.cn/mysql4.png)
+> 📷 图注：MySQL-based2
+> 📷 图注：MySQL-based3
 
 ### With a Mongo-based JHipster application:
-
-![MySQL-based3](https://img.hchstudio.cn/mongo2.png)
-
-![MySQL-based3](https://img.hchstudio.cn/mongo3.png)
-
-![MySQL-based3](https://img.hchstudio.cn/mongo4.png)
+> 📷 图注：MySQL-based3
+> 📷 图注：MySQL-based3
+> 📷 图注：MySQL-based3
 
 ## Regarding the execution times
 

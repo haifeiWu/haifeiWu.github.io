@@ -30,8 +30,6 @@ Go 语言的 sync.Mutex 由两个字段 state 和 sema 组成。其中 state 表
 
 互斥锁的状态比较复杂，如下图所示，最低三位分别表示 mutexLocked、mutexWoken 和 mutexStarving，剩下的位置用来表示当前有多少个 Goroutine 等待互斥锁的释放：如下图
 
-![](http://img.hchstudio.cn/go-lock-state.png)
-
 在默认情况下，互斥锁的所有状态位都是 0，int32 中的不同位分别表示了不同的状态：
 
 - mutexLocked — 表示互斥锁的锁定状态；
@@ -163,8 +161,6 @@ RWMutex
 
 如下图所示，WaitGroup可以将原本顺序执行的代码在多个 Goroutine 中并发执行，加快程序处理的速度。
 
-![](http://img.hchstudio.cn/wait-group.png)
-
 sync.WaitGroup 必须在 sync.WaitGroup.Wait 方法返回之后才能被重新使用；\
 sync.WaitGroup.Done 只是对 sync.WaitGroup.Add 方法的简单封装，我们可以向 sync.WaitGroup.Add 方法传入任意负数（需要保证计数器非负）快速将计数器归零以唤醒其他等待的 Goroutine；\
 可以同时有多个 Goroutine 等待当前 sync.WaitGroup 计数器的归零，这些 Goroutine 会被同时唤醒；
@@ -265,10 +261,7 @@ Go 语言中最常见的、也是经常被人提及的设计模式就是：不�
 
 通过共享内存的方式实现多线程之间的数据传递：
 
-![](http://img.hchstudio.cn/thread-memory.png)
-
 go中使用channel实现goroutine之间的数据共享：\
-![](http://img.hchstudio.cn/go-channel.png)
 
 ### Channel 类型
 
@@ -276,7 +269,6 @@ go中使用channel实现goroutine之间的数据共享：\
 - 有缓冲区的channel
 
 下图是示意图：\
-![](http://img.hchstudio.cn/channel-type.png)
 
 **非缓冲通道特性：**
 

@@ -35,8 +35,7 @@ MapReduce编程模型的原理是：利用一个输入 `key/value pair` 集合�
 - 倒排索引：Map 函数分析每个文档输出一个(词,文档号)的列表，Reduce函数的输入是一个给定词的所有（词，文档号），排序所有的文档号，输出(词,list（文档号）)。所有的输出集合形成一个简单的倒排索引，它以一种简单的算法跟踪词在文档中的位置。
 
 ## MapReduce 执行过程图解
-
-![Execution overview](https://img.hchstudio.cn/map-reduce-exec.png)\
+> 📷 图注：Execution overview\
 上图中展示了我们的 MapReduce 实现中执行的全部流程。当用户调用MapReduce函数时，将发生下面的一系列动作（下面的序号和上图中的序号一一对应）：
 
 1.  用户程序首先调用的 MapReduce 库将输入文件分成 M 个数据片度，每个数据片段的大小一般从 16MB 到 64MB (可以通过可选的参数来控制每个数据片段的大小)。然后用户程序在机群中创建大量的程序副本。

@@ -55,8 +55,7 @@ translationKey: "mysql--de-qi-zhong--join"
 ### 内连接
 
 #### 内连接文氏图
-
-![表的内连接](https://of9xsczb1.bkt.clouddn.com/%E4%BA%A4%E9%9B%86.png)
+> 📷 图注：表的内连接
 
 ##### 执行的sql语句以及执行的查询结果
 
@@ -65,13 +64,12 @@ translationKey: "mysql--de-qi-zhong--join"
       select * from tbl_dept a inner join tbl_emp b on a.id=b.deptId;
 
 - 查询结果\
-  ![这里写图片描述](https://of9xsczb1.bkt.clouddn.com/%E5%86%85%E8%BF%9E%E6%8E%A5.png)
+  
 
 ## 左外连接
 
 ### 左外连接文氏图
-
-![左连接](https://of9xsczb1.bkt.clouddn.com/%E5%85%A8A.png)
+> 📷 图注：左连接
 
 ##### 执行的sql语句以及执行的查询结果
 
@@ -82,13 +80,11 @@ translationKey: "mysql--de-qi-zhong--join"
     select * from tbl_dept a left join tbl_emp b on a.id=b.deptId;
 
 - 查询结果\
-  ![左外连接](https://of9xsczb1.bkt.clouddn.com/%E5%B7%A6%E8%BF%9E%E6%8E%A5.png)
+> 📷 图注：左外连接
 
 ### 右外连接
 
 #### 右外连接文氏图
-
-![这里写图片描述](https://of9xsczb1.bkt.clouddn.com/%E5%85%A8B.jpg)
 
 ##### 执行的sql语句以及执行的查询结果
 
@@ -99,13 +95,11 @@ translationKey: "mysql--de-qi-zhong--join"
     select * from tbl_dept a right join tbl_emp b on a.id=b.deptId;
 
 - 查询结果\
-  ![这里写图片描述](https://of9xsczb1.bkt.clouddn.com/%E5%8F%B3%E5%A4%96%E9%93%BE%E6%8E%A5.png)
+  
 
 ### 左连接
 
 #### 左连接文氏图
-
-![这里写图片描述](https://of9xsczb1.bkt.clouddn.com/%E7%8B%AC%E6%9C%89A.png)
 
 ##### 执行的sql语句以及执行的查询结果
 
@@ -117,13 +111,10 @@ translationKey: "mysql--de-qi-zhong--join"
 
 - 查询结果
 
-![这里写图片描述](https://of9xsczb1.bkt.clouddn.com/%E5%B7%A6%E5%A4%96%E8%BF%9E%E6%8E%A5.png)
-
 ### 右连接
 
 #### 右连接文氏图
-
-![右连接](https://of9xsczb1.bkt.clouddn.com/%E7%8B%AC%E6%9C%89B.jpg)
+> 📷 图注：右连接
 
 ##### 执行的sql语句以及执行的查询结果
 
@@ -134,14 +125,11 @@ translationKey: "mysql--de-qi-zhong--join"
     select * from tbl_dept a right join tbl_emp b on a.id=b.deptId where a.id is null;
 
 - 查询结果
-
-![右连接](https://of9xsczb1.bkt.clouddn.com/%E5%8F%B3%E8%BF%9E%E6%8E%A5.png)
+> 📷 图注：右连接
 
 ### 全连接
 
 #### 全连接文氏图
-
-![这里写图片描述](https://of9xsczb1.bkt.clouddn.com/%E5%85%A8%E9%9B%86.png)
 
 ##### 执行的sql语句以及执行的查询结果
 
@@ -154,13 +142,11 @@ translationKey: "mysql--de-qi-zhong--join"
     select * from tbl_dept a left join tbl_emp b on a.id=b.deptId;
 
 - 查询结果\
-  ![全连接](https://of9xsczb1.bkt.clouddn.com/%E5%85%A8%E8%BF%9E%E6%8E%A5.png)
+> 📷 图注：全连接
 
 ### 两张表中都没有出现的数据集
 
 #### 文氏图
-
-![](https://of9xsczb1.bkt.clouddn.com/%E7%8B%ACA%E7%8B%ACB%E5%B9%B6%E9%9B%86.png)
 
 ##### 执行的sql语句以及执行的查询结果
 
@@ -171,6 +157,4 @@ translationKey: "mysql--de-qi-zhong--join"
     select * from tbl_dept a right join tbl_emp b on a.id=b.deptId where a.id is null union select * from tbl_dept a left join tbl_emp b on a.id=b.deptId where b.deptId is null;
 
 - 查询结果
-
-![这里写图片描述](https://img.hchstudio.cn/mysql-result.png)
 

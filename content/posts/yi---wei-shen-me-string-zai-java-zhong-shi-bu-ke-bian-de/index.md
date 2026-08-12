@@ -21,8 +21,7 @@ String 在 Java 中是不可变的。 不可变类只是一个无法修改其实
     String string2 = "abcd";
 
 如下图所示：
-
-![字符串池](https://img.hchstudio.cn/java-string-pool.jpeg)
+> 📷 图注：字符串池
 
 如果字符串是可变的，则使用一个引用更改字符串将导致其他引用的错误。
 

@@ -16,7 +16,7 @@ translationKey: "yi---liao-jie-linux-cpu-fu-zai---nin-he-shi-ying-gai-dan-xin"
 大多数人都对负载平均值的含义有所了解：三个数字代表了较长时间段内的平均值（一分钟，五分钟和十五分钟的平均值），而较低的数字更好。 较高的数字表示问题或机器过载。 但是，门槛是多少？ 什么构成“好”和“坏”负载平均值？ 什么时候应该关注负载平均值，什么时候应该地修复它？
 
 首先，简要了解负载平均值的含义。 我们将从最简单的情况开始：一台带有一个单核处理器的机器。\
-![cpu-load](http://img.hchstudio.cn/server-load-overage.png)
+> 📷 图注：cpu-load
 
 ## The traffic analogy
 
@@ -29,8 +29,6 @@ translationKey: "yi---liao-jie-linux-cpu-fu-zai---nin-he-shi-ying-gai-dan-xin"
 - **1.00表示桥刚好处于满负荷状态。** 一切都还不错，但是如果流量增加一点，事情就会变慢。
 
 - **超过1.00表示有备份。** 多少？ 那么，2.00意味着总共有两个车道的汽车价值-桥上一个车道的价值，一个车道的等待价值。 3.00表示总共有3条车道-桥上1条车道值得等待。 等等。
-
-![](http://img.hchstudio.cn/understanding-load-averages.png)
 
 这基本上是CPU负载。 “汽车”是指使用CPU时间（“过桥”）或排队使用CPU的进程。 Unix将其称为运行队列长度：当前正在运行的进程数与正在等待（排队）的进程数之和。
 

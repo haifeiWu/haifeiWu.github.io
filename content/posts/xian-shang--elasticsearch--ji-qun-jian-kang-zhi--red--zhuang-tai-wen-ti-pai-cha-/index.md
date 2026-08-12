@@ -16,10 +16,10 @@ translationKey: "xian-shang--elasticsearch--ji-qun-jian-kang-zhi--red--zhuang-ta
 ### 服务器内存，CPU状态检查
 
 使用 `top` 查看服务器 `cpu`，内存等占用情况，如下图示（当时楼主的服务器ES应用的CPU占用在90%以上，肯定有问题）\
-![top](https://img.hchstudio.cn/top_cmd.png "top")
+> 📷 图注：top
 
 内存占用也极高（当时楼主的8G内存的服务器仅剩下150M左右的空闲，肯定是ES的问题）\
-![free](https://img.hchstudio.cn/free_cmd.png "free")
+> 📷 图注：free
 
 ### ES集群状态
 

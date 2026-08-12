@@ -25,13 +25,13 @@ translationKey: "kafka-consumer-de-rebalance-jizhi"
 
 如上图所示，`Consumer` 使用 `Consumer Group` 名称标记自己，并且发布到主题的每条记录都会传递到每个订阅消费者组中的一个 `Consumer` 实例。`Consumer` 实例可以在单独的进程中或在单独的机器上。
 
-如果所有 `Consumer` 实例都属于同一个 `Consumer Group`，那么这些 `Consumer` 实例将平衡再负载的方式来消费 `Kafka`。
+如果所有 `Consumer` 实例都属于同一个 `Consumer Group`，那么这些 `Consumer` 实例将以负载均衡的方式来消费 `Kafka`。
 
-如果所有 `Consumer` 实例具有不同的 `Consumer Group`，则每条记录将广播到所有 `Consumer` 进程。
+如果所有 `Consumer` 实例具有不同的 `Consumer Group`，则每条记录将被广播到所有 `Consumer` 进程。
 
 ### Group Coordinator
 
-`Group Coordinator` 是一个服务，每个 `Broker`在启动的时候都会启动一个该服务。`Group Coordinator` 的作用是用来存储 `Group` 的相关 `Meta` 信息，并将对应 `Partition` 的 `Offset` 信息记录到 `Kafka` 内置`Topic(__consumer_offsets)` 中。`Kafka` 在 0.9 之前是基于 `Zookeeper` 来存储 `Partition` 的 `Offset` 信息 `(consumers/{group}/offsets/{topic}/{partition})`，因为 `Zookeeper` 并不适用于频繁的写操作，所以在 0.9 之后通过内置 `Topic` 的方式来记录对应 `Partition` 的 `Offset`。如下图所示：
+`Group Coordinator` 是一个服务，每个 `Broker`在启动的时候都会启动该服务。`Group Coordinator` 的作用是存储 `Group` 的相关 `Meta` 信息，并将对应 `Partition` 的 `Offset` 信息记录到 `Kafka` 内置`Topic(__consumer_offsets)` 中。`Kafka` 在 0.9 之前是基于 `Zookeeper` 来存储 `Partition` 的 `Offset` 信息 `(consumers/{group}/offsets/{topic}/{partition})`，因为 `Zookeeper` 并不适用于频繁的写操作，所以在 0.9 之后通过内置 `Topic` 的方式来记录对应 `Partition` 的 `Offset`。如下图所示：
 
 在 `Kafka 0.8.2` 之前是这样的
 
@@ -45,10 +45,10 @@ translationKey: "kafka-consumer-de-rebalance-jizhi"
 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/11/19/16e82bf30624d9dc~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" loading="lazy" />
 </figure>
 
-每个 `Group` 都会选择一个 `Coordinator` 来完成自己组内各 `Partition` 的 `Offset` 信息，选择的规则如下：
+每个 `Group` 都会选择一个 `Coordinator` 来记录自己组内各 `Partition` 的 `Offset` 信息，选择的规则如下：
 
 1.  计算 `Group` 对应在 `__consumer_offsets` 上的 `Partition`
-2.  根据对应的 Partition 寻找该 Partition 的 leader 所对应的 Broker，该 Broker 上的 Group Coordinator 即就是该 Group 的 Coordinator
+2.  根据对应的 Partition 寻找该 Partition 的 leader 所对应的 Broker，该 Broker 上的 Group Coordinator 就是该 Group 的 Coordinator
 
 Partition 计算规则：
 
@@ -71,7 +71,7 @@ partition-Id(__consumer_offsets) = Math.abs(groupId.hashCode() % groupMetadataTo
 1.  `session` 过期
 2.  `heartbeat` 过期
 
-`Rebalance` 发生时，`Group` 下所有 `Consumer` 实例都会协调在一起共同参与，`Kafka` 能够保证尽量达到最公平的分配。但是 `Rebalance` 过程对 `Consumer Group` 会造成比较严重的影响。在 `Rebalance` 的过程中 `Consumer Group` 下的所有消费者实例都会停止工作，等待 `Rebalance` 过程完成。
+`Rebalance` 发生时，`Group` 下所有 `Consumer` 实例都会共同参与，`Kafka` 能够保证尽量达到最公平的分配。但是 `Rebalance` 过程对 `Consumer Group` 会造成比较严重的影响。在 `Rebalance` 的过程中 `Consumer Group` 下的所有消费者实例都会停止工作，等待 `Rebalance` 过程完成。
 
 ## 消费者的 Rebalance 协议
 
@@ -91,7 +91,7 @@ Known Issue \#1: Stop-the-world Rebalance
 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/11/19/16e82bf309b51c0b~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" loading="lazy" />
 </figure>
 
-如上图所示：之前版本的 `Kafka` 在发生 `Rebalance` 时候会释放 `Consumer Group` 的所有资源，造成比较长的 `Stop-the-world`
+如上图所示：之前版本的 `Kafka` 在发生 `Rebalance` 的时候会释放 `Consumer Group` 的所有资源，造成比较长的 `Stop-the-world`
 
 Known Issue \#2: Back-and-forth Rebalance
 
@@ -99,7 +99,7 @@ Known Issue \#2: Back-and-forth Rebalance
 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/11/19/16e82bf352865c95~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" loading="lazy" />
 </figure>
 
-如上图所示：在发生 `Rebalance` 的时候发生的不必要的资源释放与重新分配。
+如上图所示：在发生 `Rebalance` 的时候发生了不必要的资源释放与重新分配。
 
 ## 当前的 Rebalance 与 改进后的 ReBalance 对比
 
@@ -113,7 +113,7 @@ Known Issue \#2: Back-and-forth Rebalance
 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/11/19/16e82bf267963509~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" loading="lazy" />
 </figure>
 
-如上图所示，新的渐进式 Rebalance 协议，在 Rebalance 的时候不需要当前所有的 Consumer 释放所拥有的资源，而是当需要触发 Rebalance 的时候对当前资源进行登记，然后进行渐进式的 Rebalance。这样做产生的优化效果
+如上图所示，新的渐进式 Rebalance 协议，在 Rebalance 的时候不需要当前所有的 Consumer 释放所拥有的资源，而是当需要触发 Rebalance 的时候对当前资源进行登记，然后进行渐进式的 Rebalance。这样做产生的优化效果如下
 
 - 相较之前进行了更多次数的 Rebalance，但是每次 Rebalance 对资源的消耗都是比较廉价的
 - 发生迁移的分区相较之前更少了

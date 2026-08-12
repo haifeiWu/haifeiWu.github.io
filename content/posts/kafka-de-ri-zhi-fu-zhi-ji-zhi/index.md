@@ -33,14 +33,12 @@ Kafka的日志复制主要考虑的是同一个数据中心机器之间的数据
 ## 几个概念
 
 在 Kafka 中，消息流是由 topic 定义的，topic被划分为一个或多个partition。而复制发生在 partition 级别，每个 partition 都有有一个或多个副本。
-
-![topic的逻辑关系](https://img.hchstudio.cn/topic_loginc_0114.png)
-
-![topic的屋里存储关系](https://img.hchstudio.cn/topic%20%E5%AD%98%E5%82%A8%E7%9A%84%E7%89%A9%E7%90%86%E5%85%B3%E7%B3%BB.png)
+> 📷 图注：topic的逻辑关系
+> 📷 图注：topic的屋里存储关系
 
 在 Kafka 集群中，将副本均匀地分配到不同的服broker上。每个副本都在磁盘上维护一个日志。发布的消息按顺序附加到日志中，每条消息都通过日志中的单调递增offset来标识。\
 offset 是分区中的逻辑概念。给定一个offset，可以在每个分区副本中标识相同的消息。当 consumer 订阅某个主题时，它会跟踪每个分区中用于消费的偏移量，并使用它向 broker 发出读取请求。\
-![](https://img.hchstudio.cn/kafka_replication_diagram.png)\
+\
 如上图所示当 producer 将消息发布到topic的某个 partition 时，该消息首先被转发到该 partition 的leader副本，并追加到其日志中。fellower 的副本不断地从 leader 那里获取新的信息。一旦有足够多的副本接收到消息，leader 就提交消息。\
 有个问题就是说 leader 如何决定到什么程度是足够的。leader 不能总是等待所有副本的写操作完成。这样为了保证数据一致性而降低我们服务的可用性是不可行的，这是因为任何跟随者副本可以失败和领导者不能无限地等待。
 

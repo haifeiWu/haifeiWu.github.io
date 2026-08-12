@@ -18,14 +18,12 @@ translationKey: "threadpoolexecutor--de-jian-dan-shu-li"
 ## why ?
 
 上面说的是整个线程池的总体概念，当然 `Java` 中的线程池也是基于相同的理念设计的。在 `Java` 线程池可以提高线程复用，又可以固定最大线程使用量，防止无限制地创建线程。当程序提交一个任务需要一个线程时，会去线程池中查找是否有空闲的线程，若有，则直接使用线程池中的线程工作，若没有，会去判断当前已创建的线程数量是否超过最大线程数量，如未超过，则创建新线程，如已超过，则进行排队等待或者直接抛出异常。如下图所示\
-![](https://img.hchstudio.cn/Thread-pool2.png)
 
 总的来说，线程池就是把资源池化，预先准备好，以避免不必要额外开销。
 
 ## how ?
 
 `Java` 提供了一套 `Executor` 框架，根据常用的场景对 `ThreadPoolExecutor` 类做了简单的封装，当然这样做的话难免有些束手束脚，所以大部分情况下都是根据自己的业务需求直接调用 `ThreadPoolExecutor` 实现自己的线程池。\
-![](https://img.hchstudio.cn/Executors.png)
 
 这个框架中包括了 `ScheduledThreadPoolExecutor` 和 `ThreadPoolExecutor` 两个核心线程池。前者是用来定时执行任务，后者是用来执行被提交的任务。因为这两个线程池的原理是一样的，都是调用底层的 `ThreadPoolExecutor`，下面我们就重点看看 ThreadPoolExecutor 类是如何实现线程池的。\
 

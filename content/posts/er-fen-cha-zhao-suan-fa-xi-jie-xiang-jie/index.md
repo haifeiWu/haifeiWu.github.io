@@ -149,7 +149,7 @@ translationKey: "er-fen-cha-zhao-suan-fa-xi-jie-xiang-jie"
 2.  为什么没有返回 -1 的操作？如果 `nums` 中不存在 `target` 这个值，怎么办？
 
 答：因为要一步一步来，先理解一下这个「左侧边界」有什么特殊含义：\
-![binary-search](https://img.hchstudio.cn/binary-search01.png)
+> 📷 图注：binary-search
 
 对于这个数组，算法会返回 `1`。这个 `1` 的含义可以这样解读：nums 中小于 `2` 的元素有 `1` 个。
 
@@ -223,8 +223,6 @@ translationKey: "er-fen-cha-zhao-suan-fa-xi-jie-xiang-jie"
     if (nums[mid] == target) {
         left = mid + 1;
         // 这样想: mid = left - 1
-
-![](https://img.hchstudio.cn/binary-search02.png)
 
 因为我们对 left 的更新必须是 `left = mid + 1`，就是说 `while` 循环结束时，`nums[left]` 一定不等于 `target` 了，而 `nums[left-1]` 可能是 `target`。
 
