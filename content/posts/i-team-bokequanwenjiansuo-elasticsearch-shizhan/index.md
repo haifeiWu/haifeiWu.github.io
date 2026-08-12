@@ -3,26 +3,26 @@ categories: ["后端"]
 title: "I-team 博客全文检索 Elasticsearch 实战"
 date: "2018-07-12T16:26:02+08:00"
 tags: ["Go", "Spring Boot", "Elasticsearch", "Java", "Linux"]
-summary: "一直觉得博客缺点东西，最近还是发现了，当博客慢慢多起来的时候想要找一篇之前写的博客很是麻烦，于是作为后端开发的楼主觉得自己动手丰衣足食，也就有了这次博客全文检索功能Elasticsearch实战，这里还要感谢一下‘辉哥’赞助的一台服务器。"
+summary: "一直觉得博客缺点东西，最近还是发现了，当博客慢慢多起来的时候想要找一篇之前写的博客很是麻烦，于是作为后端开发的楼主觉得自己动手丰衣足食，也就有了这次博客全文检索功能 Elasticsearch 实战，这里还要感谢一下‘辉哥’赞助的一台服务器。"
 translationKey: "i-team-bokequanwenjiansuo-elasticsearch-shizhan"
 ---
 
 > 📌 本文原发布于掘金社区：[I-team 博客全文检索 Elasticsearch 实战](https://juejin.cn/post/6844903637433450503)
 
-一直觉得博客缺点东西，最近还是发现了，当博客慢慢多起来的时候想要找一篇之前写的博客很是麻烦，于是作为后端开发的楼主觉得自己动手丰衣足食，也就有了这次博客全文检索功能Elasticsearch实战，这里还要感谢一下‘辉哥’赞助的一台服务器。\
+一直觉得博客缺点东西，最近还是发现了，当博客慢慢多起来的时候想要找一篇之前写的博客很是麻烦，于是作为后端开发的楼主觉得自己动手丰衣足食，也就有了这次博客全文检索功能 Elasticsearch 实战，这里还要感谢一下‘辉哥’赞助的一台服务器。\
 <span id="user-content-more"></span>
 
 ## [](#全文检索工具选型 "#全文检索工具选型")全文检索工具选型
 
-众所周知，支持全文检索的工具有很多，像 Lucene，solr， Elasticsearch 等，相比于其他的工具，显然 Elasticsearch 社区更加活跃，遇到问题相对来说也比较好解决，另外 Elasticsearch 提供的restful接口操作起来还是比较方便的，这也是楼主选择 Elasticsearch 的重要原因，当然 Elasticsearch 占据的内存相对来说比较大一点，楼主2G的云服务器跑起来也是捉襟见肘。
+众所周知，支持全文检索的工具有很多，像 Lucene，solr，Elasticsearch 等，相比于其他的工具，显然 Elasticsearch 社区更加活跃，遇到问题相对来说也比较好解决，另外 Elasticsearch 提供的 restful 接口操作起来还是比较方便的，这也是楼主选择 Elasticsearch 的重要原因，当然 Elasticsearch 占据的内存相对来说比较大一点，楼主 2G 的云服务器跑起来也是捉襟见肘。
 
 ## [](#数据迁移，从-MySQL-到-Elasticsearch "#数据迁移，从-MySQL-到-Elasticsearch")数据迁移，从 MySQL 到 Elasticsearch
 
-这个功能相对来说比较简单，就是定时从 MySQL 更新数据到 Elasticsearch 中，本来楼主打算自己写一个数据迁移的工具，但是想起之前楼主做数据迁移时用到的DataX很是不错，看了写官方文档还是支持的，但是楼主硬是没有跑起来，原因就是楼主2G内存的云服务器不够使啊，DataX光是跑起来就要1G多的内存，所以楼主只能另谋它法。对DataX感兴趣的小伙伴可以看看楼主的另一篇文章<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F4928%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/4928/">阿里离线数据同步工具 DataX 踩坑记录</a>。
+这个功能相对来说比较简单，就是定时从 MySQL 更新数据到 Elasticsearch 中，本来楼主打算自己写一个数据迁移的工具，但是想起之前楼主做数据迁移时用到的 DataX 很是不错，看了写官方文档还是支持的，但是楼主硬是没有跑起来，原因就是楼主 2G 内存的云服务器不够使啊，DataX 光是跑起来就要 1G 多的内存，所以楼主只能另谋它法。对 DataX 感兴趣的小伙伴可以看看楼主的另一篇文章<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F4928%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/4928/">阿里离线数据同步工具 DataX 踩坑记录</a>。
 
-说起可以省内存的语言，小伙伴可能会想到最近比较火的golang，没错楼主也想到了。最后楼主使用的就是一个叫go-mysql-elasticsearch的工具，就是使用golang实现的从 MySQL 将数据迁移到 Elasticsearch 的工具。具体搭建过程楼主不在这里细说，感兴趣的小伙伴请移步<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fsiddontang%2Fgo-mysql-elasticsearch" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/siddontang/go-mysql-elasticsearch">go-mysql-elasticsearch</a>，另外 Elasticsearch 环境的搭建，需要注意的就是安装 Elasticsearch 的机器内存应该大于或者等于2G，否则可能会出现起不起来的情况，楼主也不在这里赘述了，比较简单，请小伙伴们自行google。
+说起可以省内存的语言，小伙伴可能会想到最近比较火的 golang，没错楼主也想到了。最后楼主使用的就是一个叫 go-mysql-elasticsearch 的工具，就是使用 golang 实现的从 MySQL 将数据迁移到 Elasticsearch 的工具。具体搭建过程楼主不在这里细说，感兴趣的小伙伴请移步<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fsiddontang%2Fgo-mysql-elasticsearch" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/siddontang/go-mysql-elasticsearch">go-mysql-elasticsearch</a>，另外 Elasticsearch 环境的搭建，需要注意的就是安装 Elasticsearch 的机器内存应该大于或者等于 2G，否则可能会出现起不起来的情况，楼主也不在这里赘述了，比较简单，请小伙伴们自行 google。
 
-另外需要注意的是，在使用 go-mysql-elasticsearch 的时候应该开启mysql的binlog功能，go-mysql-elasticsearch的实现同步数据的思想就是将自己作为MySQL的一个slave挂载在MySQL上，这样就可以很轻松的将数据实时同步到 Elasticsearch 中，在启动 go-mysql-elasticsearch 的机器上最少应该有MySQL client工具，否则会启动报错。楼主的建议是根MySQL部署在同一台机器上，因为golang耗费内存极少，并不会有太大影响。下面给出楼主同步数据时 go-mysql-elasticsearch 的配置文件：
+另外需要注意的是，在使用 go-mysql-elasticsearch 的时候应该开启 MySQL 的 binlog 功能，go-mysql-elasticsearch 的实现同步数据的思想就是将自己作为 MySQL 的一个 slave 挂载在 MySQL 上，这样就可以很轻松的将数据实时同步到 Elasticsearch 中，在启动 go-mysql-elasticsearch 的机器上最少应该有 MySQL client 工具，否则会启动报错。楼主的建议是根 MySQL 部署在同一台机器上，因为 golang 耗费内存极少，并不会有太大影响。下面给出楼主同步数据时 go-mysql-elasticsearch 的配置文件：
 
     # MySQL address, user and password
     # user must have replication privilege in MySQL.
@@ -109,9 +109,9 @@ translationKey: "i-team-bokequanwenjiansuo-elasticsearch-shizhan"
 
 ## [](#实现全文检索功能的服务 "#实现全文检索功能的服务")实现全文检索功能的服务
 
-要想实现全文检索的功能并对外提供服务，web服务必不可少，楼主使用Spring Boot搭建web服务，对Spring Boot感兴趣的小伙伴也可以看一下楼主的另一篇文章，<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F6f25%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/6f25/">使用Spring Boot实现博客统计服务</a>。好了废话不多说了，请看代码
+要想实现全文检索的功能并对外提供服务，web 服务必不可少，楼主使用 Spring Boot 搭建 web 服务，对 Spring Boot 感兴趣的小伙伴也可以看一下楼主的另一篇文章，<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F6f25%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/6f25/">使用 Spring Boot 实现博客统计服务</a>。好了废话不多说了，请看代码
 
-接口实现代码，代码比较简单就是接收参数，调用service代码
+接口实现代码，代码比较简单就是接收参数，调用 service 代码
 
     @ApiOperation(value="全文检索接口", notes="")
     @ApiImplicitParam(name = "searchParam", value = "博客搜索条件（作者，描述，内容，标题）", required = true, dataType = "String")
@@ -130,7 +130,7 @@ translationKey: "i-team-bokequanwenjiansuo-elasticsearch-shizhan"
         return resultCode;
     }
 
-service代码实现，这里代码主要功能就是调用es的工具类，对博客描述，作者，博客标题，博客内容进行全文检索。
+service 代码实现，这里代码主要功能就是调用 es 的工具类，对博客描述，作者，博客标题，博客内容进行全文检索。
 
     @Override
     public ResultCode<List<ContentsWithBLOBs>> getContentListFromEs(String searchParam) {
@@ -162,7 +162,7 @@ service代码实现，这里代码主要功能就是调用es的工具类，对�
         return resultCode;
     }
 
-楼主用到的es的工具类代码实现，就是使用es的java客户端对es进行检索。
+楼主用到的 es 的工具类代码实现，就是使用 es 的 Java 客户端对 es 进行检索。
 
     /**
      * 使用分词查询
@@ -272,15 +272,15 @@ service代码实现，这里代码主要功能就是调用es的工具类，对�
 
     }
 
-最后，楼主使用postman测试web服务，如下图所示：
+最后，楼主使用 postman 测试 web 服务，如下图所示：
 
-<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2Fpostman_es.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/postman_es.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/7/12/1648c8ba4bdfe787~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" alt="postman图" /></a>postman图
+<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2Fpostman_es.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/postman_es.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/7/12/1648c8ba4bdfe787~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" alt="postman图" /></a>postman 图
 
 ## [](#过程中遇到的坑 "#过程中遇到的坑")过程中遇到的坑
 
-### [](#IK分词器的设置 "#IK分词器的设置")IK分词器的设置
+### [](#IK分词器的设置 "#IK分词器的设置")IK 分词器的设置
 
-这里需要注意的是，Elasticsearch的版本一定要与ik分词器的版本对应，不对应的话 Elasticsearch 会报错的。
+这里需要注意的是，Elasticsearch 的版本一定要与 ik 分词器的版本对应，不对应的话 Elasticsearch 会报错的。
 
     $ ./bin/elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v6.3.0/elasticsearch-analysis-ik-6.3.0.zip
 
@@ -318,17 +318,17 @@ service代码实现，这里代码主要功能就是调用es的工具类，对�
       }
     }'
 
-上面代码中，首先新建一个名称为contentindex的 Index，里面有一个名称为content的 Type。content有好多个字段，这里只为其中四个字段指定分词，**content**， **title**， **blog_desc**，**author** 。
+上面代码中，首先新建一个名称为 contentindex 的 Index，里面有一个名称为 content 的 Type。content 有好多个字段，这里只为其中四个字段指定分词，**content**，**title**，**blog_desc**，**author**。
 
 这四个字段都是中文，而且类型都是文本（text），所以需要指定中文分词器，不能使用默认的英文分词器。
 
-### [](#MySQL-binlog的设置 "#MySQL-binlog的设置")MySQL binlog的设置
+### [](#MySQL-binlog的设置 "#MySQL-binlog的设置")MySQL binlog 的设置
 
-因为楼主运行 go-mysql-elasticsearch 的时候使用的MySQL的客户端跟要导出数据的MySQL server端的版本不一致导致报错，最终在 go-mysql-elasticsearch 原作者的帮助下解决，所以一定要使用同版本的MySQL server 与client，因为不同版本的MySQL特性不一样，也就导致了 go-mysql-elasticsearch 导出数据有略微的不同。
+因为楼主运行 go-mysql-elasticsearch 的时候使用的 MySQL 的客户端跟要导出数据的 MySQL server 端的版本不一致导致报错，最终在 go-mysql-elasticsearch 原作者的帮助下解决，所以一定要使用同版本的 MySQL server 与 client，因为不同版本的 MySQL 特性不一样，也就导致了 go-mysql-elasticsearch 导出数据有略微的不同。
 
 ## [](#小结 "#小结")小结
 
-整个过程相对来说比较简单，当然楼主通过这个功能的实现，也对es有了一个相对的认识，学习了一项新的技能，可能有的小伙伴对楼主的整个工程的代码比较感兴趣，暂时先不能透露，等楼主完善好了一并贡献出来。
+整个过程相对来说比较简单，当然楼主通过这个功能的实现，也对 es 有了一个相对的认识，学习了一项新的技能，可能有的小伙伴对楼主的整个工程的代码比较感兴趣，暂时先不能透露，等楼主完善好了一并贡献出来。
 
 ## [](#参考文章 "#参考文章")参考文章
 

@@ -3,66 +3,66 @@ categories: ["后端"]
 title: "TCP 粘包问题浅析及其解决方案"
 date: "2018-07-16T18:58:07+08:00"
 tags: ["Java", "TCP/IP", "Netty", "面试", "源码"]
-summary: "最近一直在做中间件相关的东西，所以接触到的各种协议比较多，总的来说有TCP，UDP，HTTP等各种网络传输协议，因此楼主想先从协议最基本的TCP粘包问题搞起，把计算机网络这部分基础夯实一下。"
+summary: "最近一直在做中间件相关的东西，所以接触到的各种协议比较多，总的来说有 TCP，UDP，HTTP 等各种网络传输协议，因此楼主想先从协议最基本的 TCP 粘包问题搞起，把计算机网络这部分基础夯实一下。"
 translationKey: "tcp-zhanbaowentiqianxijiqijiejuefangan"
 ---
 
 > 📌 本文原发布于掘金社区：[TCP 粘包问题浅析及其解决方案](https://juejin.cn/post/6844903639174086670)
 
-最近一直在做中间件相关的东西，所以接触到的各种协议比较多，总的来说有TCP，UDP，HTTP等各种网络传输协议，因此楼主想先从协议最基本的TCP粘包问题搞起，把计算机网络这部分基础夯实一下。\
+最近一直在做中间件相关的东西，所以接触到的各种协议比较多，总的来说有 TCP，UDP，HTTP 等各种网络传输协议，因此楼主想先从协议最基本的 TCP 粘包问题搞起，把计算机网络这部分基础夯实一下。\
 <span id="user-content-more"></span>
 
-## [](#TCP协议的简单介绍 "#TCP协议的简单介绍")TCP协议的简单介绍
+## [](#TCP协议的简单介绍 "#TCP协议的简单介绍")TCP 协议的简单介绍
 
-**TCP是面向连接的运输层协议**
+**TCP 是面向连接的运输层协议**
 
-简单来说，在使用TCP协议之前，必须先建立TCP连接，就是我们常说的三次握手。在数据传输完毕之后，必须是释放已经建立的TCP连接，否则会发生不可预知的问题，造成服务的不可用状态。
+简单来说，在使用 TCP 协议之前，必须先建立 TCP 连接，就是我们常说的三次握手。在数据传输完毕之后，必须是释放已经建立的 TCP 连接，否则会发生不可预知的问题，造成服务的不可用状态。
 
-**每一条TCP连接都是可靠连接，且只有两个端点**
+**每一条 TCP 连接都是可靠连接，且只有两个端点**
 
-TCP连接是从Server端到Client端的点对点的，通过TCP传输数据，无差错，不重复不丢失。
+TCP 连接是从 Server 端到 Client 端的点对点的，通过 TCP 传输数据，无差错，不重复不丢失。
 
-**TCP协议的通信是全双工的**
+**TCP 协议的通信是全双工的**
 
-TCP协议允许通信双方的应用程序在任何时候都能发送数据。TCP 连接的两端都设有发送缓冲区和接收缓冲区，用来临时存放双向通信的数据。发送数据时，应用程序把数据传送给TCP的缓冲后，就可以做自己的事情，而TCP在合适的时候将数据发送出去。在接收的时候，TCP把收到的数据放入接收缓冲区，上层应用在合适的时候读取数据。
+TCP 协议允许通信双方的应用程序在任何时候都能发送数据。TCP 连接的两端都设有发送缓冲区和接收缓冲区，用来临时存放双向通信的数据。发送数据时，应用程序把数据传送给 TCP 的缓冲后，就可以做自己的事情，而 TCP 在合适的时候将数据发送出去。在接收的时候，TCP 把收到的数据放入接收缓冲区，上层应用在合适的时候读取数据。
 
-**TCP协议是面向字节流的**
+**TCP 协议是面向字节流的**
 
-TCP中的流是指流入进程或者从进程中流出的字节序列。所以向Java，golang等高级语言在进行TCP通信是都需要将相应的实体序列化才能进行传输。还有就是在我们使用Redis做缓存的时候，都需要将放入Redis的数据序列化才可以，原因就是Redis底层就是实现的TCP协议。
+TCP 中的流是指流入进程或者从进程中流出的字节序列。所以向 Java，golang 等高级语言在进行 TCP 通信是都需要将相应的实体序列化才能进行传输。还有就是在我们使用 Redis 做缓存的时候，都需要将放入 Redis 的数据序列化才可以，原因就是 Redis 底层就是实现的 TCP 协议。
 
-**TCP并不知道所传输的字节流的含义，TCP并不能保证接收方应用程序和发送方应用程序所发出的数据块具有对应大小的关系（这就是TCP传输过程中产生的粘包问题）。**但是应用程序接收方最终受到的字节流与发送方发送的字节流是一定相同的。因此，我们在使用TCP协议的时候应该制定合理的粘包拆包策略。
+**TCP 并不知道所传输的字节流的含义，TCP 并不能保证接收方应用程序和发送方应用程序所发出的数据块具有对应大小的关系（这就是 TCP 传输过程中产生的粘包问题）。**但是应用程序接收方最终受到的字节流与发送方发送的字节流是一定相同的。因此，我们在使用 TCP 协议的时候应该制定合理的粘包拆包策略。
 
-下图是TCP的协议传输的整个过程：
+下图是 TCP 的协议传输的整个过程：
 
-<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2FTCP-face-to-feed.jpg" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/TCP-face-to-feed.jpg"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/7/16/164a2bdae3ad8672~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" alt="TCP面向字节流" /></a>TCP面向字节流
+<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2FTCP-face-to-feed.jpg" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/TCP-face-to-feed.jpg"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/7/16/164a2bdae3ad8672~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" alt="TCP面向字节流" /></a>TCP 面向字节流
 
 下面这个图是从<a href="https://juejin.cn/post/6844903629233766414" target="_blank" title="https://juejin.cn/post/6844903629233766414">老钱</a>的博客里面取到的，非常生动\
-<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2FTCP.gif" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/TCP.gif"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/7/16/164a2bdb1bc5585a~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" alt="TCP传输动图" /></a>TCP传输动图
+<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2FTCP.gif" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/TCP.gif"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/7/16/164a2bdb1bc5585a~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" alt="TCP传输动图" /></a>TCP 传输动图
 
-## [](#TCP粘包问题复现 "#TCP粘包问题复现")TCP粘包问题复现
+## [](#TCP粘包问题复现 "#TCP粘包问题复现")TCP 粘包问题复现
 
 ### [](#理论推敲 "#理论推敲")理论推敲
 
 如下图所示，出现的粘包问题一共有三种情况
 
-<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2FTCP-PACKAGE.jpg" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/TCP-PACKAGE.jpg"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/7/16/164a2bdad5bdfc17~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" alt="TCP粘包问题" /></a>TCP粘包问题
+<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2FTCP-PACKAGE.jpg" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/TCP-PACKAGE.jpg"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/7/16/164a2bdad5bdfc17~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" alt="TCP粘包问题" /></a>TCP 粘包问题
 
 **第一种情况：**\
 如上图中的第一根**bar**所示，服务端一共读到两个数据包，每个数据包都是完成的，并没有发生粘包的问题，这种情况比较好处理，服务器只需要简单的从网络缓冲区去读就好了，每次服务端读取到的消息都是完成的，并不会出现数据不正确的情况。
 
 **第二种情况：**\
-服务端仅收到一个数据包，这个数据包包含客户端发出的两条消息的完整信息，这个时候基于第一种情况的逻辑实现的服务端就蒙了，因为服务端并不能很好的处理这个数据包，甚至不能处理，这种情况其实就是TCP的粘包问题。
+服务端仅收到一个数据包，这个数据包包含客户端发出的两条消息的完整信息，这个时候基于第一种情况的逻辑实现的服务端就蒙了，因为服务端并不能很好的处理这个数据包，甚至不能处理，这种情况其实就是 TCP 的粘包问题。
 
 **第三种情况：**\
-服务端收到了两个数据包，第一个数据包只包含了第一条消息的一部分，第一条消息的后半部分和第二条消息都在第二个数据包中，或者是第一个数据包包含了第一条消息的完整信息和第二条消息的一部分信息，第二个数据包包含了第二条消息的剩下部分，这种情况其实是发送了TCP拆包问题，因为发生了一条消息被拆分在两个包里面发送了，同样上面的服务器逻辑对于这种情况是不好处理的。
+服务端收到了两个数据包，第一个数据包只包含了第一条消息的一部分，第一条消息的后半部分和第二条消息都在第二个数据包中，或者是第一个数据包包含了第一条消息的完整信息和第二条消息的一部分信息，第二个数据包包含了第二条消息的剩下部分，这种情况其实是发送了 TCP 拆包问题，因为发生了一条消息被拆分在两个包里面发送了，同样上面的服务器逻辑对于这种情况是不好处理的。
 
-**为什么会发生TCP粘包、拆包**
+**为什么会发生 TCP 粘包、拆包**
 
 1.  应用程序写入的数据大于套接字缓冲区大小，这将会发生拆包。
 
 2.  应用程序写入数据小于套接字缓冲区大小，网卡将应用多次写入的数据发送到网络上，这将会发生粘包。
 
-3.  进行MSS（最大报文长度）大小的TCP分段，当TCP报文长度-TCP头部长度\>MSS的时候将发生拆包。
+3.  进行 MSS（最大报文长度）大小的 TCP 分段，当 TCP 报文长度-TCP 头部长度\>MSS 的时候将发生拆包。
 
 4.  接收方法不及时读取套接字缓冲区数据，这将发生粘包。
 
@@ -76,13 +76,13 @@ TCP中的流是指流入进程或者从进程中流出的字节序列。所以�
 
 3.  设置消息边界，服务端从网络流中按消息编辑分离出消息内容，一般使用‘\n’。
 
-4.  更为复杂的协议，例如楼主最近接触比较多的车联网协议808,809协议。
+4.  更为复杂的协议，例如楼主最近接触比较多的车联网协议 808,809 协议。
 
-### [](#TCP粘包拆包的代码实践 "#TCP粘包拆包的代码实践")TCP粘包拆包的代码实践
+### [](#TCP粘包拆包的代码实践 "#TCP粘包拆包的代码实践")TCP 粘包拆包的代码实践
 
-下面代码楼主主要演示了使用规定消息头，消息体的方式来解决TCP的粘包，拆包问题。
+下面代码楼主主要演示了使用规定消息头，消息体的方式来解决 TCP 的粘包，拆包问题。
 
-**server端代码：** server端代码的主要逻辑是接收客户端发送过来的消息，重新组装出消息，并打印出来。
+**server 端代码：** server 端代码的主要逻辑是接收客户端发送过来的消息，重新组装出消息，并打印出来。
 
     import java.io.*;
     import java.net.InetSocketAddress;
@@ -178,7 +178,7 @@ TCP中的流是指流入进程或者从进程中流出的字节序列。所以�
 
     }
 
-**client端代码：**客户端代码主要逻辑是组装要发送的消息，确定消息头，消息体，然后发送到服务端。
+**client 端代码：**客户端代码主要逻辑是组装要发送的消息，确定消息头，消息体，然后发送到服务端。
 
     import java.io.*;
     import java.net.InetSocketAddress;
@@ -247,7 +247,7 @@ TCP中的流是指流入进程或者从进程中流出的字节序列。所以�
 
 ## [](#参考文章 "#参考文章")参考文章
 
-- <a href="https://link.juejin.cn?target=https%3A%2F%2Fmy.oschina.net%2Fandylucc%2Fblog%2F625315" target="_blank" data-ref="nofollow noopener noreferrer" title="https://my.oschina.net/andylucc/blog/625315">Netty精粹之TCP粘包拆包问题</a>
+- <a href="https://link.juejin.cn?target=https%3A%2F%2Fmy.oschina.net%2Fandylucc%2Fblog%2F625315" target="_blank" data-ref="nofollow noopener noreferrer" title="https://my.oschina.net/andylucc/blog/625315">Netty 精粹之 TCP 粘包拆包问题</a>
 - <a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/">计算机网络-谢希仁-第七版</a>
 
 作 者：haifeiWu\

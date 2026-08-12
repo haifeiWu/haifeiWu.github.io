@@ -52,7 +52,7 @@ Span 具有“父子关系”，这个父子关系由 SpanID 和 ParentSpanID �
 - 最早在出现的国际化标准是 OpenTracing，随后还有 Google 发起的 OpenCensus 项目。
 - 而目前 OpenTracing 项目和 OpenCensus 项目已经合并成为 OpenTelemetry，OpenTelemetry 已经成为 Trace 领域的唯一国际化标准。
 
-而 OpenTelemetry 标准带来的好处不仅仅是解决各个系统之间的 Trace 互通问题，还有统一的 SDK、自动化埋点方案、数据采集、Traces/Metrics/Logs 互通等等好处。感兴趣的同学可以异步： <a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.aliyun.com%2Farticle%2F766070" target="_blank" data-ref="nofollow noopener noreferrer" title="https://developer.aliyun.com/article/766070">OpenTelemetry 介绍</a> 。
+而 OpenTelemetry 标准带来的好处不仅仅是解决各个系统之间的 Trace 互通问题，还有统一的 SDK、自动化埋点方案、数据采集、Traces/Metrics/Logs 互通等等好处。感兴趣的同学可以异步：<a href="https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.aliyun.com%2Farticle%2F766070" target="_blank" data-ref="nofollow noopener noreferrer" title="https://developer.aliyun.com/article/766070">OpenTelemetry 介绍</a>。
 
 ### **SLS**
 

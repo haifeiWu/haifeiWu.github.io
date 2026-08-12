@@ -1,5 +1,5 @@
 ---
-title: "基于 websocket 的长连接服务的设计与实践"
+title: "基于 WebSocket 的长连接服务的设计与实践"
 date: "2024-06-18T18:29:44+08:00"
 tags: ["后端", "架构", "程序员"]
 categories: ["后端"]

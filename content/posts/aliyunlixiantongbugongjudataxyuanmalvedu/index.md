@@ -1,20 +1,20 @@
 ---
 categories: ["后端"]
-title: "阿里云离线同步工具DataX源码略读"
+title: "阿里云离线同步工具 DataX 源码略读"
 date: "2018-07-06T10:47:57+08:00"
 tags: ["阿里巴巴", "Java", "数据库", "MySQL", "源码"]
-summary: "最近在做一些数据迁移相关工作，并最终采用了DataX，楼主也本着知其然，也要知其所以然的精神粗略的看一看Datax的源码。"
+summary: "最近在做一些数据迁移相关工作，并最终采用了 DataX，楼主也本着知其然，也要知其所以然的精神粗略的看一看 Datax 的源码。"
 translationKey: "aliyunlixiantongbugongjudataxyuanmalvedu"
 ---
 
-> 📌 本文原发布于掘金社区：[阿里云离线同步工具DataX源码略读](https://juejin.cn/post/6844903634195447821)
+> 📌 本文原发布于掘金社区：[阿里云离线同步工具 DataX 源码略读](https://juejin.cn/post/6844903634195447821)
 
-最近在做一些数据迁移相关工作，并最终采用了DataX，楼主也本着知其然，也要知其所以然的精神粗略的看一看Datax的源码。\
+最近在做一些数据迁移相关工作，并最终采用了 DataX，楼主也本着知其然，也要知其所以然的精神粗略的看一看 Datax 的源码。\
 <span id="user-content-more"></span>
 
 ## [](#代码下载 "#代码下载")代码下载
 
-相信这部分作为程序员的我们，大家都知道，github是个大家庭，所以楼主直接去github上扒下来就好了，项目是基于maven构建的，直接使用IDE导入工程即可。
+相信这部分作为程序员的我们，大家都知道，github 是个大家庭，所以楼主直接去 github 上扒下来就好了，项目是基于 Maven 构建的，直接使用 IDE 导入工程即可。
 
     git clone git@github.com:alibaba/DataX.git
 
@@ -22,23 +22,23 @@ translationKey: "aliyunlixiantongbugongjudataxyuanmalvedu"
 
 这部分楼主也不多说了，因为楼主在上篇文章中已经讲清楚了，感兴趣的小伙伴请移步<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F4928%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/4928/">阿里离线数据同步工具 DataX 踩坑记录</a>
 
-## [](#DataX概览-（摘抄自官网） "#DataX概览-（摘抄自官网）")DataX概览 （摘抄自官网）
+## [](#DataX概览-（摘抄自官网） "#DataX概览-（摘抄自官网）")DataX 概览（摘抄自官网）
 
-<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2FdataX-struct.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/dataX-struct.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/7/6/1646d7d4549eca4c~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" title="DataX结构图" loading="lazy" alt="DataX结构图" /></a>DataX结构图
+<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2FdataX-struct.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/dataX-struct.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/7/6/1646d7d4549eca4c~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" title="DataX结构图" loading="lazy" alt="DataX结构图" /></a>DataX 结构图
 
 - 设计理念\
-  为了解决异构数据源同步问题，DataX将复杂的网状的同步链路变成了星型数据链路，DataX作为中间传输载体负责连接各种数据源。当需要接入一个新的数据源的时候，只需要将此数据源对接到DataX，便能跟已有的数据源做到无缝数据同步。
+  为了解决异构数据源同步问题，DataX 将复杂的网状的同步链路变成了星型数据链路，DataX 作为中间传输载体负责连接各种数据源。当需要接入一个新的数据源的时候，只需要将此数据源对接到 DataX，便能跟已有的数据源做到无缝数据同步。
 
 - 当前使用现状\
-  DataX在阿里巴巴集团内被广泛使用，承担了所有大数据的离线同步业务，并已持续稳定运行了6年之久。目前每天完成同步8w多道作业，每日传输数据量超过300TB。
+  DataX 在阿里巴巴集团内被广泛使用，承担了所有大数据的离线同步业务，并已持续稳定运行了 6年之久。目前每天完成同步 8w 多道作业，每日传输数据量超过 300TB。
 
 ## [](#源码分析 "#源码分析")源码分析
 
-如上图所示，DataX的源码大部分都是用来适配各种各样的数据源的reader与writer，核心转换的framework就是core这个model，打开这model，我们可以直接看到一个叫Engine的文件
+如上图所示，DataX 的源码大部分都是用来适配各种各样的数据源的 reader 与 writer，核心转换的 framework 就是 core 这个 model，打开这 model，我们可以直接看到一个叫 Engine 的文件
 
-<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2Fdatax-source.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/datax-source.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/7/6/1646d7d44a370e42~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" title="DataX结构图" loading="lazy" alt="DataX结构图" /></a>DataX结构图
+<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2Fdatax-source.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/datax-source.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/7/6/1646d7d44a370e42~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" title="DataX结构图" loading="lazy" alt="DataX结构图" /></a>DataX 结构图
 
-根据我们代码习惯，这个就该是DataX的入口代码，如下所示,代码是删除异常处理的代码，很简单就三行，我们接着看entry这个方法
+根据我们代码习惯，这个就该是 DataX 的入口代码，如下所示，代码是删除异常处理的代码，很简单就三行，我们接着看 entry 这个方法
 
     public static void main(String[] args) throws Exception {
           int exitCode = 0;
@@ -46,7 +46,7 @@ translationKey: "aliyunlixiantongbugongjudataxyuanmalvedu"
           System.exit(exitCode);
       }
 
-通过代码我们知道，这个方法就是初始化一些启动参数，并调用start方法\
+通过代码我们知道，这个方法就是初始化一些启动参数，并调用 start 方法\
 
     public static void entry(final String[] args) throws Throwable {
             Options options = new Options();
@@ -100,7 +100,7 @@ translationKey: "aliyunlixiantongbugongjudataxyuanmalvedu"
             engine.start(configuration);
         }
 
-下面代码就是获取配置文件中的配置，初始化container的具体类型，初始化Job或者Task的运行容器，并运行插件的Job或者Task逻辑\
+下面代码就是获取配置文件中的配置，初始化 container 的具体类型，初始化 Job 或者 Task 的运行容器，并运行插件的 Job 或者 Task 逻辑\
 
     /* check job model (job/task) first */
        public void start(Configuration allConf) {
@@ -159,9 +159,9 @@ translationKey: "aliyunlixiantongbugongjudataxyuanmalvedu"
            container.start();
        }
 
-### [](#DataX的core模块的配置文件 "#DataX的core模块的配置文件")DataX的core模块的配置文件
+### [](#DataX的core模块的配置文件 "#DataX的core模块的配置文件")DataX 的 core 模块的配置文件
 
-从配置文件中可以看出DataX要求的JVM的堆内存最小是1G，这是之前楼主使用DataX遇到的一个小小的问题，其他的配置都是一些通用配置。
+从配置文件中可以看出 DataX 要求的 JVM 的堆内存最小是 1G，这是之前楼主使用 DataX 遇到的一个小小的问题，其他的配置都是一些通用配置。
 
     {
         "entry": {
@@ -226,6 +226,6 @@ translationKey: "aliyunlixiantongbugongjudataxyuanmalvedu"
 
 ## [](#小结 "#小结")小结
 
-这次楼主只是大概的梳理了一下DataX的代码，水平有点水，相信热爱学习的楼主，可以day day up
+这次楼主只是大概的梳理了一下 DataX 的代码，水平有点水，相信热爱学习的楼主，可以 day day up
 
-作 者：haifeiWu原文链接：<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fd91b%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/d91b/">www.hchstudio.cn/article/201…</a>版权声明：非特殊声明均为本站原创作品，转载时请注明作者和原文链接。
+作 者：haifeiWu 原文链接：<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fd91b%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/d91b/">www.hchstudio.cn/article/201…</a>版权声明：非特殊声明均为本站原创作品，转载时请注明作者和原文链接。

@@ -3,17 +3,17 @@ categories: ["后端"]
 title: "实现自己的 RPC 框架（二）"
 date: "2019-08-06T14:13:41+08:00"
 tags: ["Java", "RPC"]
-summary: "前段时间自己搞了个 RPC 的轮子，不过相对来说比较简单，最近在原来的基础上加以改造，使用 Zookeeper 实现了 provider 自动寻址以及消费者的简单负载均衡，对之前的感兴趣的请转 造个轮子---RPC动手实现。 在原来使用 TCP 直连的基础上实现基于 Zooke…"
+summary: "前段时间自己搞了个 RPC 的轮子，不过相对来说比较简单，最近在原来的基础上加以改造，使用 ZooKeeper 实现了 provider 自动寻址以及消费者的简单负载均衡，对之前的感兴趣的请转 造个轮子---RPC 动手实现。在原来使用 TCP 直连的基础上实现基于 Zooke…"
 translationKey: "shixianzijide-rpc-kuangjia-er"
 ---
 
 > 📌 本文原发布于掘金社区：[实现自己的 RPC 框架（二）](https://juejin.cn/post/6844903907190112264)
 
-前段时间自己搞了个 RPC 的轮子，不过相对来说比较简单，最近在原来的基础上加以改造，使用 Zookeeper 实现了 provider 自动寻址以及消费者的简单负载均衡，对之前的感兴趣的请转 <a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fb674%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/b674/">造个轮子---RPC动手实现</a>。
+前段时间自己搞了个 RPC 的轮子，不过相对来说比较简单，最近在原来的基础上加以改造，使用 ZooKeeper 实现了 provider 自动寻址以及消费者的简单负载均衡，对之前的感兴趣的请转 <a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fb674%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/b674/">造个轮子---RPC 动手实现</a>。
 
 ## RPC 模型
 
-在原来使用 TCP 直连的基础上实现基于 Zookeeper 的服务的注册与发现，改造后的依赖关系是这样的。
+在原来使用 TCP 直连的基础上实现基于 ZooKeeper 的服务的注册与发现，改造后的依赖关系是这样的。
 
 <figure>
 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/8/6/16c658efd976c10d~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" alt="child-rpc" />
@@ -21,7 +21,7 @@ translationKey: "shixianzijide-rpc-kuangjia-er"
 
 ## 怎么用
 
-话不多说，我们来看下如何发布和引用服务。 服务端我们将服务的 IP 和端口号基础信息注册到 Zookeeper 上。
+话不多说，我们来看下如何发布和引用服务。服务端我们将服务的 IP 和端口号基础信息注册到 ZooKeeper 上。
 
 ``` java
 /**
@@ -57,7 +57,7 @@ public class ZookeeperServerMainTest {
 }
 ```
 
-通过 Zookeeper 引用注册在其上的服务。
+通过 ZooKeeper 引用注册在其上的服务。
 
 ``` java
 /**
@@ -85,11 +85,11 @@ public class ZookeeperClientMainTest {
 }
 ```
 
-运行结果就不一一贴出了，感兴趣的小伙伴可以查看楼主传到 github 上的源码<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Fchild-rpc.git" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/child-rpc.git">这是一个rpc的轮子</a>。
+运行结果就不一一贴出了，感兴趣的小伙伴可以查看楼主传到 github 上的源码<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Fchild-rpc.git" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/child-rpc.git">这是一个 rpc 的轮子</a>。
 
 ## 服务的发布与订阅
 
-楼主在原来代码的基础上添加了 Zookeeper 的注册的逻辑，原来的代码相关介绍请转 <a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fb674%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/b674/">造个轮子---RPC动手实现</a>。
+楼主在原来代码的基础上添加了 ZooKeeper 的注册的逻辑，原来的代码相关介绍请转 <a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fb674%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/b674/">造个轮子---RPC 动手实现</a>。
 
 ### 服务的发布
 

@@ -1,5 +1,5 @@
 ---
-title: "Kafka的Replica机制"
+title: "Kafka 的 Replica 机制"
 date: "2021-05-12T12:19:58+08:00"
 tags: ["后端", "Kafka", "Java"]
 categories: ["后端"]

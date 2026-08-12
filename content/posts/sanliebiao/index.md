@@ -9,7 +9,7 @@ translationKey: "sanliebiao"
 
 > 📌 本文原发布于掘金社区：[散列表](https://juejin.cn/post/6844903720157708296)
 
-> 原文地址： <a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F799a%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/799a/?_ref=juejin">haifeiWu和他朋友们的博客</a>\
+> 原文地址：<a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F799a%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/799a/?_ref=juejin">haifeiWu 和他朋友们的博客</a>\
 > 博客地址：<a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F799a%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/799a/?_ref=juejin">www.hchstudio.cn</a>\
 > 欢迎转载，转载请注明作者及出处，谢谢！
 
@@ -21,13 +21,13 @@ translationKey: "sanliebiao"
 
 ## 通俗的解释
 
-一个通俗的例子是，为了查找电话簿中某人的号码，可以创建一个按照人名首字母顺序排列的表（即建立人名<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle x}`$</span></span></span> 到首字母 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle F(x)}`$</span></span></span> 的一个函数关系），在首字母为W的表中查找 `王` 姓的电话号码，显然比直接查找就要快得多。这里使用人名作为关键字，`取首字母` 是这个例子中散列函数的函数法则 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle F(x)}`$</span></span></span> ，存放首字母的表对应散列表。关键字和函数法则理论上可以任意确定。
+一个通俗的例子是，为了查找电话簿中某人的号码，可以创建一个按照人名首字母顺序排列的表（即建立人名<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle x}`$</span></span></span> 到首字母 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle F(x)}`$</span></span></span> 的一个函数关系），在首字母为 W 的表中查找 `王` 姓的电话号码，显然比直接查找就要快得多。这里使用人名作为关键字，`取首字母` 是这个例子中散列函数的函数法则 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle F(x)}`$</span></span></span>，存放首字母的表对应散列表。关键字和函数法则理论上可以任意确定。
 
 ## 基本思想
 
 若关键字为 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle k}`$</span></span></span>，则其值存放在 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle f(k)}`$</span></span></span> 的存储位置上。由此，不需比较便可直接取得所查记录。称这个对应关系 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle f}`$</span></span></span> 为散列函数
 
-## 散列表几个重要概念 ：
+## 散列表几个重要概念：
 
 散列函数、装载因子、散列冲突
 
@@ -35,9 +35,9 @@ translationKey: "sanliebiao"
 
 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> = 填入表中的元素个数 / 散列表的长度
 
-<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> 是散列表装满程度的标志因子。由于表长是定值，<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> 与“填入表中的元素个数”成正比，所以，<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> 越大，表明填入表中的元素越多，产生冲突的可能性就越大；反之，<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> 越小，标明填入表中的元素越少，产生冲突的可能性就越小。实际上，散列表的平均查找长度是载荷因子 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> 的函数，只是不同处理冲突的方法有不同的函数。
+<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> 是散列表装满程度的标志因子。由于表长是定值，<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> 与“填入表中的元素个数”成正比，所以，<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> 越大，表明填入表中的元素越多，产生冲突的可能性就越大；反之，<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> 越小，表明填入表中的元素越少，产生冲突的可能性就越小。实际上，散列表的平均查找长度是载荷因子 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle \alpha }`$</span></span></span> 的函数，只是不同处理冲突的方法有不同的函数。
 
-对于开放定址法，荷载因子是特别重要因素，应严格限制在 `0.7-0.8` 以下。超过 `0.8` ，查表时的CPU缓存不命中（`cache missing`）按照指数曲线上升。因此，一些采用开放定址法的 `hash` 库，如 `Java` 的系统库限制了荷载因子为 `0.75`，超过此值将 `resize` 散列表。
+对于开放定址法，荷载因子是特别重要因素，应严格限制在 `0.7-0.8` 以下。超过 `0.8`，查表时的 CPU 缓存不命中（`cache missing`）按照指数曲线上升。因此，一些采用开放定址法的 `hash` 库，如 `Java` 的系统库限制了荷载因子为 `0.75`，超过此值将 `resize` 散列表。
 
 ### 散列冲突：
 
@@ -51,15 +51,15 @@ translationKey: "sanliebiao"
 
 #### 数据结构中的散列函数：
 
-1，直接定址法 ： 取关键字或关键字的某个线性函数值为散列地址。即<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle hash(k)=k}`$</span></span></span>或<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle hash(k)=a\cdot k+b}`$</span></span></span>，其中 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle a\,b}`$</span></span></span> 为常数。
+1，直接定址法：取关键字或关键字的某个线性函数值为散列地址。即<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle hash(k)=k}`$</span></span></span>或<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle hash(k)=a\cdot k+b}`$</span></span></span>，其中 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle a\,b}`$</span></span></span> 为常数。
 
-2，数字分析法 ： 数字分析法通常适合处理散列表中可能出现的关键字都是事先知道的，例如我们现在要存储某家公司员工登记表，如果用手机号作为关键字，那么我们发现抽取后面的四位数字作为散列地址是不错的选择，同理存储身份证号码时，也可以采用这样的逻辑。
+2，数字分析法：数字分析法通常适合处理散列表中可能出现的关键字都是事先知道的，例如我们现在要存储某家公司员工登记表，如果用手机号作为关键字，那么我们发现抽取后面的四位数字作为散列地址是不错的选择，同理存储身份证号码时，也可以采用这样的逻辑。
 
-3，平方去中法 ： 平方取中法是将关键字平方之后取中间若干位数字作为散列地址。这种方法适用于不知道关键字的分布，且数值的位数又不是很大的情况。
+3，平方去中法：平方取中法是将关键字平方之后取中间若干位数字作为散列地址。这种方法适用于不知道关键字的分布，且数值的位数又不是很大的情况。
 
-3，随机数法 ： 选择一个随机数，取关键字的随机函数值为它的散列地址，<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`f(key) = random(key)`$</span></span></span>
+3，随机数法：选择一个随机数，取关键字的随机函数值为它的散列地址，<span class="math math-inline"><span class="katex"><span class="katex-mathml">$`f(key) = random(key)`$</span></span></span>
 
-4，除留取余法： 取关键字被某个不大于散列表表长 `m` 的数 `p` 除后所得的余数为散列地址。即 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle hash(k)=k\,{\bmod {\,}}p}, {\displaystyle p\leq m}`$</span></span></span> `p`为小于m的最大质数，所谓素数就是指只能被 `1` 与它本身整除的数。
+4，除留取余法：取关键字被某个不大于散列表表长 `m` 的数 `p` 除后所得的余数为散列地址。即 <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`{\displaystyle hash(k)=k\,{\bmod {\,}}p}, {\displaystyle p\leq m}`$</span></span></span> `p`为小于 m 的最大质数，所谓素数就是指只能被 `1` 与它本身整除的数。
 
 ### 主要的散列冲突的解决办法
 
@@ -69,7 +69,7 @@ translationKey: "sanliebiao"
 
 主要是有**线性探查** <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`fi(key) = (f(key)+di) MOD m (di=1,2,…,m-1)`$</span></span></span> **平方探查** <span class="math math-inline"><span class="katex"><span class="katex-mathml">$`fi(key) = (f(key)+di) MOD m (di=1²,-1²,2²,-2²…,q²,-q²,q<=m/1)`$</span></span></span>
 
-**拉链法（链地址法）** 将散列到同一个存储位置的所有元素保存在一个链表中。 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/11/23/1673f5308d3db46f~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp#?w=421&amp;h=339&amp;s=9722&amp;e=png&amp;b=ffffff" title="链地址表" loading="lazy" alt="链地址表" />
+**拉链法（链地址法）** 将散列到同一个存储位置的所有元素保存在一个链表中。<img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/11/23/1673f5308d3db46f~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp#?w=421&amp;h=339&amp;s=9722&amp;e=png&amp;b=ffffff" title="链地址表" loading="lazy" alt="链地址表" />
 
 #### 再散列法：
 

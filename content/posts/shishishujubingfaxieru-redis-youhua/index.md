@@ -47,7 +47,7 @@ end
 
 ## 可能存在问题及其解决方案
 
-1，在并发冲突概率大的高竞争环境下，如果CAS一直失败，会一直重试，CPU开销较大。针对这个问题的一个思路是引入退出机制，如重试次数超过一定阈值后失败退出。如：
+1，在并发冲突概率大的高竞争环境下，如果 CAS 一直失败，会一直重试，CPU 开销较大。针对这个问题的一个思路是引入退出机制，如重试次数超过一定阈值后失败退出。如：
 
 ``` go
 func main() {
@@ -107,11 +107,11 @@ end`
 
 2，`Lua` 脚本执行时只能在同一台机器上生效，因此在 `Redis` 集群在就要求相关联的 `key` 分配到相同机器。这里很多同学可能会问为什么，其实很简单，`Redis` 是单线程的，倘若 `Lua` 脚本操作的 `key` 在不同机器上执行，也就无法保证其执行的原子性了。
 
-解决方法还是从分片技术的原理上找： 数据分片，就是一个 `hash` 的过程：对 `key` 做 `md5`，`sha1` 等 `hash` 算法，根据 `hash` 值分配到不同的机器上。
+解决方法还是从分片技术的原理上找：数据分片，就是一个 `hash` 的过程：对 `key` 做 `md5`，`sha1` 等 `hash` 算法，根据 `hash` 值分配到不同的机器上。
 
-为了实现将key分到相同机器，就需要相同的 `hash` 值，即相同的 `key`（改变 `hash` 算法也行，但比较复杂）。但 `key` 相同是不现实的，因为 `key` 都有不同的用途。但是我们让 `key` 的一部分相同对我们业务实现来说是可以实现的。那么能不能拿 `key` 一部分来计算 `hash` 呢？答案是肯定的，
+为了实现将 key 分到相同机器，就需要相同的 `hash` 值，即相同的 `key`（改变 `hash` 算法也行，但比较复杂）。但 `key` 相同是不现实的，因为 `key` 都有不同的用途。但是我们让 `key` 的一部分相同对我们业务实现来说是可以实现的。那么能不能拿 `key` 一部分来计算 `hash` 呢？答案是肯定的，
 
-这就是 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Ftwitter%2Ftwemproxy%2Fblob%2Fmaster%2Fnotes%2Frecommendation.md%23hash-tags" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/twitter/twemproxy/blob/master/notes/recommendation.md#hash-tags">Hash Tag</a> 。允许用key的部分字符串来计算hash。当一个key包含 {} 的时候，就不对整个key做hash，而仅对 {} 包括的字符串做 hash。假设 hash 算法为sha1。对 user:{user1}:ids和user:{user1}:tweets ，其 hash 值都等同于 sha1(user1)。
+这就是 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Ftwitter%2Ftwemproxy%2Fblob%2Fmaster%2Fnotes%2Frecommendation.md%23hash-tags" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/twitter/twemproxy/blob/master/notes/recommendation.md#hash-tags">Hash Tag</a>。允许用 key 的部分字符串来计算 hash。当一个 key 包含 {} 的时候，就不对整个 key 做 hash，而仅对 {} 包括的字符串做 hash。假设 hash 算法为 sha1。对 user:{user1}:ids 和 user:{user1}:tweets，其 hash 值都等同于 sha1(user1)。
 
 ## 小结
 

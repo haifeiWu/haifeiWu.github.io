@@ -3,17 +3,17 @@ categories: ["后端"]
 title: "Nginx 不停机升级 及 gzip 压缩优化"
 date: "2018-11-14T10:04:53+08:00"
 tags: ["Nginx", "后端", "百度"]
-summary: "好久不写博客手都生了，不过这个习惯不能丢，仅以一篇水文记录一下 nginx 不停机版本升级及配置 gzip 压缩优化网站访问体验过程。 何为水文，楼主对水文的定义就是百度一搜一大把，但是始终比较杂乱，需要自己仔细甄别才能真正解决问题，这也是楼主写这篇文章的原因，记录一下这个过程…"
+summary: "好久不写博客手都生了，不过这个习惯不能丢，仅以一篇水文记录一下 Nginx 不停机版本升级及配置 gzip 压缩优化网站访问体验过程。何为水文，楼主对水文的定义就是百度一搜一大把，但是始终比较杂乱，需要自己仔细甄别才能真正解决问题，这也是楼主写这篇文章的原因，记录一下这个过程…"
 translationKey: "nginx-butingjishengji-ji-gzip-yasuoyouhua"
 ---
 
 > 📌 本文原发布于掘金社区：[Nginx 不停机升级 及 gzip 压缩优化](https://juejin.cn/post/6844903713270824967)
 
-> 原文地址： <a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fca%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/ca/?_ref=juejin">haifeiWu和他朋友们的博客</a>\
+> 原文地址：<a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fca%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/ca/?_ref=juejin">haifeiWu 和他朋友们的博客</a>\
 > 博客地址：<a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fca%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/ca/?_ref=juejin">www.hchstudio.cn</a>\
 > 欢迎转载，转载请注明作者及出处，谢谢！
 
-好久不写博客手都生了，不过这个习惯不能丢，仅以一篇水文记录一下 nginx 不停机版本升级及配置 gzip 压缩优化网站访问体验过程。
+好久不写博客手都生了，不过这个习惯不能丢，仅以一篇水文记录一下 Nginx 不停机版本升级及配置 gzip 压缩优化网站访问体验过程。
 
 ## 缘起
 
@@ -31,7 +31,7 @@ wget http://nginx.org/download/nginx-1.14.1.tar.gz
 
 **2. 编译 Nginx**
 
-注意编译的时候不要执行 `make install` 。
+注意编译的时候不要执行 `make install`。
 
 ``` bash
 # 解压

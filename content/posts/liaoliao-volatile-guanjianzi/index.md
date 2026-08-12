@@ -3,13 +3,13 @@ categories: ["后端"]
 title: "聊聊 volatile 关键字"
 date: "2018-10-22T10:07:21+08:00"
 tags: ["后端", "安全", "Java", "算法"]
-summary: "我们知道 volatile 关键字的作用是保证变量在多线程之间的可见性，它是 java.util.concurrent 包的核心，没有 volatile 就没有这么多的并发类给我们使用。本文将简单介绍一下 volatile 这个东东。 CAS(compare-and-swap)…"
+summary: "我们知道 volatile 关键字的作用是保证变量在多线程之间的可见性，它是 java.util.concurrent 包的核心，没有 volatile 就没有这么多的并发类给我们使用。本文将简单介绍一下 volatile 这个东东。CAS(compare-and-swap)…"
 translationKey: "liaoliao-volatile-guanjianzi"
 ---
 
 > 📌 本文原发布于掘金社区：[聊聊 volatile 关键字](https://juejin.cn/post/6844903696468279303)
 
-> 原文地址： <a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F3da%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/3da/?_ref=juejin">haifeiWu和他朋友们的博客</a>\
+> 原文地址：<a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F3da%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/3da/?_ref=juejin">haifeiWu 和他朋友们的博客</a>\
 > 博客地址：<a href="https://link.juejin.cn?target=https%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F3da%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="https://www.hchstudio.cn/article/2018/3da/?_ref=juejin">www.hchstudio.cn</a>\
 > 欢迎转载，转载请注明作者及出处，谢谢！
 
@@ -86,16 +86,16 @@ class CompareAndSwap{
 
 - 类的小工具包，支持在单个变量上解除锁的线程安全编程。事实上，此包中的类可将 volatile 值、字段和数组元素的概念扩展到那些也提供原子条件更新操作的类。
 
-- 类 AtomicBoolean、 AtomicInteger、 AtomicLong 和 AtomicReference 的实例各自提供对相应类型单个变量的访问和更新。每个类也为该类型提供适当的实用工具方法。
+- 类 AtomicBoolean、AtomicInteger、AtomicLong 和 AtomicReference 的实例各自提供对相应类型单个变量的访问和更新。每个类也为该类型提供适当的实用工具方法。
 
-- AtomicIntegerArray、 AtomicLongArray 和 AtomicReferenceArray 类进一步扩展了原子操作，对这些类型的数组提供了支持。这些类在为其数组元素提供 volatile 访问语义方面也引人注目，这对于普通数组来说是不受支持的。
+- AtomicIntegerArray、AtomicLongArray 和 AtomicReferenceArray 类进一步扩展了原子操作，对这些类型的数组提供了支持。这些类在为其数组元素提供 volatile 访问语义方面也引人注目，这对于普通数组来说是不受支持的。
 
-- 核心方法： boolean compareAndSet(expectedValue, updateValue)
+- 核心方法：boolean compareAndSet(expectedValue, updateValue)
 
-- java.util.concurrent.atomic 包下提供了一些原子操作的常用类:
+- java.util.concurrent.atomic 包下提供了一些原子操作的常用类：
 
-1.  AtomicBoolean 、 AtomicInteger 、 AtomicLong 、AtomicReference
-2.  AtomicIntegerArray 、 AtomicLongArray
+1.  AtomicBoolean、AtomicInteger、AtomicLong、AtomicReference
+2.  AtomicIntegerArray、AtomicLongArray
 3.  AtomicMarkableReference
 4.  AtomicReferenceArray
 5.  AtomicStampedReference

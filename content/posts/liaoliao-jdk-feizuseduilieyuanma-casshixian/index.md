@@ -1,15 +1,15 @@
 ---
 categories: ["后端"]
-title: "聊聊 JDK 非阻塞队列源码（CAS实现）"
+title: "聊聊 JDK 非阻塞队列源码（CAS 实现）"
 date: "2018-08-02T14:23:33+08:00"
 tags: ["Java", "RxJava", "Java EE", "求职", "面试"]
-summary: "正如上篇文章聊聊 JDK 阻塞队列源码（ReentrantLock实现）所说，队列在我们现实生活中队列随处可见，最经典的就是去银行办理业务，超市买东西排队等。今天楼主要讲的就是JDK中安全队列的另一种实现使用CAS算法实现的安全队列。"
+summary: "正如上篇文章聊聊 JDK 阻塞队列源码（ReentrantLock 实现）所说，队列在我们现实生活中队列随处可见，最经典的就是去银行办理业务，超市买东西排队等。今天楼主要讲的就是 JDK 中安全队列的另一种实现使用 CAS 算法实现的安全队列。"
 translationKey: "liaoliao-jdk-feizuseduilieyuanma-casshixian"
 ---
 
-> 📌 本文原发布于掘金社区：[聊聊 JDK 非阻塞队列源码（CAS实现）](https://juejin.cn/post/6844903650456780807)
+> 📌 本文原发布于掘金社区：[聊聊 JDK 非阻塞队列源码（CAS 实现）](https://juejin.cn/post/6844903650456780807)
 
-正如上篇文章<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F22ff%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/22ff/">聊聊 JDK 阻塞队列源码（ReentrantLock实现）</a>所说，队列在我们现实生活中队列随处可见，最经典的就是去银行办理业务，超市买东西排队等。今天楼主要讲的就是JDK中安全队列的另一种实现使用CAS算法实现的安全队列。\
+正如上篇文章<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F22ff%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/22ff/">聊聊 JDK 阻塞队列源码（ReentrantLock 实现）</a>所说，队列在我们现实生活中队列随处可见，最经典的就是去银行办理业务，超市买东西排队等。今天楼主要讲的就是 JDK 中安全队列的另一种实现使用 CAS 算法实现的安全队列。\
 <span id="user-content-more"></span>
 
 ## [](#JDK-中的队列 "#JDK-中的队列")JDK 中的队列
@@ -23,14 +23,14 @@ translationKey: "liaoliao-jdk-feizuseduilieyuanma-casshixian"
 
 ## [](#LinkedTransferQueue-源码分析 "#LinkedTransferQueue-源码分析")LinkedTransferQueue 源码分析
 
-LinkedTransferQueue 的原理就是通过使用原子变量compare and swap（简称“CAS”）这种不加锁的方式来实现的进行并发控制，LinkedTransferQueue是一个无界的安全队列，其长度可以无限延伸，当然其带来的问题也是显而易见的。\
+LinkedTransferQueue 的原理就是通过使用原子变量 compare and swap（简称“CAS”）这种不加锁的方式来实现的进行并发控制，LinkedTransferQueue 是一个无界的安全队列，其长度可以无限延伸，当然其带来的问题也是显而易见的。\
 
 ### [](#主要方法源码实现 "#主要方法源码实现")主要方法源码实现
 
-1.  add：添加元素到队列里，添加成功返回true；\
-2.  offer：添加元素到队列里，添加成功返回true，添加失败返回false；\
+1.  add：添加元素到队列里，添加成功返回 true；\
+2.  offer：添加元素到队列里，添加成功返回 true，添加失败返回 false；\
 3.  put：添加元素到队列里，如果容量满了会阻塞直到容量不满；\
-4.  poll：删除队列头部元素，如果队列为空，返回null。否则返回元素；\
+4.  poll：删除队列头部元素，如果队列为空，返回 null。否则返回元素；\
 5.  take：删除队列头部元素，如果队列为空，一直阻塞到队列有元素并删除。\
 
 `add`方法：\
@@ -83,8 +83,8 @@ LinkedTransferQueue 的原理就是通过使用原子变量compare and swap（�
 从源码的 doc 注释中可以知道\
 第一个参数，如果是 put 类型，就是实际的值，反之就是 null。\
 第二个参数，是否包含数据，put 类型就是 true，take 就是 false。\
-第三个参数，执行类型，有立即返回的NOW，有异步的ASYNC，有阻塞的SYNC， 有带超时的 TIMED。\
-第四个参数，只有在 TIMED类型才有作用。
+第三个参数，执行类型，有立即返回的 NOW，有异步的 ASYNC，有阻塞的 SYNC，有带超时的 TIMED。\
+第四个参数，只有在 TIMED 类型才有作用。
 
 接下来我们来看看 `xfer` 到底是何方神圣\
 
@@ -150,8 +150,8 @@ LinkedTransferQueue 的原理就是通过使用原子变量compare and swap（�
         }
     }
 
-代码有点长，其实逻辑很简单。就是找到 `head` 节点,如果 `head` 节点是匹配的操作,就直接赋值,如果不是,添加到队列中。\
-注意：队列中永远只有一种类型的操作,要么是 `put` 类型, 要么是 `take` 类型.
+代码有点长，其实逻辑很简单。就是找到 `head` 节点，如果 `head` 节点是匹配的操作，就直接赋值，如果不是，添加到队列中。\
+注意：队列中永远只有一种类型的操作，要么是 `put` 类型，要么是 `take` 类型。
 
 ## [](#ConcurrentLinkedQueue-源码分析 "#ConcurrentLinkedQueue-源码分析")ConcurrentLinkedQueue 源码分析
 
@@ -159,11 +159,11 @@ LinkedTransferQueue 的原理就是通过使用原子变量compare and swap（�
 
 ### [](#主要方法源码实现-1 "#主要方法源码实现-1")主要方法源码实现
 
-1.  add：添加元素到队列里，添加成功返回true；\
-2.  offer：添加元素到队列里，添加成功返回true，添加失败返回false；\
+1.  add：添加元素到队列里，添加成功返回 true；\
+2.  offer：添加元素到队列里，添加成功返回 true，添加失败返回 false；\
 3.  put：添加元素到队列里，如果容量满了会阻塞直到容量不满；\
-4.  poll：删除队列头部元素，如果队列为空，返回null。否则返回元素；\
-5.  remove：基于对象找到对应的元素，并删除。删除成功返回true，否则返回false；\
+4.  poll：删除队列头部元素，如果队列为空，返回 null。否则返回元素；\
+5.  remove：基于对象找到对应的元素，并删除。删除成功返回 true，否则返回 false；\
 
 `add`方法：\
 \
@@ -174,7 +174,7 @@ LinkedTransferQueue 的原理就是通过使用原子变量compare and swap（�
 
 `offer`方法：\
 \
-`ConcurrentLinkedQueue`是无界的，所以`offer`永远返回true，不能通过返回值来判断是否入队成功，
+`ConcurrentLinkedQueue`是无界的，所以`offer`永远返回 true，不能通过返回值来判断是否入队成功，
 
     public boolean offer(E e) {
         // 校验是否为空
@@ -292,12 +292,12 @@ LinkedTransferQueue 的原理就是通过使用原子变量compare and swap（�
 
 ## [](#小结 "#小结")小结
 
-本文主要介绍了两种CAS算法实现的安全队列，然而稳定性要较高的系统中，为了防止生产者速度过快，导致内存溢出，通常是不建议选择无界队列的。当然楼主水平有限，文章中不免有纰漏，望小伙伴谅解并指出，在技术的道路上一起成长。
+本文主要介绍了两种 CAS 算法实现的安全队列，然而稳定性要较高的系统中，为了防止生产者速度过快，导致内存溢出，通常是不建议选择无界队列的。当然楼主水平有限，文章中不免有纰漏，望小伙伴谅解并指出，在技术的道路上一起成长。
 
 ## [](#参考链接 "#参考链接")参考链接
 
 - <a href="https://link.juejin.cn?target=https%3A%2F%2Ftech.meituan.com%2Fdisruptor.html" target="_blank" data-ref="nofollow noopener noreferrer" title="https://tech.meituan.com/disruptor.html">高性能队列——Disruptor</a>
-- <a href="https://link.juejin.cn?target=http%3A%2F%2Fifeve.com%2Fconcurrentlinkedqueue%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://ifeve.com/concurrentlinkedqueue/">聊聊并发（六）ConcurrentLinkedQueue的实现原理分析</a>
+- <a href="https://link.juejin.cn?target=http%3A%2F%2Fifeve.com%2Fconcurrentlinkedqueue%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://ifeve.com/concurrentlinkedqueue/">聊聊并发（六）ConcurrentLinkedQueue 的实现原理分析</a>
 
 作 者：haifeiWu\
 原文链接：<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fefed%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/efed/">www.hchstudio.cn/article/201…</a>\

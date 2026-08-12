@@ -1,30 +1,30 @@
 ---
 categories: ["后端"]
-title: "聊聊 JDK 阻塞队列源码（ReentrantLock版）"
+title: "聊聊 JDK 阻塞队列源码（ReentrantLock 版）"
 date: "2018-08-01T10:14:44+08:00"
 tags: ["Java", "Linux"]
 summary: "项目中用到了一个叫做 Disruptor 的队列，今天楼主并不是要介绍 Disruptor 而是想巩固一下基础扒一下 JDK 中的阻塞队列，听到队列相信大家对其并不陌生，在我们现实生活中队列随处可见，最经典的就是去银行办理业务等。"
 translationKey: "liaoliao-jdk-zuseduilieyuanma-reentrantlockban"
 ---
 
-> 📌 本文原发布于掘金社区：[聊聊 JDK 阻塞队列源码（ReentrantLock版）](https://juejin.cn/post/6844903649542406152)
+> 📌 本文原发布于掘金社区：[聊聊 JDK 阻塞队列源码（ReentrantLock 版）](https://juejin.cn/post/6844903649542406152)
 
 项目中用到了一个叫做 Disruptor 的队列，今天楼主并不是要介绍 Disruptor 而是想巩固一下基础扒一下 JDK 中的阻塞队列，听到队列相信大家对其并不陌生，在我们现实生活中队列随处可见，最经典的就是去银行办理业务等。\
 <span id="user-content-more"></span>\
-当然在计算机世界中，队列是属于一种数据结构，队列采用的FIFO(first in firstout)，新元素（等待进入队列的元素）总是被插入到尾部，而读取的时候总是从头部开始读取。在计算中队列一般用来做排队(如线程池的等待排队，锁的等待排队)，用来做解耦（生产者消费者模式），异步等等。
+当然在计算机世界中，队列是属于一种数据结构，队列采用的 FIFO(first in firstout)，新元素（等待进入队列的元素）总是被插入到尾部，而读取的时候总是从头部开始读取。在计算中队列一般用来做排队(如线程池的等待排队，锁的等待排队)，用来做解耦（生产者消费者模式），异步等等。
 
 ## [](#JDK-中的队列 "#JDK-中的队列")JDK 中的队列
 
-在**JDK**中的队列都实现了 **java.util.Queue** 接口，在队列中又分为两类，一类是线程不安全的，ArrayDeque，LinkedList等等，还有一类都在**java.util.concurrent**包下属于线程安全，而在我们真实的环境中，我们的机器都是属于多线程，当多线程对同一个队列进行操作的时，如果使用线程不安全会出现数据丢失等无法预测的事情，所以我们这个时候只能选择线程安全的队列。下面是我们今天要探讨的两个队列
+在**JDK**中的队列都实现了 **java.util.Queue** 接口，在队列中又分为两类，一类是线程不安全的，ArrayDeque，LinkedList 等等，还有一类都在**java.util.concurrent**包下属于线程安全，而在我们真实的环境中，我们的机器都是属于多线程，当多线程对同一个队列进行操作的时，如果使用线程不安全会出现数据丢失等无法预测的事情，所以我们这个时候只能选择线程安全的队列。下面是我们今天要探讨的两个队列
 
 | 队列名字            | 是否加锁 | 数据结构  | 关键技术点    | 是否有锁 | 是否有界 |
 |---------------------|----------|-----------|---------------|----------|----------|
-| ArrayBlockingQueue  | 是       | 数组array | ReentrantLock | 有锁     | 有界     |
+| ArrayBlockingQueue  | 是       | 数组 array | ReentrantLock | 有锁     | 有界     |
 | LinkedBlockingQueue | 是       | 链表      | ReentrantLock | 有锁     | 有界     |
 
 ## [](#ArrayBlockingQueue-源码分析 "#ArrayBlockingQueue-源码分析")ArrayBlockingQueue 源码分析
 
-ArrayBlockingQueue 的原理就是使用一个可重入锁（ReentrantLock ）和这个锁生成的两个条件对象进行并发控制，ArrayBlockingQueue是一个有界的阻塞队列，初始化的时候必须要指定队列长度，且指定长度之后不允许进行修改。\
+ArrayBlockingQueue 的原理就是使用一个可重入锁（ReentrantLock ）和这个锁生成的两个条件对象进行并发控制，ArrayBlockingQueue 是一个有界的阻塞队列，初始化的时候必须要指定队列长度，且指定长度之后不允许进行修改。\
 
 ### [](#成员变量属性 "#成员变量属性")成员变量属性
 
@@ -51,14 +51,14 @@ ArrayBlockingQueue 的原理就是使用一个可重入锁（ReentrantLock ）�
 
 ### [](#主要方法源码实现 "#主要方法源码实现")主要方法源码实现
 
-1.  add：添加元素到队列里，添加成功返回true，由于容量满了添加失败会抛出`IllegalStateException`异常；\
-2.  offer：添加元素到队列里，添加成功返回true，添加失败返回false；\
+1.  add：添加元素到队列里，添加成功返回 true，由于容量满了添加失败会抛出`IllegalStateException`异常；\
+2.  offer：添加元素到队列里，添加成功返回 true，添加失败返回 false；\
 3.  put：添加元素到队列里，如果容量满了会阻塞直到容量不满；\
-4.  poll：删除队列头部元素，如果队列为空，返回null。否则返回元素；\
-5.  remove：基于对象找到对应的元素，并删除。删除成功返回true，否则返回false；\
+4.  poll：删除队列头部元素，如果队列为空，返回 null。否则返回元素；\
+5.  remove：基于对象找到对应的元素，并删除。删除成功返回 true，否则返回 false；\
 6.  take：删除队列头部元素，如果队列为空，一直阻塞到队列有元素并删除。\
 
-add方法：\
+add 方法：\
 
     public boolean add(E e) {
         if (offer(e))
@@ -67,7 +67,7 @@ add方法：\
             throw new IllegalStateException("Queue full");
     }
 
-offer方法：\
+offer 方法：\
 
     public boolean offer(E e) {
         checkNotNull(e);
@@ -85,7 +85,7 @@ offer方法：\
         }
     }
 
-我们可以看到，如果队列满了则返回false，如果没有满调用insert。整个方法是通过可重入锁来锁住的，并且最终释放。
+我们可以看到，如果队列满了则返回 false，如果没有满调用 insert。整个方法是通过可重入锁来锁住的，并且最终释放。
 
 接着看一下`insert`方法：\
 \
@@ -128,7 +128,7 @@ offer方法：\
         }
     }
 
-看看这个`extract`方法，extract的翻译过来就是提取的意思：\
+看看这个`extract`方法，extract 的翻译过来就是提取的意思：\
 
     private E extract() {
         final Object[] items = this.items;
@@ -243,10 +243,10 @@ offer方法：\
 
 由于文章篇幅问题对于`LinkedBlockingQueue`我们主要分析以下几个方法：
 
-1.  offer：添加元素到队列里，添加成功返回true，添加失败返回false；\
+1.  offer：添加元素到队列里，添加成功返回 true，添加失败返回 false；\
 2.  put：添加元素到队列里，如果容量满了会阻塞直到容量不满；\
-3.  poll：删除队列头部元素，如果队列为空，返回null。否则返回元素；\
-4.  remove：基于对象找到对应的元素，并删除。删除成功返回true，否则返回false；\
+3.  poll：删除队列头部元素，如果队列为空，返回 null。否则返回元素；\
+4.  remove：基于对象找到对应的元素，并删除。删除成功返回 true，否则返回 false；\
 5.  take：删除队列头部元素，如果队列为空，一直阻塞到队列有元素并删除。\
 
 `offer`方法：
@@ -398,24 +398,24 @@ offer方法：\
          putLock.unlock();
      }
 
-`LinkedBlockingQueue`的take方法对于没数据的情况下会阻塞，`poll`方法删除链表头结点，remove方法删除指定的对象。\
+`LinkedBlockingQueue`的 take 方法对于没数据的情况下会阻塞，`poll`方法删除链表头结点，remove 方法删除指定的对象。\
 
-需要注意的是`remove`方法由于要删除的数据的位置不确定，需要2个锁同时加锁。\
+需要注意的是`remove`方法由于要删除的数据的位置不确定，需要 2 个锁同时加锁。\
 
 ## [](#小结 "#小结")小结
 
-文章有点长，JDK中的阻塞队列线程安全的主要有`ArrayBlockingQueue`，`LinkedBlockingQueue`，`LinkedTransferQueue`，`DelayQueue`四种，今天楼主把`ArrayBlockingQueue`，`LinkedBlockingQueue`放在一起介绍主要原因是这两者都是使用可重入锁 `ReentrantLock`实现的线程安全。\
+文章有点长，JDK 中的阻塞队列线程安全的主要有`ArrayBlockingQueue`，`LinkedBlockingQueue`，`LinkedTransferQueue`，`DelayQueue`四种，今天楼主把`ArrayBlockingQueue`，`LinkedBlockingQueue`放在一起介绍主要原因是这两者都是使用可重入锁 `ReentrantLock`实现的线程安全。\
 当然二者也有很大的不同，主要是：
 
-1，`ArrayBlockingQueue`只有1个锁，添加数据和删除数据的时候只能有1个被执行，不允许并行执行。\
-而`LinkedBlockingQueue`有2个锁，放元素锁和取元素锁，添加数据和删除数据是可以并行进行的，当然添加数据和删除数据的时候只能有1个线程各自执行。\
+1，`ArrayBlockingQueue`只有 1 个锁，添加数据和删除数据的时候只能有 1 个被执行，不允许并行执行。\
+而`LinkedBlockingQueue`有 2 个锁，放元素锁和取元素锁，添加数据和删除数据是可以并行进行的，当然添加数据和删除数据的时候只能有 1 个线程各自执行。\
 
 2，`ArrayBlockingQueue`中放入数据阻塞的时候，需要消费数据才能唤醒。\
-而`LinkedBlockingQueue`中放入数据阻塞的时候，因为它内部有2个锁，可以并行执行放入数据和消费数据，不仅在消费数据的时候进行唤醒插入阻塞的线程，同时在插入的时候如果容量还没满，也会唤醒插入阻塞的线程。\
+而`LinkedBlockingQueue`中放入数据阻塞的时候，因为它内部有 2 个锁，可以并行执行放入数据和消费数据，不仅在消费数据的时候进行唤醒插入阻塞的线程，同时在插入的时候如果容量还没满，也会唤醒插入阻塞的线程。\
 
 ## [](#参考链接 "#参考链接")参考链接
 
-- <a href="https://juejin.cn/post/6844903648875528206" target="_blank" title="https://juejin.cn/post/6844903648875528206">还在用阻塞队列？Disruptor了解一下？</a>
+- <a href="https://juejin.cn/post/6844903648875528206" target="_blank" title="https://juejin.cn/post/6844903648875528206">还在用阻塞队列？Disruptor 了解一下？</a>
 
 作 者：haifeiWu\
 原文链接：<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F22ff%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/22ff/">www.hchstudio.cn/article/201…</a>\

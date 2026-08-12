@@ -3,13 +3,13 @@ categories: ["后端"]
 title: "Filter 设计模式编码实践"
 date: "2018-09-21T10:55:49+08:00"
 tags: ["设计模式", "后端", "Kafka", "Google"]
-summary: "最近项目中遇到各种输出数据监控，数据校验等逻辑，一个个实现很是麻烦。项目是中途接手的，不是很熟悉，偶然一天发现项目中对 Filter 的使用扩展起来很是方便，所以，今天楼主来分享下，也为自己学习做个记录。下面我们从三方面来阐述。 Filter 在设计模式里面被称为责任链设计模式…"
+summary: "最近项目中遇到各种输出数据监控，数据校验等逻辑，一个个实现很是麻烦。项目是中途接手的，不是很熟悉，偶然一天发现项目中对 Filter 的使用扩展起来很是方便，所以，今天楼主来分享下，也为自己学习做个记录。下面我们从三方面来阐述。Filter 在设计模式里面被称为责任链设计模式…"
 translationKey: "filter-shejimoshibianmashijian"
 ---
 
 > 📌 本文原发布于掘金社区：[Filter 设计模式编码实践](https://juejin.cn/post/6844903682689990664)
 
-> 原文地址： <a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F4008%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/4008/?_ref=juejin">haifeiWu和他朋友们的博客</a>\
+> 原文地址：<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F4008%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/4008/?_ref=juejin">haifeiWu 和他朋友们的博客</a>\
 > 博客地址：<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2F4008%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/4008/?_ref=juejin">www.hchstudio.cn</a>\
 > 欢迎转载，转载请注明作者及出处，谢谢！
 
@@ -17,7 +17,7 @@ translationKey: "filter-shejimoshibianmashijian"
 
 ## 什么是 Filter
 
-Filter 在设计模式里面被称为责任链设计模式，顾名思义，我们可以在这条责任链上对一组数据做不同的处理。这种类型的设计模式属于结构型模式，它结合多个标准来获得单一标准。UML见下图，
+Filter 在设计模式里面被称为责任链设计模式，顾名思义，我们可以在这条责任链上对一组数据做不同的处理。这种类型的设计模式属于结构型模式，它结合多个标准来获得单一标准。UML 见下图，
 
 <figure>
 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/9/21/165fa0c2905483f7~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" loading="lazy" alt="Filter设计模式" />
@@ -25,7 +25,7 @@ Filter 在设计模式里面被称为责任链设计模式，顾名思义，我�
 
 ## 为什么要使用 Filter
 
-好处是显而易见的，它使我们的代码将请求和处理分开。请求者可以不知道是谁处理的，处理者可以不用知道请求的全貌，两者解耦，提高系统的灵活性。从而我们的代码更加简洁跟易于扩展，而不是机械重复的Ctrl+C，Ctrl+V。当然好处还有好多，楼主就不在这里赘述了，感兴趣的小伙伴自行Google。
+好处是显而易见的，它使我们的代码将请求和处理分开。请求者可以不知道是谁处理的，处理者可以不用知道请求的全貌，两者解耦，提高系统的灵活性。从而我们的代码更加简洁跟易于扩展，而不是机械重复的 Ctrl+C，Ctrl+V。当然好处还有好多，楼主就不在这里赘述了，感兴趣的小伙伴自行 Google。
 
 ## 怎么用 Filter 项目中的代码实现逻辑
 
@@ -38,7 +38,7 @@ public interface IDataHandlerFilter {
 }
 ```
 
-统一数据发送端，将业务系统处理好的数据，统一发送到 kafka。当然我们还可以实现 Filter 对数据进行其他处理。
+统一数据发送端，将业务系统处理好的数据，统一发送到 Kafka。当然我们还可以实现 Filter 对数据进行其他处理。
 
 ``` java
 public class DataSendHandlerFilter implements IDataHandlerFilter {
@@ -80,7 +80,7 @@ public class DataSendHandlerFilter implements IDataHandlerFilter {
 }
 ```
 
-设置系统要使用的 Filter ，根据具体业务有所不同。
+设置系统要使用的 Filter，根据具体业务有所不同。
 
 ``` java
 public class HanderFilterUtil {

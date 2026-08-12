@@ -1,5 +1,5 @@
 ---
-title: "聊聊 JDK 阻塞队列源码（ReentrantLock版）"
+title: "聊聊 JDK 阻塞队列源码（ReentrantLock 版）"
 date: "2018-08-01T10:14:44+08:00"
 tags: ["Java", "Linux"]
 categories: ["后端"]

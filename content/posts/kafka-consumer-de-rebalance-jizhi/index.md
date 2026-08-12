@@ -3,7 +3,7 @@ categories: ["后端"]
 title: "Kafka Consumer 的 Rebalance 机制"
 date: "2019-11-19T16:22:34+08:00"
 tags: ["Java", "Kafka"]
-summary: "如上图所示，Consumer 使用 Consumer Group 名称标记自己，并且发布到主题的每条记录都会传递到每个订阅消费者组中的一个 Consumer 实例。 Consumer 实例可以在单独的进程中或在单独的机器上。 如果所有 Consumer 实例都属于同一个 Con…"
+summary: "如上图所示，Consumer 使用 Consumer Group 名称标记自己，并且发布到主题的每条记录都会传递到每个订阅消费者组中的一个 Consumer 实例。Consumer 实例可以在单独的进程中或在单独的机器上。如果所有 Consumer 实例都属于同一个 Con…"
 translationKey: "kafka-consumer-de-rebalance-jizhi"
 ---
 
@@ -23,9 +23,9 @@ translationKey: "kafka-consumer-de-rebalance-jizhi"
 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/11/19/16e82bf2d623075e~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" loading="lazy" />
 </figure>
 
-如上图所示，`Consumer` 使用 `Consumer Group` 名称标记自己，并且发布到主题的每条记录都会传递到每个订阅消费者组中的一个 `Consumer` 实例。 `Consumer` 实例可以在单独的进程中或在单独的机器上。
+如上图所示，`Consumer` 使用 `Consumer Group` 名称标记自己，并且发布到主题的每条记录都会传递到每个订阅消费者组中的一个 `Consumer` 实例。`Consumer` 实例可以在单独的进程中或在单独的机器上。
 
-如果所有 `Consumer` 实例都属于同一个 `Consumer Group` ，那么这些 `Consumer` 实例将平衡再负载的方式来消费 `Kafka`。
+如果所有 `Consumer` 实例都属于同一个 `Consumer Group`，那么这些 `Consumer` 实例将平衡再负载的方式来消费 `Kafka`。
 
 如果所有 `Consumer` 实例具有不同的 `Consumer Group`，则每条记录将广播到所有 `Consumer` 进程。
 
@@ -48,9 +48,9 @@ translationKey: "kafka-consumer-de-rebalance-jizhi"
 每个 `Group` 都会选择一个 `Coordinator` 来完成自己组内各 `Partition` 的 `Offset` 信息，选择的规则如下：
 
 1.  计算 `Group` 对应在 `__consumer_offsets` 上的 `Partition`
-2.  根据对应的Partition寻找该Partition的leader所对应的Broker，该Broker上的Group Coordinator即就是该Group的Coordinator
+2.  根据对应的 Partition 寻找该 Partition 的 leader 所对应的 Broker，该 Broker 上的 Group Coordinator 即就是该 Group 的 Coordinator
 
-Partition计算规则：
+Partition 计算规则：
 
 ``` bash
 partition-Id(__consumer_offsets) = Math.abs(groupId.hashCode() % groupMetadataTopicPartitionCount)
@@ -113,7 +113,7 @@ Known Issue \#2: Back-and-forth Rebalance
 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/11/19/16e82bf267963509~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" loading="lazy" />
 </figure>
 
-如上图所示，新的渐进式 Rebalance 协议，在 Rebalance 的时候不需要当前所有的 Consumer 释放所拥有的资源，而是当需要触发 Rebalance 的时候对当前资源进行登记，然后进行渐进式的 Rebalance。 这样做产生的优化效果
+如上图所示，新的渐进式 Rebalance 协议，在 Rebalance 的时候不需要当前所有的 Consumer 释放所拥有的资源，而是当需要触发 Rebalance 的时候对当前资源进行登记，然后进行渐进式的 Rebalance。这样做产生的优化效果
 
 - 相较之前进行了更多次数的 Rebalance，但是每次 Rebalance 对资源的消耗都是比较廉价的
 - 发生迁移的分区相较之前更少了

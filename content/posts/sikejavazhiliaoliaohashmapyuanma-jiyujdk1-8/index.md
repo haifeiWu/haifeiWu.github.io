@@ -1,22 +1,22 @@
 ---
 categories: ["后端"]
-title: "死磕Java之聊聊HashMap源码(基于JDK1.8)"
+title: "死磕 Java 之聊聊 HashMap 源码(基于 JDK1.8)"
 date: "2018-06-04T23:07:24+08:00"
 tags: ["Java", "源码", "面试", "服务器", "Linux"]
-summary: "HashMap是Java程序员使用频率最高的数据结构之一。另外，JDK1.8对HashMap底层的实现进行了优化，如引入红黑树的数据结构以及扩容的优化等等来提高性能。本文结合JDK1.8的源码，探讨HashMap的结构实现和功能原理。"
+summary: "HashMap 是 Java 程序员使用频率最高的数据结构之一。另外，JDK1.8 对 HashMap 底层的实现进行了优化，如引入红黑树的数据结构以及扩容的优化等等来提高性能。本文结合 JDK1.8 的源码，探讨 HashMap 的结构实现和功能原理。"
 translationKey: "sikejavazhiliaoliaohashmapyuanma-jiyujdk1-8"
 ---
 
-> 📌 本文原发布于掘金社区：[死磕Java之聊聊HashMap源码(基于JDK1.8)](https://juejin.cn/post/6844903616503873550)
+> 📌 本文原发布于掘金社区：[死磕 Java 之聊聊 HashMap 源码(基于 JDK1.8)](https://juejin.cn/post/6844903616503873550)
 
-HashMap是Java程序员使用频率最高的数据结构之一。另外，JDK1.8对HashMap底层的实现进行了优化，如引入红黑树的数据结构以及扩容的优化等等来提高性能。本文结合JDK1.8的源码，探讨HashMap的结构实现和功能原理。\
+HashMap 是 Java 程序员使用频率最高的数据结构之一。另外，JDK1.8 对 HashMap 底层的实现进行了优化，如引入红黑树的数据结构以及扩容的优化等等来提高性能。本文结合 JDK1.8 的源码，探讨 HashMap 的结构实现和功能原理。\
 <span id="user-content-more"></span>
 
-## [](#HashMap的UML图 "#HashMap的UML图")HashMap的UML图
+## [](#HashMap的UML图 "#HashMap的UML图")HashMap 的 UML 图
 
-<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2FHashMap.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/HashMap.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/6/4/163cb56c386a0d81~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" title="UML图" loading="lazy" alt="HashMap的UML图" /></a>HashMap的UML图
+<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2FHashMap.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/HashMap.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/6/4/163cb56c386a0d81~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" title="UML图" loading="lazy" alt="HashMap的UML图" /></a>HashMap 的 UML 图
 
-## [](#HashMap的成员变量及其含义 "#HashMap的成员变量及其含义")HashMap的成员变量及其含义
+## [](#HashMap的成员变量及其含义 "#HashMap的成员变量及其含义")HashMap 的成员变量及其含义
 
                                                     
     public class HashMap<K,V> extends AbstractMap<K,V>
@@ -161,21 +161,21 @@ HashMap是Java程序员使用频率最高的数据结构之一。另外，JDK1.8
 
                                                 
 
-## [](#聊聊HashMap的主要方法实现 "#聊聊HashMap的主要方法实现")聊聊HashMap的主要方法实现
+## [](#聊聊HashMap的主要方法实现 "#聊聊HashMap的主要方法实现")聊聊 HashMap 的主要方法实现
 
 ### [](#内部实现 "#内部实现")内部实现
 
-搞清楚HashMap，首先需要知道HashMap是什么，即它的存储结构-字段；其次弄明白它能干什么，即它的功能实现-方法。下面我们针对这两个方面详细展开讲解。
+搞清楚 HashMap，首先需要知道 HashMap 是什么，即它的存储结构-字段；其次弄明白它能干什么，即它的功能实现-方法。下面我们针对这两个方面详细展开讲解。
 
 ### [](#存储结构-字段 "#存储结构-字段")存储结构-字段
 
-从结构实现来讲，HashMap是数组+链表+红黑树（JDK1.8增加了红黑树部分）实现的，如下如所示。
+从结构实现来讲，HashMap 是数组+链表+红黑树（JDK1.8 增加了红黑树部分）实现的，如下如所示。
 
-<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2FhashMap%25E5%2586%2585%25E5%25AD%2598%25E7%25BB%2593%25E6%259E%2584%25E5%259B%25BE.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/hashMap%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84%E5%9B%BE.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/6/4/163cb56c385ea680~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" title="HashMap的内存结构图" loading="lazy" alt="HashMap的内存结构图" /></a> HashMap的内存结构图
+<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2FhashMap%25E5%2586%2585%25E5%25AD%2598%25E7%25BB%2593%25E6%259E%2584%25E5%259B%25BE.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/hashMap%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84%E5%9B%BE.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/6/4/163cb56c385ea680~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" title="HashMap的内存结构图" loading="lazy" alt="HashMap的内存结构图" /></a> HashMap 的内存结构图
 
 这里需要讲明白两个问题：数据底层具体存储的是什么？这样的存储方式有什么优点呢？
 
-\(1\) 从源码可知，HashMap类中有一个非常重要的字段，就是 Node\[\] table，即哈希桶数组，明显它是一个Node的数组。我们来看Node\[JDK1.8\]是何物。
+\(1\) 从源码可知，HashMap 类中有一个非常重要的字段，就是 Node\[\] table，即哈希桶数组，明显它是一个 Node 的数组。我们来看 Node\[JDK1.8\]是何物。
 
                                                     
     static class Node<K,V> implements Map.Entry<K,V> {
@@ -196,13 +196,13 @@ HashMap是Java程序员使用频率最高的数据结构之一。另外，JDK1.8
 
                                                 
 
-Node是HashMap的一个内部类，实现了Map.Entry接口，本质是就是一个映射(键值对)。上图中的每个黑色圆点就是一个Node对象。
+Node 是 HashMap 的一个内部类，实现了 Map.Entry 接口，本质是就是一个映射(键值对)。上图中的每个黑色圆点就是一个 Node 对象。
 
-\(2\) HashMap就是使用哈希表来存储的。哈希表为解决冲突，可以采用开放地址法和链地址法等来解决问题，Java中HashMap采用了链地址法。链地址法，简单来说，就是数组加链表的结合。在每个数组元素上都一个链表结构，当数据被Hash后，得到数组下标，把数据放在对应下标元素的链表上。例如程序执行下面代码：
+\(2\) HashMap 就是使用哈希表来存储的。哈希表为解决冲突，可以采用开放地址法和链地址法等来解决问题，Java 中 HashMap 采用了链地址法。链地址法，简单来说，就是数组加链表的结合。在每个数组元素上都一个链表结构，当数据被 Hash 后，得到数组下标，把数据放在对应下标元素的链表上。例如程序执行下面代码：
 
     map.put("name","makefeixiang");
 
-系统将调用”name”这个key的hashCode()方法得到其hashCode 值（该方法适用于每个Java对象），然后再通过Hash算法的后两步运算来定位该键值对的存储位置，有时两个key会定位到相同的位置，表示发生了Hash碰撞。当然Hash算法计算结果越分散均匀，Hash碰撞的概率就越小，map的存取效率就会越高。
+系统将调用”name”这个 key 的 hashCode()方法得到其 hashCode 值（该方法适用于每个 Java 对象），然后再通过 Hash 算法的后两步运算来定位该键值对的存储位置，有时两个 key 会定位到相同的位置，表示发生了 Hash 碰撞。当然 Hash 算法计算结果越分散均匀，Hash 碰撞的概率就越小，map 的存取效率就会越高。
 
                                                     
     /**
@@ -216,16 +216,16 @@ Node是HashMap的一个内部类，实现了Map.Entry接口，本质是就是一
 
                                                 
 
-当然如果哈希桶数组很大，即便是较差的hash算法也会比较分散，有较好的效果，然而，如果哈希桶数组数组很小，即使好的Hash算法也会出现较多hash碰撞，因此就需要在空间成本和时间成本之间权衡，其实就是在根据实际情况确定哈希桶数组的大小，并在此基础上设计好的hash算法减少Hash碰撞。那么通过什么方式来控制map使得Hash碰撞的概率又小，哈希桶数组（Node\[\] table）占用空间又少呢？答案就是好的Hash算法和扩容机制。\
-HashMap的扩容机制就是通过threshold = length \* Load factor来做是否进行扩容的决策。也就是说，在数组定义好长度之后，负载因子越大，所能容纳的键值对个数越多。当然，负载因子也不是越大越好，JDK设计者给出了一个相对来说比较均衡的方案，Load factor为负载因子(默认值是0.75)，一般我们不对这个参数做修改。
+当然如果哈希桶数组很大，即便是较差的 hash 算法也会比较分散，有较好的效果，然而，如果哈希桶数组数组很小，即使好的 Hash 算法也会出现较多 hash 碰撞，因此就需要在空间成本和时间成本之间权衡，其实就是在根据实际情况确定哈希桶数组的大小，并在此基础上设计好的 hash 算法减少 Hash 碰撞。那么通过什么方式来控制 map 使得 Hash 碰撞的概率又小，哈希桶数组（Node\[\] table）占用空间又少呢？答案就是好的 Hash 算法和扩容机制。\
+HashMap 的扩容机制就是通过 threshold = length \* Load factor 来做是否进行扩容的决策。也就是说，在数组定义好长度之后，负载因子越大，所能容纳的键值对个数越多。当然，负载因子也不是越大越好，JDK 设计者给出了一个相对来说比较均衡的方案，Load factor 为负载因子(默认值是 0.75)，一般我们不对这个参数做修改。
 
 ### [](#功能实现-方法 "#功能实现-方法")功能实现-方法
 
-HashMap的内部功能实现很多，本文主要选取从根据key获取HashMap数组索引、put方法的执行、扩容、获取HashMap对应key的值等几个具有代表性的点深入展开讲解。
+HashMap 的内部功能实现很多，本文主要选取从根据 key 获取 HashMap 数组索引、put 方法的执行、扩容、获取 HashMap 对应 key 的值等几个具有代表性的点深入展开讲解。
 
 #### [](#1-确定哈希桶数组索引位置 "#1-确定哈希桶数组索引位置")1. 确定哈希桶数组索引位置
 
-不管增加、删除、查找键值对，定位到哈希桶数组的索引都是很关键的第一步。HashMap的数据结构是数组和链表或者红黑树的结合，所以我们希望这个HashMap里面的元素位置尽量分布均匀，使得每个位置上的元素数量只有一个，那么当我们用hash算法求得这个位置的时候，就可以马上找到，不用遍历链表，查询的时间复杂度也仅仅是O(n)。我们来看看源码的实现：
+不管增加、删除、查找键值对，定位到哈希桶数组的索引都是很关键的第一步。HashMap 的数据结构是数组和链表或者红黑树的结合，所以我们希望这个 HashMap 里面的元素位置尽量分布均匀，使得每个位置上的元素数量只有一个，那么当我们用 hash 算法求得这个位置的时候，就可以马上找到，不用遍历链表，查询的时间复杂度也仅仅是 O(n)。我们来看看源码的实现：
 
                                                     
     // 方法1，代码段1
@@ -241,16 +241,16 @@ HashMap的内部功能实现很多，本文主要选取从根据key获取HashMap
 
                                                 
 
-这里的Hash算法本质上就是三步：**取key的hashCode值、高位运算、取模运算。**
+这里的 Hash 算法本质上就是三步：**取 key 的 hashCode 值、高位运算、取模运算。**
 
-#### [](#2-分析HashMap的put方法 "#2-分析HashMap的put方法")2. 分析HashMap的put方法
+#### [](#2-分析HashMap的put方法 "#2-分析HashMap的put方法")2. 分析 HashMap 的 put 方法
 
-①.判断键值对数组table\[i\]是否为空或为null，否则执行resize()进行扩容；\
-②.根据键值key计算hash值得到插入的数组索引i，如果table\[i\]==null，直接新建节点添加，转向⑥，如果table\[i\]不为空，转向③；\
-③.判断table\[i\]的首个元素是否和key一样，如果相同直接覆盖value，否则转向④，这里的相同指的是hashCode以及equals；\
-④.判断table\[i\] 是否为treeNode，即table\[i\] 是否是红黑树，如果是红黑树，则直接在树中插入键值对，否则转向⑤；\
-⑤.遍历table\[i\]，判断链表长度是否大于8，大于8的话把链表转换为红黑树，在红黑树中执行插入操作，否则进行链表的插入操作；遍历过程中若发现key已经存在直接覆盖value即可；\
-⑥.插入成功后，判断实际存在的键值对数量size是否超多了最大容量threshold，如果超过，进行扩容。
+①.判断键值对数组 table\[i\]是否为空或为 null，否则执行 resize()进行扩容；\
+②.根据键值 key 计算 hash 值得到插入的数组索引 i，如果 table\[i\]==null，直接新建节点添加，转向⑥，如果 table\[i\]不为空，转向③；\
+③.判断 table\[i\]的首个元素是否和 key 一样，如果相同直接覆盖 value，否则转向④，这里的相同指的是 hashCode 以及 equals；\
+④.判断 table\[i\] 是否为 treeNode，即 table\[i\] 是否是红黑树，如果是红黑树，则直接在树中插入键值对，否则转向⑤；\
+⑤.遍历 table\[i\]，判断链表长度是否大于 8，大于 8 的话把链表转换为红黑树，在红黑树中执行插入操作，否则进行链表的插入操作；遍历过程中若发现 key 已经存在直接覆盖 value 即可；\
+⑥.插入成功后，判断实际存在的键值对数量 size 是否超多了最大容量 threshold，如果超过，进行扩容。
 
                                                     
     final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
@@ -309,9 +309,9 @@ HashMap的内部功能实现很多，本文主要选取从根据key获取HashMap
 
 #### [](#3-扩容机制的实现 "#3-扩容机制的实现")3. 扩容机制的实现
 
-扩容(resize)就是重新计算容量，向HashMap对象里不停的添加元素，**当HashMap对象内部的数组长度 大于DEFAULT_LOAD_FACTOR \* DEFAULT_INITIAL_CAPACITY** ，HashMap就需要扩大数组的长度，以便能装入更多的元素。方法是使用一个新的数组代替已有的容量小的数组。
+扩容(resize)就是重新计算容量，向 HashMap 对象里不停的添加元素，**当 HashMap 对象内部的数组长度 大于 DEFAULT_LOAD_FACTOR \* DEFAULT_INITIAL_CAPACITY**，HashMap 就需要扩大数组的长度，以便能装入更多的元素。方法是使用一个新的数组代替已有的容量小的数组。
 
-我们分析下resize的源码，鉴于JDK1.8融入了红黑树，较复杂，为了便于理解我们仍然使用JDK1.7的代码，好理解一些，本质上区别不大，具体区别后文再说。\
+我们分析下 resize 的源码，鉴于 JDK1.8 融入了红黑树，较复杂，为了便于理解我们仍然使用 JDK1.7 的代码，好理解一些，本质上区别不大，具体区别后文再说。\
 
                                                     
     final Node<K,V>[] resize() {
@@ -400,9 +400,9 @@ HashMap的内部功能实现很多，本文主要选取从根据key获取HashMap
 
                                                 
 
-#### [](#4-HashMap中根据key获取value代码实现 "#4-HashMap中根据key获取value代码实现")4. HashMap中根据key获取value代码实现
+#### [](#4-HashMap中根据key获取value代码实现 "#4-HashMap中根据key获取value代码实现")4. HashMap 中根据 key 获取 value 代码实现
 
-相比于上面几个，HashMap中获取value相对来说就简单许多，基本逻辑就是根据key算出hash值定位到哈希桶的索引，当可以就是当前索引的值则直接返回其对于的value，反之用key去遍历equal该索引下的key，直到找到位置。\
+相比于上面几个，HashMap 中获取 value 相对来说就简单许多，基本逻辑就是根据 key 算出 hash 值定位到哈希桶的索引，当可以就是当前索引的值则直接返回其对于的 value，反之用 key 去遍历 equal 该索引下的 key，直到找到位置。\
 
                                                     
     final Node<K,V> getNode(int hash, Object key) {
@@ -428,9 +428,9 @@ HashMap的内部功能实现很多，本文主要选取从根据key获取HashMap
 
                                                 
 
-## [](#HashMap的线程安全问题 "#HashMap的线程安全问题")HashMap的线程安全问题
+## [](#HashMap的线程安全问题 "#HashMap的线程安全问题")HashMap 的线程安全问题
 
-在多线程使用场景中，应该尽量不要使用线程不安全的HashMap，而应该使用线程安全的ConcurrentHashMap。那么HashMap线程不安全的性质表现在哪里呢？下面来分析一下并发场景下使用HashMap可能造成死循环的问题。在HashMap的resize方法中，我们可以看到
+在多线程使用场景中，应该尽量不要使用线程不安全的 HashMap，而应该使用线程安全的 ConcurrentHashMap。那么 HashMap 线程不安全的性质表现在哪里呢？下面来分析一下并发场景下使用 HashMap 可能造成死循环的问题。在 HashMap 的 resize 方法中，我们可以看到
 
                                                     
     Node<K,V> loHead = null, loTail = null;
@@ -457,19 +457,19 @@ HashMap的内部功能实现很多，本文主要选取从根据key获取HashMap
 
                                                 
 
-由于楼主本人才疏学浅，具体过程就不在分析，想要了解的请移步<a href="https://link.juejin.cn?target=https%3A%2F%2Fcoolshell.cn%2Farticles%2F9606.html" target="_blank" data-ref="nofollow noopener noreferrer" title="https://coolshell.cn/articles/9606.html">疫苗：JAVA HASHMAP的死循环</a>
+由于楼主本人才疏学浅，具体过程就不在分析，想要了解的请移步<a href="https://link.juejin.cn?target=https%3A%2F%2Fcoolshell.cn%2Farticles%2F9606.html" target="_blank" data-ref="nofollow noopener noreferrer" title="https://coolshell.cn/articles/9606.html">疫苗：Java HASHMAP 的死循环</a>
 
 ## [](#小结 "#小结")小结
 
-\(1\) 扩容是一个特别耗性能的操作，因此初始化HashMap的时候给一个数值，避免map频繁的扩容情况的额发生。
+\(1\) 扩容是一个特别耗性能的操作，因此初始化 HashMap 的时候给一个数值，避免 map 频繁的扩容情况的额发生。
 
 \(2\) 负载因子是可以修改的，但是建议一般情况下不要轻易修改。
 
-\(3\) HashMap是线程不安全的，不要在并发的环境中使用HashMap，建议使用ConcurrentHashMap或者Collections.synchronizedMap()中的。
+\(3\) HashMap 是线程不安全的，不要在并发的环境中使用 HashMap，建议使用 ConcurrentHashMap 或者 Collections.synchronizedMap()中的。
 
-\(4\) JDK1.8引入红黑树在很大程度优化了HashMap的性能。
+\(4\) JDK1.8 引入红黑树在很大程度优化了 HashMap 的性能。
 
 ## [](#参考文章 "#参考文章")参考文章
 
-- <a href="https://link.juejin.cn?target=https%3A%2F%2Ftech.meituan.com%2Fjava-hashmap.html" target="_blank" data-ref="nofollow noopener noreferrer" title="https://tech.meituan.com/java-hashmap.html">Java 8系列之重新认识HashMap</a>
-- <a href="https://link.juejin.cn?target=https%3A%2F%2Fcoolshell.cn%2Farticles%2F9606.html" target="_blank" data-ref="nofollow noopener noreferrer" title="https://coolshell.cn/articles/9606.html">疫苗：JAVA HASHMAP的死循环</a>
+- <a href="https://link.juejin.cn?target=https%3A%2F%2Ftech.meituan.com%2Fjava-hashmap.html" target="_blank" data-ref="nofollow noopener noreferrer" title="https://tech.meituan.com/java-hashmap.html">Java 8 系列之重新认识 HashMap</a>
+- <a href="https://link.juejin.cn?target=https%3A%2F%2Fcoolshell.cn%2Farticles%2F9606.html" target="_blank" data-ref="nofollow noopener noreferrer" title="https://coolshell.cn/articles/9606.html">疫苗：Java HASHMAP 的死循环</a>

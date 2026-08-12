@@ -1,21 +1,21 @@
 ---
 categories: ["后端"]
-title: "使用Spring Boot实现博客统计服务"
+title: "使用 Spring Boot 实现博客统计服务"
 date: "2018-06-19T14:53:42+08:00"
 tags: ["Spring", "Spring Boot", "Redis", "后端", "Java EE"]
-summary: "作为一个后端开发，在微服务，server mesh等概念满天飞的时代，持续学习能力是不能丢的。此外，楼主博客的阅读统计功能是用的是与HEXO相匹配的第三方的数量统计功能，也就诞生了楼主这次更换成自己开发的基础功能的装逼之旅。"
+summary: "作为一个后端开发，在微服务，server mesh 等概念满天飞的时代，持续学习能力是不能丢的。此外，楼主博客的阅读统计功能是用的是与 HEXO 相匹配的第三方的数量统计功能，也就诞生了楼主这次更换成自己开发的基础功能的装逼之旅。"
 translationKey: "shiyongspring-bootshixianboketongjifuwu"
 ---
 
-> 📌 本文原发布于掘金社区：[使用Spring Boot实现博客统计服务](https://juejin.cn/post/6844903622145212429)
+> 📌 本文原发布于掘金社区：[使用 Spring Boot 实现博客统计服务](https://juejin.cn/post/6844903622145212429)
 
-作为一个后端开发，在微服务，server mesh等概念满天飞的时代，持续学习能力是不能丢的，因此楼主最近也研究好多RPC，NETTY，Spring Boot等技术。此外，楼主博客的阅读统计功能是用的是与HEXO相匹配的第三方的数量统计功能，也就诞生了楼主这次更换成自己开发的基础功能的装逼之旅。\
+作为一个后端开发，在微服务，server mesh 等概念满天飞的时代，持续学习能力是不能丢的，因此楼主最近也研究好多 RPC，Netty，Spring Boot 等技术。此外，楼主博客的阅读统计功能是用的是与 HEXO 相匹配的第三方的数量统计功能，也就诞生了楼主这次更换成自己开发的基础功能的装逼之旅。\
 <span id="user-content-more"></span>
 
-## [](#通过SPRING-INITIALIZR生成工程 "#通过SPRING-INITIALIZR生成工程")通过SPRING INITIALIZR生成工程
+## [](#通过SPRING-INITIALIZR生成工程 "#通过SPRING-INITIALIZR生成工程")通过 SPRING INITIALIZR 生成工程
 
-<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2Fspring-init.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/spring-init.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/6/19/16416d22744b9873~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" alt="spring init" /></a>spring init\
-如上图，通过Spring官方的 <a href="https://link.juejin.cn?target=http%3A%2F%2Fstart.spring.io%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://start.spring.io/">Spring Initial</a> 网站生成项目，项目的目录结构如下：
+<a href="https://link.juejin.cn?target=http%3A%2F%2Fimg.hchstudio.cn%2Fspring-init.png" target="_blank" data-ref="nofollow noopener noreferrer" title="http://img.hchstudio.cn/spring-init.png"><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/6/19/16416d22744b9873~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" loading="lazy" alt="spring init" /></a>Spring init\
+如上图，通过 Spring 官方的 <a href="https://link.juejin.cn?target=http%3A%2F%2Fstart.spring.io%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://start.spring.io/">Spring Initial</a> 网站生成项目，项目的目录结构如下：
 
 - 目录结构
 
@@ -39,7 +39,7 @@ translationKey: "shiyongspring-bootshixianboketongjifuwu"
      # pom.xml 文件是Maven构建的基础，里面包含了我们所依赖JAR和Plugin的信息
     - pom
 
-- pom依赖
+- pom 依赖
 
 <!-- -->
 
@@ -114,12 +114,12 @@ translationKey: "shiyongspring-bootshixianboketongjifuwu"
         </build>
     </project>
 
-## [](#实现redis存储逻辑 "#实现redis存储逻辑")实现redis存储逻辑
+## [](#实现redis存储逻辑 "#实现redis存储逻辑")实现 Redis 存储逻辑
 
-选择redis而没选择数据库的原因是redis提供了丰富的数据结构与数据持久化策略，另外redis是基于内存的，相对于数据库来说，快了不止一个数量级。而统计阅读次数的场景对接口处理的速度还是有一定的要求的，因此楼主选择了redis作为阅读次数统计的db。\
-下面就是redis操作的基础代码，比较简单楼主贴一下代码，不做进一步的阐述
+选择 Redis 而没选择数据库的原因是 Redis 提供了丰富的数据结构与数据持久化策略，另外 Redis 是基于内存的，相对于数据库来说，快了不止一个数量级。而统计阅读次数的场景对接口处理的速度还是有一定的要求的，因此楼主选择了 Redis 作为阅读次数统计的 db。\
+下面就是 Redis 操作的基础代码，比较简单楼主贴一下代码，不做进一步的阐述
 
-- redis的接口类
+- Redis 的接口类
 
       public interface RedisService {
           public boolean set(final String key, final String value);
@@ -127,7 +127,7 @@ translationKey: "shiyongspring-bootshixianboketongjifuwu"
           public String incr(final String key);
       }
 
-- redis的实现类
+- Redis 的实现类
 
 <!-- -->
 
@@ -180,7 +180,7 @@ translationKey: "shiyongspring-bootshixianboketongjifuwu"
 
 ## [](#博客阅读次数统计接口实现 "#博客阅读次数统计接口实现")博客阅读次数统计接口实现
 
-博客阅读次数统计的基本业务逻辑就是，对应每篇博客的blogId作为redis的key，而访问次数就是这个key所对应的value，每访问一次该接口就要将对应的blogId自增一次，并返回对应的value。这里楼主选择的redis的数据结构是redis的Stirng，下面是楼主实现该逻辑的主要代码：
+博客阅读次数统计的基本业务逻辑就是，对应每篇博客的 blogId 作为 Redis 的 key，而访问次数就是这个 key 所对应的 value，每访问一次该接口就要将对应的 blogId 自增一次，并返回对应的 value。这里楼主选择的 Redis 的数据结构是 Redis 的 Stirng，下面是楼主实现该逻辑的主要代码：
 
     /**
      * 统计博客阅读次数.
@@ -242,18 +242,18 @@ translationKey: "shiyongspring-bootshixianboketongjifuwu"
 
     server.port=9401
 
-- 设置应用访问的path
+- 设置应用访问的 path
 
-Spring Boot应用默认的应用访问的path还是 “/“，楼主在这里吃了点苦头，使用http://项目名:port访问服务，愣是访问不通，在配置文件中设置如下所示
+Spring Boot 应用默认的应用访问的 path 还是 “/“，楼主在这里吃了点苦头，使用http://项目名:port访问服务，愣是访问不通，在配置文件中设置如下所示
 
     server.servlet.context-path=/项目名
 
 ## [](#小结 "#小结")小结
 
-目前很多大佬都写过关于 SpringBoot 的教程了，如有雷同，请略过不看，本文通过自己的亲身实战以及楼主自己踩到的坑完成的，另外本文是基于最新的 spring-boot-starter-parent：2.0.3.RELEASE编写。
+目前很多大佬都写过关于 SpringBoot 的教程了，如有雷同，请略过不看，本文通过自己的亲身实战以及楼主自己踩到的坑完成的，另外本文是基于最新的 spring-boot-starter-parent：2.0.3.RELEASE 编写。
 
 ## [](#号外 "#号外")号外
 
-楼主造了一个轮子，LIGHTCONF 是一个基于Netty实现的一个配置管理平台，其核心设计目标是“为业务提供统一的配置管理服务”，可以做到开箱即用。感兴趣的给个star支持一下。
+楼主造了一个轮子，LIGHTCONF 是一个基于 Netty 实现的一个配置管理平台，其核心设计目标是“为业务提供统一的配置管理服务”，可以做到开箱即用。感兴趣的给个 star 支持一下。
 
-- <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Flightconf" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/lightconf">基于Netty实现的轻量级分布式应用配置中心</a>
+- <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Flightconf" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/lightconf">基于 Netty 实现的轻量级分布式应用配置中心</a>

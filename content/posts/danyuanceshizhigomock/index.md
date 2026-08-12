@@ -1,13 +1,13 @@
 ---
 categories: ["后端"]
-title: "单元测试之gomock"
+title: "单元测试之 gomock"
 date: "2023-08-08T20:48:49+08:00"
 tags: ["后端", "代码规范", "单元测试"]
 summary: "简介 gomock 的由来和概述 gomock 是 Uber 公司开源的一个 mock 框架，于 2015 年开源。它是基于 Go 语言中的反射机制实现的，可以自动生成接口的 mock 对象。"
 translationKey: "danyuanceshizhigomock"
 ---
 
-> 📌 本文原发布于掘金社区：[单元测试之gomock](https://juejin.cn/post/7264920202851450917)
+> 📌 本文原发布于掘金社区：[单元测试之 gomock](https://juejin.cn/post/7264920202851450917)
 
 # 简介
 
@@ -337,13 +337,13 @@ func TestAdd(t *testing.T) {
 adder.EXPECT().Add(4, 5).Return(0, errors.New("Error"))
 ```
 
-3.  模拟异常使用 gomock.Panic（） 来模拟 panic:
+3.  模拟异常使用 gomock.Panic（）来模拟 panic:
 
 ``` scss
 adder.EXPECT().Add(4, 5).Do(gomock.Panic())
 ```
 
-4.  设置方法副作用可以通过 Do（） 来产生副作用：
+4.  设置方法副作用可以通过 Do（）来产生副作用：
 
 ``` go
 var sharedValue int
@@ -488,25 +488,25 @@ mock.AddWithDefault()
 1.  解析接口 gomock 会使用 reflect 包解析需要 mock 的接口，获取接口中的方法名、参数和返回值等信息。
 2.  生成代码根据接口信息，gomock 使用 text/template 自动生成接口方法的 mock 实现代码，包括函数体、匹配器、调用记录等。
 3.  构建对象使用 go generate 工具自动编译生成的 mock 代码，得到 mock 对象的实现。
-4.  调节行为测试时通过调用 mock 对象的 EXPECT（） 等方法设置返回值、行为等，调节 mock 行为。
+4.  调节行为测试时通过调用 mock 对象的 EXPECT（）等方法设置返回值、行为等，调节 mock 行为。
 5.  记录调用 mock 对象记录每次方法调用，assert 是否与预设的行为一致。
 
-gomock 通过自动化代码生成和运行时行为控制，可以快速灵活地构造 mock 对象，减轻编写 mock 对象的工作量。其核心是通过解析接口定义自动生成针对接口的 mock 实现代码。这样可以确保 mock 对象与目标接口一致， typing 安全。
+gomock 通过自动化代码生成和运行时行为控制，可以快速灵活地构造 mock 对象，减轻编写 mock 对象的工作量。其核心是通过解析接口定义自动生成针对接口的 mock 实现代码。这样可以确保 mock 对象与目标接口一致，typing 安全。
 
 ### matchers 的工作原理
 
 1.  实现 Matcher 接口每个 matcher 都实现了 Matcher 接口，该接口定义了 Matches 和 String 两个方法。
-2.  Matches 方法判断匹配当调用 Expect（） 配置 mock 行为时，会用 matcher 的 Matches 方法来判断参数是否匹配。
+2.  Matches 方法判断匹配当调用 Expect（）配置 mock 行为时，会用 matcher 的 Matches 方法来判断参数是否匹配。
 3.  String 方法生成代码 matcher 的 String 方法返回其类型名称，gomock 使用该名称生成对应 mock 方法的代码。
-4.  生成匹配表达式针对每个 Expect（） 调用和 matcher，gomock 会生成对应的匹配表达式代码。
+4.  生成匹配表达式针对每个 Expect（）调用和 matcher，gomock 会生成对应的匹配表达式代码。
 5.  运行时评估表达式当 mock 方法被调用时，会执行生成的匹配表达式，以判断参数是否满足预期。这样通过匹配器接口和生成的匹配代码，可以实现灵活 parameter matching，如 Eq（）、Any（）等。
 
 常用的匹配器有：
 
-- Eq（） 等于
-- Any（） 任意参数
-- Nil（） nil 参数
-- Not（） 排除指定参数
+- Eq（）等于
+- Any（）任意参数
+- Nil（）nil 参数
+- Not（）排除指定参数
 
 我们也可以定制 matcher 来实现自定义匹配逻辑。
 
@@ -540,7 +540,7 @@ gomock 通过自动化代码生成和运行时行为控制，可以快速灵活�
 ## gomock 的优缺点
 
 - 优点：自动生成 mock，提高测试效率等
-- 缺点：依赖反射， debug 困难等
+- 缺点：依赖反射，debug 困难等
 
 ## 总结
 

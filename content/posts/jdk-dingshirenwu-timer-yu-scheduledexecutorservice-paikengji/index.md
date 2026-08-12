@@ -14,19 +14,19 @@ translationKey: "jdk-dingshirenwu-timer-yu-scheduledexecutorservice-paikengji"
 
 ## [](#定时任务，关于-Timer-与-ScheduledExecutorService-的抉择 "#定时任务，关于-Timer-与-ScheduledExecutorService-的抉择")定时任务，关于 Timer 与 ScheduledExecutorService 的抉择
 
-这事肯定会有小伙伴说了为啥不用Quartz啊，因为楼主的庙小啊，就几个定时任务而已Quartz太重了。
+这事肯定会有小伙伴说了为啥不用 Quartz 啊，因为楼主的庙小啊，就几个定时任务而已 Quartz 太重了。
 
 ### [](#Timer-存在的问题 "#Timer-存在的问题")Timer 存在的问题
 
-Timer的主要问题在于，如果TimerTask抛出未检查的异常，Timer将会产生无法预料的行为。Timer线程并不捕获异常，所以TimerTask抛出的未检查的异常会终止timer线程，这种情况下，Timer也不会再重新恢复线程的执行了;它错误的认为整个Timer都被取消了。此时，已经被安排但尚未执行的TimerTask永远不会再执行了，新的任务也不能被调度了。
+Timer 的主要问题在于，如果 TimerTask 抛出未检查的异常，Timer 将会产生无法预料的行为。Timer 线程并不捕获异常，所以 TimerTask 抛出的未检查的异常会终止 timer 线程，这种情况下，Timer 也不会再重新恢复线程的执行了；它错误的认为整个 Timer 都被取消了。此时，已经被安排但尚未执行的 TimerTask 永远不会再执行了，新的任务也不能被调度了。
 
 ### [](#使用-ScheduledExecutorService "#使用-ScheduledExecutorService")使用 ScheduledExecutorService
 
-ScheduledExecutorService 是 JDK 1.5之后 concurrent 包下提供的 API 。ScheduledExecutorService 妥善地处理了这个异常的任务，所以说在 JDK1.5 或更高的 JDK 中，楼主不建议使用Timer。关于 ScheduledExecutorService 楼主的另一篇文章也有提到，感兴趣的小伙伴请移步<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fcc2a%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/cc2a/">Java实现终止线程池中正在运行的定时任务</a>
+ScheduledExecutorService 是 JDK 1.5 之后 concurrent 包下提供的 API。ScheduledExecutorService 妥善地处理了这个异常的任务，所以说在 JDK1.5 或更高的 JDK 中，楼主不建议使用 Timer。关于 ScheduledExecutorService 楼主的另一篇文章也有提到，感兴趣的小伙伴请移步<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fcc2a%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/cc2a/">Java 实现终止线程池中正在运行的定时任务</a>
 
 ## [](#产生的问题 "#产生的问题")产生的问题
 
-上面说了一堆 Timer 与 ScheduledExecutorService 的区别，有点不着重点，现在重点来了，楼主凌晨的定时任务没有跑成功就是使用了 ScheduledExecutorService 而不是 Timer ，当然倘若使用了Timer而导致的问题楼主也没必要说了。下面开始我们的找坑过程
+上面说了一堆 Timer 与 ScheduledExecutorService 的区别，有点不着重点，现在重点来了，楼主凌晨的定时任务没有跑成功就是使用了 ScheduledExecutorService 而不是 Timer，当然倘若使用了 Timer 而导致的问题楼主也没必要说了。下面开始我们的找坑过程
 
 ### [](#查日志 "#查日志")查日志
 

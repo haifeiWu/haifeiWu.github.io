@@ -13,7 +13,7 @@ translationKey: "docker-kuaisushangshouzhinan"
 
 <figure>
 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/12/3/16772b00735d9c0c~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.png" title="docker" data-src="https://mmbiz.qpic.cn/mmbiz_png/0I2EEYqhgI2xPCws8tGYeHhgmQAJibmbzzic8KfsQrwBUuib5FLSmZVrJxklMEzY0nhK3oemCAmx3jkgoTialVZsYA/640?wx_fmt=png" data-type="png" loading="lazy" />
-<figcaption>docker</figcaption>
+<figcaption>Docker</figcaption>
 </figure>
 
 ## \`Docker\` 是什么？
@@ -30,7 +30,7 @@ Docker 将应用程序与该程序的依赖，打包在一个文件里面。运�
 
 ### 卸载旧版本的 \`Docker\`
 
-较旧版本的 `Docker` 被称为  `docker` 或 `docker-engine` 。 如果已安装这些，请卸载它们以及相关的依赖项。
+较旧版本的 `Docker` 被称为  `docker` 或 `docker-engine` 。如果已安装这些，请卸载它们以及相关的依赖项。
 
     sudo yum remove docker \                  docker-client \                  docker-client-latest \                  docker-common \                  docker-latest \                  docker-latest-logrotate \                  docker-logrotate \                  docker-selinux \                  docker-engine-selinux \                  docker-engine
 
@@ -38,61 +38,61 @@ Docker 将应用程序与该程序的依赖，打包在一个文件里面。运�
 
 您可以根据需要以不同方式安装 `Docker CE` ：
 
-- 大多数用户设置 `Docker` 的存储库并从中进行安装，以便于安装和升级任务。 也是 `Docker` 官方推荐的方法。
+- 大多数用户设置 `Docker` 的存储库并从中进行安装，以便于安装和升级任务。也是 `Docker` 官方推荐的方法。
 
-- 有些用户下载 `RPM` 软件包并手动安装并完全手动管理升级。 这在诸如在没有访问互联网的气隙系统上安装 `Docker`的情况下非常有用。
+- 有些用户下载 `RPM` 软件包并手动安装并完全手动管理升级。这在诸如在没有访问互联网的气隙系统上安装 `Docker`的情况下非常有用。
 
 - 在测试和开发环境中，一些用户选择使用自动便捷脚本来安装 `Docker`。
 
-本文采用的是第一种方法 ：
+本文采用的是第一种方法：
 
-在新主机上首次安装 `Docker CE`之前，需要设置  `Docker` 存储库。 之后，您可以 从存储库安装和更新 `Docker` 。
+在新主机上首次安装 `Docker CE`之前，需要设置  `Docker` 存储库。之后，您可以 从存储库安装和更新 `Docker` 。
 
 #### 设置 \`REPOSITORY\`
 
-1， 安装所需的包。 `yum-utils` 提供  `yum-config-manager` 实用程序，`devicemapper` 存储驱动程序需要  `device-mapper-persistent-data` 和 `lvm2`。
+1，安装所需的包。 `yum-utils` 提供  `yum-config-manager` 实用程序，`devicemapper` 存储驱动程序需要  `device-mapper-persistent-data` 和 `lvm2`。
 
     sudo yum install -y yum-utils \  device-mapper-persistent-data \  lvm2
 
-2， 使用以下命令设置稳定存储库。
+2，使用以下命令设置稳定存储库。
 
     sudo yum-config-manager \    --add-repo \    https://download.docker.com/linux/centos/docker-ce.repo
 
 #### 安装 \`Docker CE\`
 
-1， 安装最新版本的`Docker CE`，或转到下一步安装特定版本
+1，安装最新版本的`Docker CE`，或转到下一步安装特定版本
 
     sudo yum install docker-ce
 
-2， 要安装特定版本的`Docker CE`，请列出 `repo`中的可用版本，然后选择并安装：a. 列出并对您的仓库中可用的版本进行排序。 此示例按版本号对结果进行排序，从最高到最低，并被截断：
+2，要安装特定版本的`Docker CE`，请列出 `repo`中的可用版本，然后选择并安装：a. 列出并对您的仓库中可用的版本进行排序。此示例按版本号对结果进行排序，从最高到最低，并被截断：
 
     yum list docker-ce --showduplicates | sort -rdocker-ce.x86_64            18.09.0.ce-1.el7.centos             docker-ce-stable
 
 返回的列表取决于启用的存储库，并且特定于您的`CentOS`版本（在此示例中以 `.el7`后缀表示）。
 
-b\. 通过其完全限定的包名称安装特定版本，包名称（`docker-ce`）加上版本字符串（第2列）直到第一个连字符，用连字符（ - ）分隔，例如，`docker-ce-18.03.0.ce`。
+b\. 通过其完全限定的包名称安装特定版本，包名称（`docker-ce`）加上版本字符串（第 2 列）直到第一个连字符，用连字符（ - ）分隔，例如，`docker-ce-18.03.0.ce`。
 
     sudo yum install docker-ce-<VERSION STRING>
 
-`Docker` 已安装但尚未启动。 已创建 `docker` 组，但未向该组添加任何用户。
+`Docker` 已安装但尚未启动。已创建 `docker` 组，但未向该组添加任何用户。
 
-3， 启动 `Docker`
+3，启动 `Docker`
 
     sudo systemctl start docker
 
-4， 通过启动 `hello-world` 镜像来验证  `Docker` 安装并启动成功
+4，通过启动 `hello-world` 镜像来验证  `Docker` 安装并启动成功
 
     sudo docker run hello-world
 
-上面的命令下载测试映像并在容器中运行它。 当容器运行时，它会打印一条信息性消息并退出。
+上面的命令下载测试映像并在容器中运行它。当容器运行时，它会打印一条信息性消息并退出。
 
 ## 卸载 \`Docker CE\`
 
-1， 卸载 docker 的安装包
+1，卸载 Docker 的安装包
 
     sudo yum remove docker-ce
 
-2， 主机上的图像，容器，卷或自定义配置文件不会自动删除。 要删除所有图像，容器和卷：
+2，主机上的图像，容器，卷或自定义配置文件不会自动删除。要删除所有图像，容器和卷：
 
     sudo rm -rf /var/lib/docker
 
@@ -124,7 +124,7 @@ b\. 通过其完全限定的包名称安装特定版本，包名称（`docker-ce
 
     docker container ls CONTAINER ID        IMAGE                      COMMAND                  CREATED             STATUS              PORTS                    NAMESe5f2c7e4e7c1        docker-springboot:latest   "java -jar /docker-s…"   22 hours ago        Up 22 hours         0.0.0.0:8080->8080/tcp   agitated_kilby
 
-启动 docker 镜像
+启动 Docker 镜像
 
     docker run -p 8080:8080 docker-springboot
 
@@ -137,7 +137,7 @@ b\. 通过其完全限定的包名称安装特定版本，包名称（`docker-ce
 
 ## 小结
 
-本文涉及的代码已经上传到 `github`，感兴趣的小伙伴后台回复关键字 docker 就可获得代码地址。
+本文涉及的代码已经上传到 `github`，感兴趣的小伙伴后台回复关键字 Docker 就可获得代码地址。
 
 ## 参考链接
 

@@ -3,19 +3,19 @@ categories: ["后端"]
 title: "造个轮子之基于 Netty 实现自己的 RPC 框架"
 date: "2018-09-04T08:31:11+08:00"
 tags: ["GitHub", "后端", "Netty", "服务器"]
-summary: "服务端开发都会或多或少的涉及到 RPC 的使用，当然如果止步于会用，对自己的成长很是不利，所以楼主今天本着知其然，且知其所以然的精神来探讨一下 RPC 这个东西。 child-rpc 采用 socket 直连的方式来实现服务的远程调用，然后使用 jdk 动态代理的方式让调用者感…"
+summary: "服务端开发都会或多或少的涉及到 RPC 的使用，当然如果止步于会用，对自己的成长很是不利，所以楼主今天本着知其然，且知其所以然的精神来探讨一下 RPC 这个东西。child-rpc 采用 socket 直连的方式来实现服务的远程调用，然后使用 jdk 动态代理的方式让调用者感…"
 translationKey: "zaogelunzizhijiyu-netty-shixianzijide-rpc-kuangjia"
 ---
 
 > 📌 本文原发布于掘金社区：[造个轮子之基于 Netty 实现自己的 RPC 框架](https://juejin.cn/post/6844903669343715335)
 
-> 原文地址： <a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fb674%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/b674/?_ref=juejin">haifeiWu和他朋友们的博客</a>\
+> 原文地址：<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fb674%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/b674/?_ref=juejin">haifeiWu 和他朋友们的博客</a>\
 > 博客地址：<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fb674%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/b674/?_ref=juejin">www.hchstudio.cn</a>\
 > 欢迎转载，转载请注明作者及出处，谢谢！
 
 服务端开发都会或多或少的涉及到 RPC 的使用，当然如果止步于会用，对自己的成长很是不利，所以楼主今天本着知其然，且知其所以然的精神来探讨一下 RPC 这个东西。
 
-## child-rpc模型
+## child-rpc 模型
 
 child-rpc 采用 socket 直连的方式来实现服务的远程调用，然后使用 jdk 动态代理的方式让调用者感知不到远程调用。
 
@@ -27,7 +27,7 @@ child-rpc 采用 socket 直连的方式来实现服务的远程调用，然后�
 
 ### 发布服务
 
-RPC 服务类要监听指定IP端口，设置要发布的服务的实现及其接口的引用，并指定序列化的方式，目前 child-rpc 支持 Hessian，JACKSON 两种序列化方式。
+RPC 服务类要监听指定 IP 端口，设置要发布的服务的实现及其接口的引用，并指定序列化的方式，目前 child-rpc 支持 Hessian，JACKSON 两种序列化方式。
 
 ``` java
 /**
@@ -99,7 +99,7 @@ client 端输出
 
 ### RPC 请求，响应消息实体定义
 
-定义消息请求响应格式，消息类型、消息唯一 ID 和消息的 json 序列化字符串内容。消息唯一 ID 是用来客户端验证服务器请求和响应是否匹配。
+定义消息请求响应格式，消息类型、消息唯一 ID 和消息的 JSON 序列化字符串内容。消息唯一 ID 是用来客户端验证服务器请求和响应是否匹配。
 
 ``` java
 // rpc 请求
@@ -130,7 +130,7 @@ public class RpcResponse implements Serializable {
 
 消息编码解码使用自定义的编解码器，根据服务初始化是使用的序列化器来将数据序列化成字节流，拆包的策略是设定指定长度的数据包，对 socket 粘包，拆包感兴趣的小伙伴请移步 <a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fd5b3%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/d5b3/">Socket 中粘包问题浅析及其解决方案</a>
 
-下面是解码器代码实现 ：
+下面是解码器代码实现：
 
 ``` java
 public class NettyDecoder extends ByteToMessageDecoder {
@@ -200,7 +200,7 @@ public class NettyEncoder extends MessageToByteEncoder<Object> {
 
 ### RPC 业务逻辑处理 handler
 
-server 端业务处理 handler 实现 : 主要业务逻辑是 通过 java 的反射实现方法的调用。
+server 端业务处理 handler 实现 : 主要业务逻辑是 通过 Java 的反射实现方法的调用。
 
 ``` java
 public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
@@ -252,7 +252,7 @@ client 端主要业务实现是等待 server 响应返回。代码比较简单�
 
 ### RPC 服务端与客户端启动
 
-因为服务端与客户端启动都是 Netty 的模板代码，因为篇幅原因就不贴出来了，感兴趣的伙伴请移步 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Fchild-rpc" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/child-rpc">造个轮子---RPC动手实现</a>。
+因为服务端与客户端启动都是 Netty 的模板代码，因为篇幅原因就不贴出来了，感兴趣的伙伴请移步 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Fchild-rpc" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/child-rpc">造个轮子---RPC 动手实现</a>。
 
 ## 小结
 
@@ -260,7 +260,7 @@ client 端主要业务实现是等待 server 响应返回。代码比较简单�
 
 ## 参考文章
 
-- <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Fchild-rpc" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/child-rpc">造个轮子---RPC动手实现</a>
+- <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Fchild-rpc" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/child-rpc">造个轮子---RPC 动手实现</a>
 - <a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fd5b3%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/d5b3/">Socket 中粘包问题浅析及其解决方案</a>
 
 <figure>

@@ -1,19 +1,19 @@
 ---
 categories: ["后端"]
-title: "死磕Java之聊聊ThreadLocal源码(基于JDK1.8)"
+title: "死磕 Java 之聊聊 ThreadLocal 源码(基于 JDK1.8)"
 date: "2018-05-09T22:15:42+08:00"
 tags: ["Java"]
-summary: "记得在一次面试中被问到ThreadLocal，答得马马虎虎，所以打算研究一下ThreadLocal的源码 面试官 ： 用过ThreadLocal吗？ 楼主答 ： 用过，当时使用ThreadLocal的时候，使用Spring实现横切整个Controller层，使用ThreadL…"
+summary: "记得在一次面试中被问到 ThreadLocal，答得马马虎虎，所以打算研究一下 ThreadLocal 的源码 面试官：用过 ThreadLocal 吗？楼主答：用过，当时使用 ThreadLocal 的时候，使用 Spring 实现横切整个 Controller 层，使用 ThreadL…"
 translationKey: "sikejavazhiliaoliaothreadlocalyuanma-jiyujdk1-8"
 ---
 
-> 📌 本文原发布于掘金社区：[死磕Java之聊聊ThreadLocal源码(基于JDK1.8)](https://juejin.cn/post/6844903603979845645)
+> 📌 本文原发布于掘金社区：[死磕 Java 之聊聊 ThreadLocal 源码(基于 JDK1.8)](https://juejin.cn/post/6844903603979845645)
 
-记得在一次面试中被问到ThreadLocal，答得马马虎虎，所以打算研究一下ThreadLocal的源码
+记得在一次面试中被问到 ThreadLocal，答得马马虎虎，所以打算研究一下 ThreadLocal 的源码
 
-面试官 ： 用过ThreadLocal吗？
+面试官：用过 ThreadLocal 吗？
 
-楼主答 ： 用过，当时使用ThreadLocal的时候，使用Spring实现横切整个Controller层，使用ThreadLocal实现了统计每次请求对应方法的执行时间，具体代码如下\
+楼主答：用过，当时使用 ThreadLocal 的时候，使用 Spring 实现横切整个 Controller 层，使用 ThreadLocal 实现了统计每次请求对应方法的执行时间，具体代码如下\
 <span id="user-content-more"></span>\
 
                                                     
@@ -54,20 +54,20 @@ translationKey: "sikejavazhiliaoliaothreadlocalyuanma-jiyujdk1-8"
 
                                                 
 
-面试官 ： 那ThreadLocal对应的数据结构是咋样的啊？
+面试官：那 ThreadLocal 对应的数据结构是咋样的啊？
 
-楼主答 ：应该是使用哈希表实现的吧，楼主这个时候心里开始没底了，然后就没有然后……
+楼主答：应该是使用哈希表实现的吧，楼主这个时候心里开始没底了，然后就没有然后……
 
-## [](#聊聊JDK源码中ThreadLocal的实现 "#聊聊JDK源码中ThreadLocal的实现")聊聊JDK源码中ThreadLocal的实现
+## [](#聊聊JDK源码中ThreadLocal的实现 "#聊聊JDK源码中ThreadLocal的实现")聊聊 JDK 源码中 ThreadLocal 的实现
 
 主要方法：
 
-- ThreadLocal的get方法\
-  ThreadLocal之get流程：\
-  1、获取当前线程t；\
-  2、返回当前线程t的成员变量ThreadLocalMap（以下简写map）；\
-  3、map不为null，则获取以当前线程为key的ThreadLocalMap的Entry（以下简写e），如果e不为null，则直接返回该Entry的value；\
-  4、如果map为null或者e为null，返回setInitialValue()的值。setInitialValue()调用重写的initialValue()返回新值（如果没有重写initialValue将返回默认值null），并将新值存入当前线程的ThreadLocalMap（如果当前线程没有ThreadLocalMap，会先创建一个）。
+- ThreadLocal 的 get 方法\
+  ThreadLocal 之 get 流程：\
+  1、获取当前线程 t；\
+  2、返回当前线程 t 的成员变量 ThreadLocalMap（以下简写 map）；\
+  3、map 不为 null，则获取以当前线程为 key 的 ThreadLocalMap 的 Entry（以下简写 e），如果 e 不为 null，则直接返回该 Entry 的 value；\
+  4、如果 map 为 null 或者 e 为 null，返回 setInitialValue()的值。setInitialValue()调用重写的 initialValue()返回新值（如果没有重写 initialValue 将返回默认值 null），并将新值存入当前线程的 ThreadLocalMap（如果当前线程没有 ThreadLocalMap，会先创建一个）。
 
 <!-- -->
 
@@ -90,11 +90,11 @@ translationKey: "sikejavazhiliaoliaothreadlocalyuanma-jiyujdk1-8"
 
                                                 
 
-- ThreadLocal的set方法\
-  ThreadLocal之set流程：\
-  1、获取当前线程t；\
-  2、返回当前线程t的成员变量ThreadLocalMap（以下简写map）；\
-  3、map不为null，则更新以当前线程为key的ThreadLocalMap，否则创建一个ThreadLocalMap，其中当前线程t为key；
+- ThreadLocal 的 set 方法\
+  ThreadLocal 之 set 流程：\
+  1、获取当前线程 t；\
+  2、返回当前线程 t 的成员变量 ThreadLocalMap（以下简写 map）；\
+  3、map 不为 null，则更新以当前线程为 key 的 ThreadLocalMap，否则创建一个 ThreadLocalMap，其中当前线程 t 为 key；
 
 <!-- -->
 
@@ -112,9 +112,9 @@ translationKey: "sikejavazhiliaoliaothreadlocalyuanma-jiyujdk1-8"
 
                                                 
 
-## [](#ThreadLocal主要的代码实现 "#ThreadLocal主要的代码实现")ThreadLocal主要的代码实现
+## [](#ThreadLocal主要的代码实现 "#ThreadLocal主要的代码实现")ThreadLocal 主要的代码实现
 
-下面代码时楼主认为ThreadLocal中比较重要的，还是比较容易看懂的，就不在一一细说
+下面代码时楼主认为 ThreadLocal 中比较重要的，还是比较容易看懂的，就不在一一细说
 
                                                     
 
@@ -273,7 +273,7 @@ translationKey: "sikejavazhiliaoliaothreadlocalyuanma-jiyujdk1-8"
 
                                                 
 
-## [](#ThreadLocal-使用demo "#ThreadLocal-使用demo")ThreadLocal 使用demo
+## [](#ThreadLocal-使用demo "#ThreadLocal-使用demo")ThreadLocal 使用 demo
 
                                                     
 
@@ -317,32 +317,32 @@ translationKey: "sikejavazhiliaoliaothreadlocalyuanma-jiyujdk1-8"
 
                                                 
 
-本示例创建一个传递给两个不同线程的MyRunnable实例。 两个线程都执行run（）方法，从而在ThreadLocal实例上设置不同的值。 如果对set（）调用的访问已经同步，并且它不是ThreadLocal对象，则第二个线程将覆盖第一个线程设置的值。\
-但是，由于它是一个ThreadLocal对象，因此两个线程无法看到对方的值。 因此，他们设定并获得不同的价值观。
+本示例创建一个传递给两个不同线程的 MyRunnable 实例。两个线程都执行 run（）方法，从而在 ThreadLocal 实例上设置不同的值。如果对 set（）调用的访问已经同步，并且它不是 ThreadLocal 对象，则第二个线程将覆盖第一个线程设置的值。\
+但是，由于它是一个 ThreadLocal 对象，因此两个线程无法看到对方的值。因此，他们设定并获得不同的价值观。
 
 ## [](#小结 "#小结")小结
 
-- ThreadLocal特性及使用场景
+- ThreadLocal 特性及使用场景
 
-1、实现单个线程单例以及单个线程上下文信息存储，比如交易id等
+1、实现单个线程单例以及单个线程上下文信息存储，比如交易 id 等
 
-2、实现线程安全，非线程安全的对象使用ThreadLocal之后就会变得线程安全，因为每个线程都会有一个对应的实例
+2、实现线程安全，非线程安全的对象使用 ThreadLocal 之后就会变得线程安全，因为每个线程都会有一个对应的实例
 
 3、承载一些线程相关的数据，避免在方法中来回传递参数
 
-- ThreadLocal使用过程中出现的问题
+- ThreadLocal 使用过程中出现的问题
 
-1、ThreadLocal并未解决多线程访问共享对象的问题，如果ThreadLocal.set()的对象是多线程共享的，那么还是涉及并发问题；
+1、ThreadLocal 并未解决多线程访问共享对象的问题，如果 ThreadLocal.set()的对象是多线程共享的，那么还是涉及并发问题；
 
 2、会导致内存泄露么？\
-有人认为ThreadLocal会导致内存泄露，原因如下
+有人认为 ThreadLocal 会导致内存泄露，原因如下
 
-> 首先ThreadLocal实例被线程的ThreadLocalMap实例持有，也可以看成被线程持有。\
+> 首先 ThreadLocal 实例被线程的 ThreadLocalMap 实例持有，也可以看成被线程持有。\
 > 如果应用使用了线程池，那么之前的线程实例处理完之后出于复用的目的依然存活\
-> 所以，ThreadLocal设定的值被持有，导致内存泄露。
+> 所以，ThreadLocal 设定的值被持有，导致内存泄露。
 
-上面的逻辑是清晰的，然而Java的设计者早已经想到了这个问题，ThreadLocal并不会产生内存泄露，因为ThreadLocalMap在选择key的时候，\
-并不是直接选择ThreadLocal实例，而是ThreadLocal实例的弱引用。所以实际上从ThreadLocal设计角度来说是不会导致内存泄露的，具体代码如下所示：
+上面的逻辑是清晰的，然而 Java 的设计者早已经想到了这个问题，ThreadLocal 并不会产生内存泄露，因为 ThreadLocalMap 在选择 key 的时候，\
+并不是直接选择 ThreadLocal 实例，而是 ThreadLocal 实例的弱引用。所以实际上从 ThreadLocal 设计角度来说是不会导致内存泄露的，具体代码如下所示：
 
                                                     
     static class ThreadLocalMap { 
@@ -364,4 +364,4 @@ translationKey: "sikejavazhiliaoliaothreadlocalyuanma-jiyujdk1-8"
 ## [](#参考文章 "#参考文章")参考文章
 
 - <a href="https://link.juejin.cn?target=http%3A%2F%2Ftutorials.jenkov.com%2Fjava-concurrency%2Fthreadlocal.html" target="_blank" data-ref="nofollow noopener noreferrer" title="http://tutorials.jenkov.com/java-concurrency/threadlocal.html">Java ThreadLocal</a>
-- <a href="https://link.juejin.cn?target=https%3A%2F%2Fdroidyue.com%2Fblog%2F2016%2F03%2F13%2Flearning-threadlocal-in-java%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="https://droidyue.com/blog/2016/03/13/learning-threadlocal-in-java/">理解Java中的ThreadLocal</a>
+- <a href="https://link.juejin.cn?target=https%3A%2F%2Fdroidyue.com%2Fblog%2F2016%2F03%2F13%2Flearning-threadlocal-in-java%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="https://droidyue.com/blog/2016/03/13/learning-threadlocal-in-java/">理解 Java 中的 ThreadLocal</a>

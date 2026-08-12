@@ -1,57 +1,57 @@
 ---
 categories: ["后端"]
-title: "自建脚手架之配置中心--LightConf的实现"
+title: "自建脚手架之配置中心--LightConf 的实现"
 date: "2018-04-22T18:39:29+08:00"
 tags: ["GitHub", "后端", "服务器", "Nginx"]
-summary: "在经历了一个多月的开发后，项目的第一个稳定版本终于完成，开源地址https://github.com/haifeiWu/lightconf，欢迎各路大神star，拍砖。 LIGHTCONF使用了netty实现底层通讯，保证配置的实时生效。接入LIGHTCONF事只需要添加mav…"
+summary: "在经历了一个多月的开发后，项目的第一个稳定版本终于完成，开源地址https://github.com/haifeiWu/lightconf，欢迎各路大神star，拍砖。 LIGHTCONF 使用了 Netty 实现底层通讯，保证配置的实时生效。接入 LIGHTCONF 事只需要添加 mav…"
 translationKey: "zijianjiaoshoujiazhipeizhizhongxin-lightconfdeshixian"
 ---
 
-> 📌 本文原发布于掘金社区：[自建脚手架之配置中心--LightConf的实现](https://juejin.cn/post/6844903596937445383)
+> 📌 本文原发布于掘金社区：[自建脚手架之配置中心--LightConf 的实现](https://juejin.cn/post/6844903596937445383)
 
-> 常规项目开发过程中, 通常会将配置信息位于在项目resource目录下的properties文件文件中, 配置信息通常包括有: jdbc地址配置、redis地址配置、活动开关……等等。因此每次上线或者服务迁移的时候都要手动修改配置，并一台一台的重启服务器，甚是麻烦，且费时费力。\
-> 于是便萌生出了使用配置中心的想法，在考察了github上的apoll，xxl-conf等开源项目后，感觉都不适合我司的应用模型，于是决定自研一套符合自己的配置中心，因此LightConf便应运而生，当然LightConf也借鉴了apoll，xxl-conf的部分代码实现。
+> 常规项目开发过程中，通常会将配置信息放在项目 resource 目录下的 properties 文件中，配置信息通常包括：JDBC 地址配置、Redis 地址配置、活动开关……等等。因此每次上线或者服务迁移的时候都要手动修改配置，并一台一台的重启服务器，甚是麻烦，且费时费力。\
+> 于是便萌生出了使用配置中心的想法，在考察了 github 上的 apoll，xxl-conf 等开源项目后，感觉都不适合我司的应用模型，于是决定自研一套符合自己的配置中心，因此 LightConf 便应运而生，当然 LightConf 也借鉴了 apoll，xxl-conf 的部分代码实现。
 
 ## 项目开源地址
 
-- 在经历了一个多月的开发后，项目的第一个稳定版本终于完成，开源地址<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Flightconf" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/lightconf">github.com/haifeiWu/li…</a>，欢迎各路大神star，拍砖。
-- LIGHTCONF使用了netty实现底层通讯，保证配置的实时生效。接入LIGHTCONF事只需要添加maven依赖，简单配置即可马上上手，学习零成本。
+- 在经历了一个多月的开发后，项目的第一个稳定版本终于完成，开源地址<a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Flightconf" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/lightconf">github.com/haifeiWu/li…</a>，欢迎各路大神 star，拍砖。
+- LIGHTCONF 使用了 Netty 实现底层通讯，保证配置的实时生效。接入 LIGHTCONF 事只需要添加 Maven 依赖，简单配置即可马上上手，学习零成本。
 
 ## 一、简介
 
 ### 1.1 概述
 
-LIGHTCONF 是一个基于Netty实现的一个配置管理平台，其核心设计目标是“为业务提供统一的配置管理服务”，可以做到开箱即用。
+LIGHTCONF 是一个基于 Netty 实现的一个配置管理平台，其核心设计目标是“为业务提供统一的配置管理服务”，可以做到开箱即用。
 
 ### 1.2 特性
 
-- 1、简单易用: 上手非常简单, 只需要引入maven依赖和一行配置即可;
-- 2、在线管理: 提供配置管理中心, 支持在线管理配置信息;
-- 3、实时推送: 配置信息更新后,实时推送配置信息, 项目中配置数据会实时更新并生效, 不需要重启线上机器;
-- 4、配置备份: 配置数据会在MySQL中会对配置信息做备份, 保证配置数据的安全性;
+- 1、简单易用：上手非常简单，只需要引入 Maven 依赖和一行配置即可；
+- 2、在线管理：提供配置管理中心，支持在线管理配置信息；
+- 3、实时推送：配置信息更新后，实时推送配置信息，项目中配置数据会实时更新并生效，不需要重启线上机器；
+- 4、配置备份：配置数据会在 MySQL 中会对配置信息做备份，保证配置数据的安全性；
 
 ### 1.3 背景
 
 > why not properties
 
-常规项目开发过程中, 通常会将配置信息位于在项目resource目录下的properties文件文件中, 配置信息通常包括有: jdbc地址配置、redis地址配置、活动开关、阈值配置、黑白名单……等等。使用properties维护配置信息将会导致以下几个问题:
+常规项目开发过程中，通常会将配置信息放在项目 resource 目录下的 properties 文件中，配置信息通常包括：JDBC 地址配置、Redis 地址配置、活动开关、阈值配置、黑白名单……等等。使用 properties 维护配置信息将会导致以下几个问题：
 
-- 1、需要手动修改properties文件;
-- 2、需要重新编译打包;
-- 3、需要重启线上服务器 (项目集群时,更加令人崩溃) ;
-- 4、配置生效不及时: 因为流程复杂, 新的配置生效需要经历比较长的时间才可以生效;
-- 5、不同环境上线包不一致: 例如JDBC连接, 不同环境需要差异化配置;
+- 1、需要手动修改 properties 文件；
+- 2、需要重新编译打包；
+- 3、需要重启线上服务器 (项目集群时，更加令人崩溃) ;
+- 4、配置生效不及时：因为流程复杂，新的配置生效需要经历比较长的时间才可以生效；
+- 5、不同环境上线包不一致：例如 JDBC 连接，不同环境需要差异化配置；
 
 > why LIGHTCONF
 
-- 1、不需要 (手动修改properties文件) : 在配置管理中心提供的Web界面中, 定位到指定配置项, 输入新的配置的值, 点击更新按钮即可;
-- 2、不需要 (重新编译打包) : 配置更新后, 实时推送新配置信息至项目中, 不需要编译打包;
-- 3、不需要 (重启线上服务器) : 配置更新后, 实时推送新配置信息至项目中, 实时生效, 不需要重启线上机器;
-- 4、配置生效 "非常及时" : 点击更新按钮, 新的配置信息将会即可推送到项目中, 瞬间生效, 非常及时。比如一些开关类型的配置, 配置变更后, 将会立刻推送至项目中并生效, 相对常规配置修改繁琐的流程, 及时性可谓天壤之别;
+- 1、不需要 (手动修改 properties 文件) : 在配置管理中心提供的 Web 界面中，定位到指定配置项，输入新的配置的值，点击更新按钮即可；
+- 2、不需要 (重新编译打包) : 配置更新后，实时推送新配置信息至项目中，不需要编译打包；
+- 3、不需要 (重启线上服务器) : 配置更新后，实时推送新配置信息至项目中，实时生效，不需要重启线上机器；
+- 4、配置生效 "非常及时" : 点击更新按钮，新的配置信息将会即可推送到项目中，瞬间生效，非常及时。比如一些开关类型的配置，配置变更后，将会立刻推送至项目中并生效，相对常规配置修改繁琐的流程，及时性可谓天壤之别；
 
 #### 项目在线预览地址
 
-| 配置中心预览 | 接入LIGHTCONF的Demo项目预览 |
+| 配置中心预览 | 接入 LIGHTCONF 的 Demo 项目预览 |
 |----|----|
 | http://www.whforever.cn/lightconf-admin-web/ | http://www.whforever.cn/lightconf-sample/ |
 
@@ -72,18 +72,18 @@ LIGHTCONF 是一个基于Netty实现的一个配置管理平台，其核心设�
 
 ### 2.1 初始化“数据库”
 
-请下载项目源码并解压，获取 "调度数据库初始化SQL脚本" 并执行即可。脚本位置如下：
+请下载项目源码并解压，获取 "调度数据库初始化 SQL 脚本" 并执行即可。脚本位置如下：
 
     lightconf/doc/db/light-conf-0.1.1V.sql
 
 ### 2.2 编译源码
 
-解压源码,按照maven格式将源码导入IDE, 使用maven进行编译即可
+解压源码，按照 Maven 格式将源码导入 IDE, 使用 Maven 进行编译即可
 
 - lightconf-admin：配置管理中心
 - lightconf-core：公共依赖
 - lightconf-common：公共依赖
-- lightconf-sample: 接入LIGHTCONF的Demo项目
+- lightconf-sample: 接入 LIGHTCONF 的 Demo 项目
 
 ### 2.3 “配置管理中心” 项目配置
 
@@ -119,12 +119,12 @@ LIGHTCONF 是一个基于Netty实现的一个配置管理平台，其核心设�
     # 服务端启动监听端口
     netty.server.port=9998
 
-### 2.4 “接入LIGHTCONF的示例项目” 项目配置
+### 2.4 “接入 LIGHTCONF 的示例项目” 项目配置
 
     项目：lightconf-sample
     作用：接入LIGHTCONF的示例项目，供用户参考学习
 
-#### A、引入maven依赖
+#### A、引入 Maven 依赖
 
     <!-- lightconf-client -->
     <dependency>
@@ -166,9 +166,9 @@ LIGHTCONF 是一个基于Netty实现的一个配置管理平台，其核心设�
 
 ### 3.1、应用管理
 
-系统以 "应用" 为维度进行配置;隔离。可进入 "配置管理界面" 操作和维护应用，应用属性说明如下：
+系统以 "应用" 为维度进行配置；隔离。可进入 "配置管理界面" 操作和维护应用，应用属性说明如下：
 
-- UUID：每个应用拥有唯一的UUID，作为应用标示。
+- UUID：每个应用拥有唯一的 UUID，作为应用标示。
 - 应用名称：该应用的名称；
 
 <figure>
@@ -178,7 +178,7 @@ LIGHTCONF 是一个基于Netty实现的一个配置管理平台，其核心设�
 
 ### 3.2 配置管理
 
-进入"配置管理" 界面, 选择应用，然后可查看和操作该应用下配置数据，同时也可以通过应用管理页面的"应用配置信息"的button来进入该应用的配置信息页面，如下图所示。
+进入"配置管理" 界面，选择应用，然后可查看和操作该应用下配置数据，同时也可以通过应用管理页面的"应用配置信息"的 button 来进入该应用的配置信息页面，如下图所示。
 
 <figure>
 <img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/5/22/1638587b1b5630fe~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp" loading="lazy" alt="light-conf-conf" />
@@ -187,6 +187,6 @@ LIGHTCONF 是一个基于Netty实现的一个配置管理平台，其核心设�
 
 新增配置：点击 "新增配置" 按钮可添加配置数据，配置属性说明如下：
 
-- KEY：配置的KEY，创建时将会自动添加所属项目的APPName所谓前缀，生成最终的Key。可通过客户端使用最终的Key获取配置；
+- KEY：配置的 KEY，创建时将会自动添加所属项目的 APPName 所谓前缀，生成最终的 Key。可通过客户端使用最终的 Key 获取配置；
 - 描述：该配置的描述信息；
 - VALUE：配置的值；

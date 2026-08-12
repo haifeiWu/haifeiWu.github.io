@@ -1,13 +1,13 @@
 ---
 categories: ["后端"]
-title: "炮打TCP – 关于一而再再而三的粘包拆包问题的大字报"
+title: "炮打 TCP – 关于一而再再而三的粘包拆包问题的大字报"
 date: "2018-08-10T16:44:00+08:00"
 tags: ["后端", "程序员", "GitHub", "Linux"]
-summary: "TCP 所谓的粘包和拆包问题，是技术圈里最奇葩的问题之一！ 一而再，再而三，就跟傻逼的中国球迷支持中国足球队一样，前赴后继。有时候同一个人多次在犯同一个错误，有时候是前脚一个犯错了后脚又来一个还犯同样的错。"
+summary: "TCP 所谓的粘包和拆包问题，是技术圈里最奇葩的问题之一！一而再，再而三，就跟傻逼的中国球迷支持中国足球队一样，前赴后继。有时候同一个人多次在犯同一个错误，有时候是前脚一个犯错了后脚又来一个还犯同样的错。"
 translationKey: "paodatcp-guanyuyierzaizaiersandezhanbaochaibaowentidedazibao"
 ---
 
-> 📌 本文原发布于掘金社区：[炮打TCP – 关于一而再再而三的粘包拆包问题的大字报](https://juejin.cn/post/6844903654760136712)
+> 📌 本文原发布于掘金社区：[炮打 TCP – 关于一而再再而三的粘包拆包问题的大字报](https://juejin.cn/post/6844903654760136712)
 
 TCP 所谓的粘包和拆包问题，是技术圈里最奇葩的问题之一！
 
@@ -77,8 +77,8 @@ TCP 所谓的粘包和拆包问题，是技术圈里最奇葩的问题之一！
 
 ### Related posts:
 
-1.  <a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.ideawu.net%2Fblog%2Farchives%2F993.html" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.ideawu.net/blog/archives/993.html">关于TCP粘包和拆包的终极解答</a>
+1.  <a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.ideawu.net%2Fblog%2Farchives%2F993.html" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.ideawu.net/blog/archives/993.html">关于 TCP 粘包和拆包的终极解答</a>
 2.  <a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.ideawu.net%2Fblog%2Farchives%2F891.html" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.ideawu.net/blog/archives/891.html">经典的 TCP socket 读取报文错误</a>
 3.  <a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.ideawu.net%2Fblog%2Farchives%2F264.html" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.ideawu.net/blog/archives/264.html">通过 HTTP POST 发送二进制数据</a>
-4.  <a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.ideawu.net%2Fblog%2Farchives%2F880.html" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.ideawu.net/blog/archives/880.html">在Linux进行IO的正确姿势</a>
+4.  <a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.ideawu.net%2Fblog%2Farchives%2F880.html" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.ideawu.net/blog/archives/880.html">在 Linux 进行 IO 的正确姿势</a>
 5.  <a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.ideawu.net%2Fblog%2Farchives%2F289.html" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.ideawu.net/blog/archives/289.html">使用 Channel 进行可靠传输</a>

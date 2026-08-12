@@ -1,19 +1,19 @@
 ---
 categories: ["后端"]
-title: "扒一扒spring，dom4j实现模拟实现读取xml"
+title: "扒一扒 Spring，dom4j 实现模拟实现读取 XML"
 date: "2017-08-23T20:38:56+08:00"
 tags: ["Spring", "后端", "算法"]
-summary: " 今天leadr提出需求，原来公司项目中读取解析xml文件的代码效率太低，考虑切换一种xml为数据封装格式与读取方式以提高效率。我这灵机一动spring对bean的依赖注入就是读取xml文件，可以尝试扒一扒spring的源码，来实现一个轻量级的方案。 重构xml文件，向sprin…"
+summary: " 今天 leadr 提出需求，原来公司项目中读取解析 XML 文件的代码效率太低，考虑切换一种 XML 为数据封装格式与读取方式以提高效率。我这灵机一动 Spring 对 bean 的依赖注入就是读取 XML 文件，可以尝试扒一扒 Spring 的源码，来实现一个轻量级的方案。重构 XML 文件，向 sprin…"
 translationKey: "bayibaspring-dom4jshixianmonishixianduquxml"
 ---
 
-> 📌 本文原发布于掘金社区：[扒一扒spring，dom4j实现模拟实现读取xml](https://juejin.cn/post/6844903492453138446)
+> 📌 本文原发布于掘金社区：[扒一扒 Spring，dom4j 实现模拟实现读取 XML](https://juejin.cn/post/6844903492453138446)
 
-> 今天leadr提出需求，原来公司项目中读取解析xml文件的代码效率太低，考虑切换一种xml为数据封装格式与读取方式以提高效率。我这灵机一动spring对bean的依赖注入就是读取xml文件，可以尝试扒一扒spring的源码，来实现一个轻量级的方案。
+> 今天 leadr 提出需求，原来公司项目中读取解析 XML 文件的代码效率太低，考虑切换一种 XML 为数据封装格式与读取方式以提高效率。我这灵机一动 Spring 对 bean 的依赖注入就是读取 XML 文件，可以尝试扒一扒 Spring 的源码，来实现一个轻量级的方案。
 
-## 重构xml文件，向spring的xml文件格式看齐
+## 重构 XML 文件，向 Spring 的 XML 文件格式看齐
 
-重构完成的xml文件格式如下：
+重构完成的 XML 文件格式如下：
 
 ``` ini
 <?xml version="1.0" encoding="UTF-8"?>
@@ -110,11 +110,11 @@ translationKey: "bayibaspring-dom4jshixianmonishixianduquxml"
 </beans>
 ```
 
-看起来很眼熟的有没有，跟spring的配置文件一样哦。
+看起来很眼熟的有没有，跟 Spring 的配置文件一样哦。
 
-## 扒一扒spring读取xml文件的源码
+## 扒一扒 Spring 读取 XML 文件的源码
 
-手动扒了一下spring读取xml文件的代码，由于spring过于庞大，读取spring的xml方法又按照读取不同的标签被分拆出n多个方法，楼主能力有限就不在这里卖弄了，不过spring从配置文件把bean加载到bean工厂跟楼主下面读取xml文件的方式理论上是一样的。
+手动扒了一下 Spring 读取 XML 文件的代码，由于 Spring 过于庞大，读取 Spring 的 XML 方法又按照读取不同的标签被分拆出 n 多个方法，楼主能力有限就不在这里卖弄了，不过 Spring 从配置文件把 bean 加载到 bean 工厂跟楼主下面读取 XML 文件的方式理论上是一样的。
 
 废话不多说，上代码：
 
@@ -273,11 +273,11 @@ public class XMLBeanFactory {
 }
 ```
 
-楼主的代码就是实现读取xml文件中相同类型的bean封装到list中返回。具体如何实现，看代码，注释写的很清楚了。
+楼主的代码就是实现读取 XML 文件中相同类型的 bean 封装到 list 中返回。具体如何实现，看代码，注释写的很清楚了。
 
-## 文件读取的效率提升120多倍
+## 文件读取的效率提升 120 多倍
 
-代码完成之后，对比之前的读取xml的代码，比之前的效率提升了120。
+代码完成之后，对比之前的读取 XML 的代码，比之前的效率提升了 120。
 
 ## 总结一下
 
