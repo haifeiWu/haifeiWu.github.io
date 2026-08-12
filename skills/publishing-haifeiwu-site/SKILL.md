@@ -48,18 +48,15 @@ GIT_SSH_COMMAND="ssh -o ConnectTimeout=30 -o ServerAliveInterval=15" git push or
    date: "2026-08-12T00:00:00+08:00"   # ISO with +08:00
    tags: ["标签A", "标签B"]     # 3-5 REAL topic tags, never more than 5
    summary: "纯文本摘要，不能含 HTML 或未转义引号"   # plain text only — HTML/quotes in summary breaks YAML
-   translationKey: "pinyin-slug"        # MUST equal the slug
    ---
    ```
 3. **Body**: Chinese content, `##` sections. Migrated posts start with `> 📌 本文原发布于<来源>：[标题](url)`
-4. **Create the zh-cn stub** `content/posts/{slug}/index.zh-cn.md` — same front matter + body:
-   ```
-   {{< include-post "content/posts/{slug}/index.md" >}}
-   ```
-   (Articles live once in `index.md`; the stub re-renders it for `/zh-cn/posts/`. Both files must have the SAME `translationKey` or the include fails.)
-5. Build locally, confirm both `/posts/{slug}/` and `/zh-cn/posts/{slug}/` render
+4. **NO zh-cn stub needed** — the site is unified: all articles (Chinese or not) live at `/posts/{slug}/` in the default language. There is no `/zh-cn/posts/`.
+5. Build locally, confirm `/posts/{slug}/` renders
 6. Commit + push (see Quick Reference)
-7. Poll deploy: `https://api.github.com/repos/haifeiWu/haifeiWu.github.io/actions/runs?per_page=1` until `completed|success` (~2-4 min), then verify the live URLs return 200
+7. Poll deploy: `https://api.github.com/repos/haifeiWu/haifeiWu.github.io/actions/runs?per_page=1` until `completed|success` (~2-4 min), then verify the live URL returns 200
+
+> **Legacy zh-cn stub system (removed 2026-08):** posts used to require an `index.zh-cn.md` stub with `{{< include-post "content/posts/{slug}/index.md" >}}` plus matching `translationKey` on both sides to populate `/zh-cn/posts/`. That system was retired — do NOT recreate stubs. Old `/zh-cn/posts/{slug}/` URLs redirect to `/posts/{slug}/` via per-post `aliases` in front matter.
 
 ## Image Conventions
 
@@ -82,7 +79,7 @@ The theme ships **precompiled** CSS — Tailwind never scans site `layouts/`. An
 |---|---|
 | Push fails "access rights…repository exists" | Transient SSH/network issue — retry the same push |
 | Site 404 after deploy | Pages Source changed to "Deploy from a branch" (Jekyll builds Hugo source into nothing). User must set Settings → Pages → Source = **GitHub Actions** |
-| `/zh-cn/posts/` empty | Posts belong to default language `en`; missing `index.zh-cn.md` stubs or mismatched `translationKey` |
+| `/zh-cn/posts/` empty | **Retired design (2026-08)**: the zh-cn posts section no longer exists — the site is unified, all articles at `/posts/`. Do NOT recreate `index.zh-cn.md` stubs. Old `/zh-cn/posts/{slug}/` links 301-redirect via aliases |
 | Element unstyled/invisible | Utility classes purged — add to `assets/css/custom.css` |
 | Article cards show "loading" forever | `[article] showViews` + demo Firebase config — disabled already; don't re-enable without a real Firebase project |
 | Extra language dirs (de/es/…) built | Leftover `menus.*.toml` / `languages.*.toml` files implicitly define languages — delete them |
