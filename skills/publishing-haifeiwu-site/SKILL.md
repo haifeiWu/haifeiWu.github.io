@@ -1,13 +1,13 @@
 ---
 name: publishing-haifeiwu-site
-description: Use when publishing to or updating the haifeiWu personal site (haifeiWu.github.io, Hugo + Blowfish). Triggers: adding or migrating blog articles, editing site content/config, pushing to the repo, or debugging why a deploy failed or a page 404s/renders wrong. Covers the China-network build, bilingual post conventions, git identity for commits, and GitHub Actions deploy verification.
+description: Use when publishing to or updating the haifeiWu personal site (haifeiWu.github.io, Hugo + Blowfish). Triggers: adding or migrating blog articles, editing site content/config, pushing to the repo, or debugging why a deploy failed or a page 404s/renders wrong. Covers the China-network build, single-language Chinese post conventions, git identity for commits, and GitHub Actions deploy verification.
 ---
 
 # Publishing haifeiWu Site
 
 ## Overview
 
-The site is a **Hugo + Blowfish** bilingual (en + zh-cn) blog + portfolio at `haifeiWu.github.io`, source in `/Users/chenzhiyun/work/haifeiWu.github.io`. Flow: **edit content → local build → commit (as haifeiWu) → push to main (SSH) → GitHub Actions deploys → verify live**.
+The site is a **Hugo + Blowfish** single-language **Chinese (zh-cn)** blog + portfolio at `haifeiWu.github.io`, source in `/Users/chenzhiyun/work/haifeiWu.github.io`. Flow: **edit content → local build → commit (as haifeiWu) → push to main (SSH) → GitHub Actions deploys → verify live**.
 
 ## When to Use
 
@@ -51,12 +51,12 @@ GIT_SSH_COMMAND="ssh -o ConnectTimeout=30 -o ServerAliveInterval=15" git push or
    ---
    ```
 3. **Body**: Chinese content, `##` sections. Migrated posts start with `> 📌 本文原发布于<来源>：[标题](url)`
-4. **NO zh-cn stub needed** — the site is unified: all articles (Chinese or not) live at `/posts/{slug}/` in the default language. There is no `/zh-cn/posts/`.
+4. **Single file only** — the site is Chinese-only: one `index.md` per post, no zh-cn stub, no `translationKey`. There is no `/zh-cn/` prefix anywhere.
 5. Build locally, confirm `/posts/{slug}/` renders
 6. Commit + push (see Quick Reference)
 7. Poll deploy: `https://api.github.com/repos/haifeiWu/haifeiWu.github.io/actions/runs?per_page=1` until `completed|success` (~2-4 min), then verify the live URL returns 200
 
-> **Legacy zh-cn stub system (removed 2026-08):** posts used to require an `index.zh-cn.md` stub with `{{< include-post "content/posts/{slug}/index.md" >}}` plus matching `translationKey` on both sides to populate `/zh-cn/posts/`. That system was retired — do NOT recreate stubs. Old `/zh-cn/posts/{slug}/` URLs redirect to `/posts/{slug}/` via per-post `aliases` in front matter.
+> **Site language history:** the site was bilingual (en + zh-cn) until 2026-08, when it became single-language zh-cn (all pages render Chinese chrome at root paths: `/`, `/posts/`, `/tags/`, `/about/`, `/projects/`). Do NOT recreate language configs, zh-cn stubs, translationKey, or `/zh-cn/` paths.
 
 ## Image Conventions
 
