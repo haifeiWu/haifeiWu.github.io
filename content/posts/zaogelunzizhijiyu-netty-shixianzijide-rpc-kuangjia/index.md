@@ -13,7 +13,7 @@ translationKey: "zaogelunzizhijiyu-netty-shixianzijide-rpc-kuangjia"
 > 博客地址：<a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fb674%2F%3F_ref%3Djuejin" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/b674/?_ref=juejin">www.hchstudio.cn</a>\
 > 欢迎转载，转载请注明作者及出处，谢谢！
 
-服务端开发都会或多或少的涉及到 RPC 的使用，当然如果止步于会用，对自己的成长很是不利，所以楼主今天本着知其然，且知其所以然的精神来探讨一下 RPC 这个东西。
+服务端开发都会或多或少地涉及到 RPC 的使用，当然如果止步于会用，对自己的成长很是不利，所以楼主今天本着知其然，且知其所以然的精神来探讨一下 RPC 这个东西。
 
 ## child-rpc 模型
 
@@ -27,7 +27,7 @@ child-rpc 采用 socket 直连的方式来实现服务的远程调用，然后�
 
 ### 发布服务
 
-RPC 服务类要监听指定 IP 端口，设置要发布的服务的实现及其接口的引用，并指定序列化的方式，目前 child-rpc 支持 Hessian，JACKSON 两种序列化方式。
+RPC 服务类要监听指定 IP 端口，设置要发布的服务的实现及其接口的引用，并指定序列化的方式，目前 child-rpc 支持 Hessian、JACKSON 两种序列化方式。
 
 ``` java
 /**
@@ -57,7 +57,7 @@ public class ServerTest {
 
 ### 引用服务
 
-RPC 客户端要链接远程 IP 端口，并注册要引用的服务，然后调用 sayHi 方法，输出结果
+RPC 客户端要连接远程 IP 端口，并注册要引用的服务，然后调用 sayHi 方法，输出结果
 
 ``` java
 /**
@@ -99,7 +99,7 @@ client 端输出
 
 ### RPC 请求，响应消息实体定义
 
-定义消息请求响应格式，消息类型、消息唯一 ID 和消息的 JSON 序列化字符串内容。消息唯一 ID 是用来客户端验证服务器请求和响应是否匹配。
+定义消息请求响应格式，消息类型、消息唯一 ID 和消息的 JSON 序列化字符串内容。消息唯一 ID 是用来让客户端验证服务器请求和响应是否匹配的。
 
 ``` java
 // rpc 请求
@@ -128,7 +128,7 @@ public class RpcResponse implements Serializable {
 
 ### 网络传输过程中的编码解码
 
-消息编码解码使用自定义的编解码器，根据服务初始化是使用的序列化器来将数据序列化成字节流，拆包的策略是设定指定长度的数据包，对 socket 粘包，拆包感兴趣的小伙伴请移步 <a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fd5b3%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/d5b3/">Socket 中粘包问题浅析及其解决方案</a>
+消息编码解码使用自定义的编解码器，根据服务初始化时使用的序列化器将数据序列化成字节流，拆包的策略是设定指定长度的数据包，对 socket 粘包、拆包感兴趣的小伙伴请移步 <a href="https://link.juejin.cn?target=http%3A%2F%2Fwww.hchstudio.cn%2Farticle%2F2018%2Fd5b3%2F" target="_blank" data-ref="nofollow noopener noreferrer" title="http://www.hchstudio.cn/article/2018/d5b3/">Socket 中粘包问题浅析及其解决方案</a>
 
 下面是解码器代码实现：
 
@@ -248,11 +248,11 @@ public class RpcInvokerHandler {
 }
 ```
 
-client 端主要业务实现是等待 server 响应返回。代码比较简单就不贴代码了，详情请看下面给出的 github 链接。
+client 端主要业务实现是等待 server 返回响应。代码比较简单就不贴代码了，详情请看下面给出的 github 链接。
 
 ### RPC 服务端与客户端启动
 
-因为服务端与客户端启动都是 Netty 的模板代码，因为篇幅原因就不贴出来了，感兴趣的伙伴请移步 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Fchild-rpc" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/child-rpc">造个轮子---RPC 动手实现</a>。
+服务端与客户端启动都是 Netty 的模板代码，因为篇幅原因就不贴出来了，感兴趣的伙伴请移步 <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FhaifeiWu%2Fchild-rpc" target="_blank" data-ref="nofollow noopener noreferrer" title="https://github.com/haifeiWu/child-rpc">造个轮子---RPC 动手实现</a>。
 
 ## 小结
 
