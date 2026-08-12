@@ -1,0 +1,32 @@
+/* 站点自定义样式 - 补齐 Blowfish 预编译 CSS 中缺失的 Tailwind 工具类
+   （主题 CSS 为预编译产物，不扫描本站 layouts/，以下类需手动补充）
+   语法与 Tailwind v4 / Blowfish 变量保持一致 */
+
+/* 位置与尺寸 */
+.bottom-40 { bottom: 10rem; }
+.w-64 { width: 16rem; }
+.w-40 { width: 10rem; }
+.h-7 { height: 1.75rem; }
+.w-7 { width: 1.75rem; }
+.-me-1 { margin-inline-end: -0.25rem; }
+.-mt-1 { margin-top: -0.25rem; }
+.origin-bottom-right { transform-origin: bottom right; }
+
+/* 缩放（与主题 .scale-100 同构） */
+.scale-95 { --tw-scale-x: 95%; --tw-scale-y: 95%; --tw-scale-z: 95%; scale: var(--tw-scale-x) var(--tw-scale-y); }
+.hover\:scale-105:hover { --tw-scale-x: 105%; --tw-scale-y: 105%; --tw-scale-z: 105%; scale: var(--tw-scale-x) var(--tw-scale-y); }
+
+/* 亮色 hover */
+.hover\:text-primary-600:hover { color: rgba(var(--color-primary-600), 1); }
+.hover\:text-neutral-800:hover { color: rgba(var(--color-neutral-800), 1); }
+.hover\:bg-neutral-100:hover { background-color: rgba(var(--color-neutral-100), 1); }
+
+/* 暗色变体（Blowfish 使用 class 暗色模式） */
+.dark\:border-neutral-600:is(.dark *) { border-color: rgba(var(--color-neutral-600), 1); }
+.dark\:bg-neutral-800:is(.dark *) { background-color: rgba(var(--color-neutral-800), 1); }
+.dark\:text-neutral:is(.dark *) { color: rgba(var(--color-neutral), 1); }
+.dark\:text-neutral-100:is(.dark *) { color: rgba(var(--color-neutral-100), 1); }
+.dark\:text-neutral-500:is(.dark *) { color: rgba(var(--color-neutral-500), 1); }
+.dark\:hover\:bg-neutral-700:is(.dark *):hover { background-color: rgba(var(--color-neutral-700), 1); }
+.dark\:hover\:text-primary-400:is(.dark *):hover { color: rgba(var(--color-primary-400), 1); }
+.dark\:hover\:text-neutral-100:is(.dark *):hover { color: rgba(var(--color-neutral-100), 1); }
