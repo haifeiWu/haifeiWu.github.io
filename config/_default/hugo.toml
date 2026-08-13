@@ -21,7 +21,8 @@ enableEmoji = true
 # googleAnalytics = "G-XXXXXXXXXX"  # 如需统计请填入自己的 GA4 ID
 
 [pagination]
-  pagerSize = 10
+  # 12 篇/页：3 列卡片网格满排（3×4），窄屏 2 列满排（6 行）；10 篇会导致末行孤卡空位
+  pagerSize = 12
 
 [imaging]
   anchor = 'Center'
