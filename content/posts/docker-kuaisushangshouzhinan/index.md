@@ -5,7 +5,6 @@ title: "Docker 快速上手指南"
 date: "2018-12-03T14:09:51+08:00"
 tags: ["Docker", "容器", "后端", "Spring Boot"]
 summary: "Docker 听其大名已久，但总是疏于操练，今天准备好好搞一下。"
-translationKey: "docker-kuaisushangshouzhinan"
 ---
 
 > 📌 本文原发布于掘金社区：[Docker 快速上手指南](https://juejin.cn/post/6844903729708154893)

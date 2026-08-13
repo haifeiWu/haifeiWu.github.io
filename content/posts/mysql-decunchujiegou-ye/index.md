@@ -4,7 +4,6 @@ title: "MySQL 的存储结构-页"
 date: "2023-12-20T16:05:02+08:00"
 tags: ["后端", "MySQL", "面试"]
 summary: "先从几个问题开始 innodb 引擎下 varchar 类型的最大长度？什么情况下我们需要水平分表？为什么？"
-translationKey: "mysql-decunchujiegou-ye"
 ---
 
 > 📌 本文原发布于掘金社区：[MySQL 的存储结构-页](https://juejin.cn/post/7314498126088962099)

@@ -4,14 +4,13 @@
 
 haifeiWu 的个人网站：作品集 + 技术博客（GitHub Pages 托管，Hugo + Blowfish 构建，中英双语）。Backend developer in Beijing, passionate about distributed systems, middleware and AI engineering. Main languages: Go / Java / Rust.
 
-博客文章以中文为主，共 64 篇原创（迁移自掘金社区），覆盖：分布式系统与架构、消息中间件（Kafka / Netty / Redis / MySQL）、自研 RPC 框架、单元测试、性能优化、云原生与 AI/LLM 工程（MCP）等。
+博客文章以中文为主，共 81 篇原创（迁移自掘金社区与代码星冰乐），覆盖：分布式系统与架构、消息中间件（Kafka / Netty / Redis / MySQL）、自研 RPC 框架、单元测试、性能优化、云原生与 AI/LLM 工程（MCP）等。
 
 ## Key links
 - Homepage / Portfolio: https://haifeiWu.github.io/
 - About: https://haifeiWu.github.io/about/
 - Open source projects: https://haifeiWu.github.io/projects/
-- Blog posts (EN): https://haifeiWu.github.io/posts/
-- Blog posts (中文): https://haifeiWu.github.io/posts/
+- Blog posts: https://haifeiWu.github.io/posts/
 - RSS feed: https://haifeiWu.github.io/index.xml
 - GitHub: https://github.com/haifeiWu
 - Juejin (掘金): https://juejin.cn/user/1574156379896103/posts

@@ -5,6 +5,10 @@ title = "haifeiWu"
 
 [params]
   displayName = "English"
+
+# 文章仅中文，英文首页不展示 Recent 区块（posts 无英文版，避免空区块 + 指向不存在的 /en/posts 的死链）
+[params.homepage]
+  showRecent = false
   isoCode = "en"
   rtl = false
   dateFormat = "2 January 2006"

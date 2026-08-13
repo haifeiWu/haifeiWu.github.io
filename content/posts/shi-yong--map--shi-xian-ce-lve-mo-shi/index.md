@@ -4,7 +4,6 @@ title: "使用 Map 实现策略模式"
 date: "2020-01-16T00:00:00+08:00"
 tags: ["设计模式", "Go", "Java"]
 summary: "上篇文章在谈到优化代码的时候，有一部分涉及到了使用策略模式优化我们的代码，本篇文章将围绕策略模式谈谈自己的思考~ What? 总的来说，设计模式是对软件设计中普遍存在并且反复出现的各种问题，所提出的通用解决方案，是一系列编码经验的集合。那"
-translationKey: "shi-yong--map--shi-xian-ce-lve-mo-shi"
 ---
 
 > 📌 本文原发布于代码星冰乐：[使用 Map 实现策略模式](https://changhuin.github.io/article/2020/4a72/)

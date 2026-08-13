@@ -1,6 +1,6 @@
 ---
 name: publishing-haifeiwu-site
-description: Use when publishing to or updating the haifeiWu personal site (haifeiWu.github.io, Hugo + Blowfish). Triggers: adding or migrating blog articles, editing site content/config, pushing to the repo, or debugging why a deploy failed or a page 404s/renders wrong. Covers the China-network build, single-language Chinese post conventions, git identity for commits, and GitHub Actions deploy verification.
+description: "Use when publishing to or updating the haifeiWu personal site (haifeiWu.github.io, Hugo + Blowfish). Triggers: adding or migrating blog articles, editing site content/config, pushing to the repo, or debugging why a deploy failed or a page 404s/renders wrong. Covers the China-network build, single-language Chinese post conventions, git identity for commits, and GitHub Actions deploy verification."
 ---
 
 # Publishing haifeiWu Site

@@ -4,7 +4,6 @@ title: "多应用配置管理平台 LIGHTCONF"
 date: "2018-05-07T20:42:14+08:00"
 tags: []
 summary: "LIGHTCONF 是一个配置管理平台，其核心设计目标是“为业务提供统一的配置管理服务”。"
-translationKey: "duoyingyongpeizhiguanlipingtailightconf"
 ---
 
 > 📌 本文原发布于掘金社区：[多应用配置管理平台 LIGHTCONF](https://juejin.cn/post/6844903602985680909)

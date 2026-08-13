@@ -4,7 +4,6 @@ title: "阿里云离线同步工具 DataX 源码略读"
 date: "2018-07-06T10:47:57+08:00"
 tags: ["阿里巴巴", "Java", "数据库", "MySQL", "源码"]
 summary: "最近在做一些数据迁移相关工作，并最终采用了 DataX，楼主也本着知其然，也要知其所以然的精神粗略的看一看 Datax 的源码。"
-translationKey: "aliyunlixiantongbugongjudataxyuanmalvedu"
 ---
 
 > 📌 本文原发布于掘金社区：[阿里云离线同步工具 DataX 源码略读](https://juejin.cn/post/6844903634195447821)

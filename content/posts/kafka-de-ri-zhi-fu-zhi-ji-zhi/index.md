@@ -4,7 +4,6 @@ title: "Kafka 的日志复制机制"
 date: "2021-01-14T00:00:00+08:00"
 tags: ["Kafka", "分布式", "源码"]
 summary: "Kafka 是一个分布式的发布 订阅消息系统。它最初是在 LinkedIn 开发的，2011年7月成为一个 Apache 项目。今天，Kafka 被 LinkedIn、Twitter 和 Square 用于日志聚合、队列、实时监控和事件处"
-translationKey: "kafka-de-ri-zhi-fu-zhi-ji-zhi"
 ---
 
 > 📌 本文原发布于代码星冰乐：[Kafka 的日志复制机制](https://changhuin.github.io/article/2021/7cba/)

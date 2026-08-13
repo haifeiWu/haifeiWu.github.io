@@ -4,7 +4,6 @@ title: "MySQL 的七种 join"
 date: "2017-02-06T00:00:00+08:00"
 tags: ["MySQL", "数据库", "SQL"]
 summary: "对于 SQL 的 Join，在学习起来可能是比较乱的。我们知道，SQL 的 Join 语法有很多 inner 的，有 outer 的，有 left 的，有时候，对于 Select 出来的结果集是什么样子有点不是很清楚。Coding Horror 上有一篇文章（实在不清楚"
-translationKey: "mysql--de-qi-zhong--join"
 ---
 
 > 📌 本文原发布于代码星冰乐：[MySQL 的七种 join](https://changhuin.github.io/article/2017/56cd/)

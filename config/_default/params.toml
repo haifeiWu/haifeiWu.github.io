@@ -28,9 +28,7 @@ disableTextInHeader = false
 # backgroundImageWidth = 1200
 
 # 背景改为纯 CSS 渐变（custom.css 中的 .single_hero_background），不再使用图片
-# defaultBackgroundImage = "/img/background.svg"
 # 文章无封面时不显示默认图（已移除，列表卡片更干净）
-# defaultFeaturedImage = "/img/featured.svg"
 defaultSocialImage = "img/og.png"
 hotlinkFeatureImage = false
 # imagePosition = "50% 50%"
@@ -56,7 +54,6 @@ fingerprintAlgorithm = "sha512" # Valid values are "sha512" (default), "sha384",
 
 [homepage]
   layout = "profile" # valid options: page, profile, hero, card, background, custom
-  # homepageImage = "/img/iceland.jpg" # used in: hero, and card
   showRecent = true
   showRecentItems = 12
   showMoreLink = true

@@ -4,7 +4,6 @@ title: "Redis 协议规范（译文）"
 date: "2018-08-08T00:57:50+08:00"
 tags: ["Redis", "后端", "Java", "服务器"]
 summary: "Redis 客户端使用名为 RESP（Redis 序列化协议）的协议与 Redis 服务器进行通信。虽然该协议是专为 Redis 设计的，但它可以用于其他 CS 软件项目的通讯协议。RESP 可以序列化不同的数据类型，如整型，字符串，数组。还有一种特定的错误类型。请求将要执行的命令作为字符…"
-translationKey: "redisxieyiguifan-yiwen"
 ---
 
 > 📌 本文原发布于掘金社区：[Redis 协议规范（译文）](https://juejin.cn/post/6844903653141118983)
