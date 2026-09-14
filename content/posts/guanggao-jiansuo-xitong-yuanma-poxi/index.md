@@ -14,7 +14,7 @@ summary: "一套支撑教育业务大量广告资源位的内存检索系统。�
 
 在这三条约束下，"全内存 + 倒排索引 + 定时同步"比引入一个独立集群更简单、更可控，链路也更短。adengine 就是这样一套系统：它面向教育业务 App、Web、小程序的大量广告资源位（开屏、弹窗、二楼、课程详情横幅、首页整屏），把"哪些广告、在什么条件下、展示给哪些人"变成运营可配置的规则，并在服务端完成检索、过滤、素材渲染、策略执行与埋点。
 
-本文按"边界 → 架构 → 倒排索引 → 流水线 → 数据层 → 频控 → 行为与轮转 → 埋点 → 稳定性 → 问题清单"的顺序拆解它的实现，重点放在**源码级的设计取舍与坑**：尽量给出具体函数与代码片段，也会指出读码过程中发现的、可以改进的地方。
+本文按"边界 → 架构 → 倒排索引 → 流水线 → 数据层 → 频控 → 行为与轮转 → 埋点 → 稳定性 → 问题清单"的顺序拆解它的实现，重点放在**源码级的设计取舍与坑**：尽量用流程图与结构图把机制讲清楚，只在关键缺陷处保留少量代码，也会指出读码过程中发现的、可以改进的地方。
 
 ## 一、问题与边界
 
@@ -56,34 +56,18 @@ summary: "一套支撑教育业务大量广告资源位的内存检索系统。�
 | 支撑组件 | 倒排索引、过滤流水线、素材渲染、策略中心 | 各自独立演进，由编排层组合 |
 | 数据与依赖 | 全内存只读数据 + Redis/MySQL/Kafka/ClickHouse | 检索只读内存，外部调用全部 fail-open |
 
-编排层是全篇的主线，它短到可以整段贴出来：
+编排层是全篇的主线，它本身就是一段六步式流水线：
 
-```go
-// service/search/search.go
-func DoSearch(adCtx *contextx.Context) (globaltype.SlotData, error) {
-	q := adCtx.GetQuery()
-
-	// 1. 按资源位、用户类型、年级、地区、登录状态、学科、课程等初步筛选，使用倒排索引
-	slotAdIds := indexer.Multi(adCtx, q, false)
-
-	// 2. 按其他信息、画像、导流课资格、活动定制资格等筛选广告
-	slotAdIds = filter.Ad(adCtx, slotAdIds)
-
-	// 3. 按年级、屏幕比例、AB 测筛选素材
-	slotDatas := render.Material(adCtx, slotAdIds)
-
-	// 4. 策略中心：流量分配、策略排序、广告轮转、业务去重
-	slotDatas = render.Strategy(adCtx, slotDatas)
-
-	// 5. 预览
-	slotDatas = preview.Preview(adCtx, slotDatas)
-
-	// 6. 服务端埋点
-	buryserver.BuryMany(adCtx, slotDatas)
-
-	return slotDatas, nil
-}
-```
+{{< mermaid >}}
+flowchart LR
+    Q(["请求：资源位 + 用户属性"]) --> S1["① 倒排初筛<br/>ID 级"]
+    S1 --> S2["② 广告过滤<br/>ID 级"]
+    S2 --> S3["③ 素材渲染<br/>对象级"]
+    S3 --> S4["④ 策略执行<br/>对象级"]
+    S4 --> S5["⑤ 预览<br/>独立数据通路"]
+    S5 --> S6["⑥ 服务端埋点<br/>异步投递"]
+    S6 --> R(["响应：广告 + 埋点数据"])
+{{< /mermaid >}}
 
 六个阶段，每一步都有明确的数据形态。这个"形态渐进"是刻意设计的：
 
@@ -106,9 +90,18 @@ func DoSearch(adCtx *contextx.Context) (globaltype.SlotData, error) {
 
 运营为每个广告配置的"投放条件"，本质是一个析取范式字符串：
 
-```
-adpid ~ {12970,1594,787} ^ adsite !~ {1} ^ client ~ {pc} ^ gender ~ {488,560}
-```
+{{< mermaid >}}
+flowchart TB
+    E["一条 DNF 表达式<br/>adpid ~ 12970,1594,787<br/>^ adsite !~ 1<br/>^ client ~ pc<br/>^ gender ~ 488,560"]
+    E --> G1["条件组 1：adpid 属于三个值之一"]
+    E --> G2["条件组 2：adsite 不属于 1"]
+    E --> G3["条件组 3：client 为 pc"]
+    E --> G4["条件组 4：gender 属于两个值之一"]
+    G1 --> AND{"组间用 ^ 连接 = AND<br/>组内用逗号分隔 = OR"}
+    G2 --> AND
+    G3 --> AND
+    G4 --> AND
+{{< /mermaid >}}
 
 - `字段 ~ {v1,v2}`：属于集合，**OR** 语义，命中任一值即可；
 - `字段 !~ {v}`：不属于集合；
@@ -120,24 +113,14 @@ adpid ~ {12970,1594,787} ^ adsite !~ {1} ^ client ~ {pc} ^ gender ~ {488,560}
 
 解析器按 `^` 切分条件组，把每个字段值展开成 `字段_值` 形式的索引键（如 `grade_29`、`area_27`），构建出每个资源位一份的倒排索引：
 
-```go
-// service/global/storage/index.go（简化）
-invertIndex := make(globaltype.InvertIndex)   // 字段_值 → 广告 ID 集合
-adFieldMap := make(map[string]map[string]bool) // 广告 → 声明的字段集合
-adIDs := make([]string, 0)                     // 资源位下的全量广告 ID
-
-for _, idExpress := range idExpresses {
-	adIDs = append(adIDs, adID)
-	fieldMap := invertindex.Analysis(idExpress.Express)
-	i.checkFieldMap(slotInfo, &fieldMap, preview) // 补默认值，见 3.4
-	for fieldName, fieldSlice := range fieldMap {
-		adFieldMap[adID][fieldName] = true
-		for _, fieldValue := range fieldSlice {
-			invertIndex[fieldValue][adID] = ""
-		}
-	}
-}
-```
+{{< mermaid >}}
+flowchart LR
+    EX["广告投放表达式（DNF）"] --> AN["解析：按 ^ 拆分条件组<br/>展开成 字段_值 索引键"]
+    AN --> CM["补默认值<br/>写侧与资源位约束归一化"]
+    CM --> I1[("index<br/>字段_值 → 广告 ID 集合")]
+    CM --> I2[("adField<br/>广告 → 声明了哪些字段")]
+    CM --> I3[("adIDs<br/>资源位 → 全量广告 ID")]
+{{< /mermaid >}}
 
 这里同时维护了三个结构，各有用途：
 
@@ -149,17 +132,7 @@ for _, idExpress := range idExpresses {
 
 解析失败时的策略是"**跳过单条，不阻断全量**"：
 
-```go
-func Analysis(dnfString string) globaltype.Condition {
-	defer func() {
-		if p := recover(); p != nil {
-			logx.E("Analysis解析到画像dnf：%s，panic：%+v", dnfString, p)
-			return
-		}
-	}()
-	// ...
-}
-```
+解析入口用 `defer + recover` 兜住 panic，失败只记日志并返回空条件——脏配置最多让这条广告少几个索引键（投不出去），不会让整个资源位的索引构建失败。
 
 一条脏配置只会让对应广告少几个索引键（最多是投不出去），不会让整个资源位的索引构建失败。这个取舍在"配置由多个人在多个后台维护"的系统里是必须的——索引构建失败意味着整个资源位没有广告，影响面比单条广告大得多。
 
@@ -167,30 +140,20 @@ func Analysis(dnfString string) globaltype.Condition {
 
 检索算法短得出奇：
 
-```go
-// service/indexer/trigger.go（简化）
-for _, invertKeys := range reqKeysInvert {      // 遍历查询的每个字段
-	var sumMap = make(map[string]string)         // 该字段所有候选值的并集
-	for _, invertKey := range invertKeys {
-		if values, ok := invertIndex[invertKey]; ok {
-			for id := range values { sumMap[id] = "" }
-		}
-	}
-	if len(sumMap) == 0 {                        // 任一字段全空 → 直接返回空
-		return []string{}
-	}
-	for id := range sumMap { hitKeyCountMap[id]++ }  // 累计每个广告命中的字段数
-}
-
-for adID, hitKeyCount := range hitKeyCountMap {
-	adKeyCount := global.DnfNumber(slotIDStr, adID, preview) // 广告声明的字段数
-	if hitKeyCount >= reqInvertKeyCount {                    // 广告覆盖了查询的每个字段
-		if adKeyCount == 0 || adKeyCount == reqKeyCount {     // 且字段数完全相等
-			result = append(result, adID)
-		}
-	}
-}
-```
+{{< mermaid >}}
+flowchart TD
+    A["遍历查询的每个字段"] --> B["该字段所有候选值的命中集合求并"]
+    B --> C{"并集为空？"}
+    C -->|"是"| Z["直接返回空：该字段无人命中"]
+    C -->|"否"| D["累计每个广告命中的字段数<br/>计数器 ①"]
+    D --> A
+    A --> F["逐个广告判定"]
+    F --> G{"命中字段数 ≥ 查询字段数<br/>且 广告字段数 == 查询字段数<br/>计数器 ②"}
+    G -->|"否"| X["剔除"]
+    G -->|"是"| H{"详情已在内存中？"}
+    H -->|"否"| X
+    H -->|"是"| Y["入选候选"]
+{{< /mermaid >}}
 
 这里有一个很漂亮的技巧：**用两个计数器代替集合运算**。
 
@@ -214,49 +177,20 @@ for adID, hitKeyCount := range hitKeyCountMap {
 
 检索最后还有一道防御：
 
-```go
-finalResult := make([]string, 0, len(result))
-for _, adID := range result {
-	if tmp := global.Ad(adID, preview); tmp != nil {   // 内存中不存在 → 剔除
-		finalResult = append(finalResult, adID)
-	}
-}
-```
+最后一道防御是逐个确认广告详情已在内存中，不在就剔除（即上图最后一环）。
 
-因为它是一个"索引"和"详情"分两个 worker 同步的系统，同步存在时间差：索引里已经有某个广告，但广告详情还没拉下来。这道过滤保证了脏数据不会流到后续阶段（同时也不得不承担一次 map 查找的成本）。
+索引与详情由两个 worker 分别同步，天然存在时间差：索引里已经有某个广告，但广告详情还没拉下来。这道过滤保证了脏数据不会流到后续阶段（同时也不得不承担一次 map 查找的成本）。
 
 ### 3.4 写读两侧的默认值对齐：这套系统最需要读懂的一段配置
 
 索引构建和查询构建是**两个独立代码路径**，如果两侧对"字段缺省"的理解不一致，检索结果就会静默错误。系统用四组配置来保证对齐（`config/index.go`）：
 
-```go
-// 写侧：广告 DNF 里没有这个字段时，补上这些值
-var IndexMustFields = map[string][]string{
-	IndexFieldSubject:      {IndexValDefault},          // subject_0
-	IndexFieldCourse:       {IndexValDefault},          // course_id_0
-	IndexFieldLogin:        {IndexValNotLogin, IndexValLogin}, // tag_buy_68 + tag_buy_5779
-	IndexFieldApp9UserType: {IndexValDefault},          // user_type_0
-}
-
-// 写侧：广告 DNF 里有这个字段时，额外追加这些值
-var IndexMustFieldsVals = map[string][]string{
-	IndexFieldApp9UserType: {IndexValDefault},
-}
-
-// 读侧：请求里没有这个字段时，补上默认值
-var QueryDefaultFields = map[string]string{
-	IndexFieldArea:         IndexValDefault,  // area_0
-	IndexFieldSubject:      IndexValDefault,
-	IndexFieldCourse:       IndexValDefault,
-	IndexFieldApp9UserType: IndexValDefault,
-}
-
-// 读侧：请求里有这个字段时，额外追加这些值
-var QueryMustFieldsVals = map[string]string{
-	IndexFieldArea:   IndexValDefault,   // area_X + area_0
-	IndexFieldCourse: IndexValDefault,
-}
-```
+| 配置 | 作用侧 | 触发条件 | 补什么值 | 语义 |
+|---|---|---|---|---|
+| `IndexMustFields` | 写（索引构建） | 广告 DNF 缺该字段 | `subject_0`、`course_id_0`、`tag_buy_68` 与 `tag_buy_5779`、`user_type_0` | 未声明的通用字段视为"不限" |
+| `IndexMustFieldsVals` | 写 | 广告 DNF 有该字段 | 额外追加 `user_type_0` | 用户类型取不到时仍按 0 处理 |
+| `QueryDefaultFields` | 读（查询构建） | 请求缺该字段 | `area_0`、`subject_0`、`course_id_0`、`user_type_0` | 请求未指定的维度按默认值查 |
+| `QueryMustFieldsVals` | 读 | 请求带该字段 | 额外追加 `area_0`、`course_id_0` | 让"声明为 0"的广告在任何取值下都能命中 |
 
 几条规则背后的语义值得逐条品：
 
@@ -264,13 +198,7 @@ var QueryMustFieldsVals = map[string]string{
 
 **② 支持学科的资源位，未声明学科的广告补 `-1`。**
 
-```go
-// service/global/storage/index.go
-if _, ok := (*fieldMap)[config.IndexFieldSubject]; !ok &&
-	(slotInfo.SupportSubject == 1 || slotInfo.AdslotID == "41") {
-	(*fieldMap)[config.IndexFieldSubject] = []string{config.IndexFieldSubject + "_" + config.IndexValMust}
-}
-```
+具体做法是：支持学科的资源位下，广告若没有声明 `subject`，索引侧就给它补一个哨兵值 `-1`。
 
 `IndexValMust = "-1"` 是个哨兵值：查询侧的 `subject` 默认值是 `0`，永远不会等于 `-1`，所以这类广告**永远命中不了**。它表达的业务语义是"这个资源位不支持未声明学科的广告"——用"一个永远不匹配的值"来表达"不允许"，而不是加一个专门的校验环节。
 
@@ -363,62 +291,33 @@ func (st *Bitmap) Set(ids ...uint64) *Bitmap {
 
 框架本体非常薄：
 
-```go
-// util/pipe/pipe.go
-func Send(ctx *contextx.Context, product Product) *Pipeline { ... }
-func (p *Pipeline) To(stops []Stop) *Pipeline { p.stops = Serial(stops); return p }
-func (p *Pipeline) Run() (outProd Product, err error) { return p.stops(p.ctx, p.product) }
-```
+框架本体只有三个动作：`Send(ctx, product)` 把待处理数据装进管道，`To(stops)` 把环节列表组装成串行链（任一环节输出为空即短路），`Run()` 执行整条链。
 
 调用处读起来就是一条链：
 
-```go
-// service/filter/series.go（简化）
-outProduct, _ := pipe.
-	Send(ctx, product).
-	To([]pipe.Stop{
-		pipe4f.A(ad.StartEndTime),
-		pipe4f.A(ad.AppVersion),
-		pipe4f.A(ad.SystemVersion),
-		pipe4f.A(ad.Feedback, slotset.Feedback),
-		parallel(),                        // 并行组
-		pipe4f.A(ad.Sort),
-		pipe4f.A(ad.FixPosition, slotset.NotStrategy),
-		pipe4f.A(ad.SortForAppBoot, slotset.AppBoot),
-		pipe4f.A(ad.Fallback),
-	}).
-	Run()
-```
+{{< mermaid >}}
+flowchart LR
+    A["起止时间"] --> B["App 版本"] --> C["系统版本"] --> D["负反馈"] --> P{{"并行组"}} --> E["排序"] --> F["固定位置"] --> G["开屏排序"] --> H["兜底"]
+{{< /mermaid >}}
 
 而 `parallel()` 内部是一个嵌套结构——并行组里可以再嵌串行组，串行组里再嵌并行组：
 
-```go
-func parallel() pipe.Stop {
-	return pipe.Parallel([]pipe.Stop{
-		pipe4f.S(adslot.UserProfile),      // 11 个独立环节
-		pipe4f.S(adslot.Third),
-		// ...
-		pipe4f.S(adslot.GetClientToUser, slotset.StrategyV2),
-		// 频次控制：先查最小间隔，再按"普通业务 / 特定业务"两路 OR 合并
-		pipe.Serial([]pipe.Stop{
-			pipe4f.S(adslot.FreqLimitMinIntervalMinute),
-			pipe.Parallel([]pipe.Stop{
-				pipe.Serial([]pipe.Stop{
-					pipe4f.S(adslot.FreqLimitNormal()),
-					pipe4f.S(adslot.FreqLimitNormalDailyShow),
-					pipe4f.S(adslot.FreqLimitNormalBizIntervalDay),
-				}),
-				pipe.Serial([]pipe.Stop{
-					pipe4f.S(adslot.FreqLimitOther()),
-					pipe4f.S(adslot.FreqLimitOtherDailyShow),
-				}),
-			}, pipe.Or),
-		}),
-		pipe4f.S(adslot.AbTestV3),
-		// ...
-	}, pipe.And)
-}
-```
+{{< mermaid >}}
+flowchart TB
+    P["并行组：And 合并，单请求最多约 13 个并发任务"]
+    P --> U["用户：用户画像 / 启动信息"]
+    P --> Q["资格：三方过滤 / 指定用户 / 渠道 / 活动"]
+    P --> T["用户类型：用户类型 / 课程开课时间 / 微信渠道"]
+    P --> B["业务：广告隐藏 / 设备与用户映射"]
+    P --> X["实验：AB 实验分组"]
+    P --> M["映射：广告组翻译"]
+    P --> F["频控组（串行）"]
+    F --> F0["最小间隔"]
+    F0 --> FA["常规业务两连<br/>每日 N 次 / 业务 N 天 1 次"]
+    F0 --> FB["特定业务两连<br/>N 天 1 次 / 每日 N 次"]
+    FA --> FO{{"Or 合并"}}
+    FB --> FO
+{{< /mermaid >}}
 
 **这套框架的真正价值在并行组的收益模型上**：假设 13 个环节平均耗时 20ms（外部服务调用），串行是 260ms，并行后约等于 20ms 加微秒级调度开销。检索阶段从"百毫秒"降到"毫秒"，主要靠的就是这里。
 
@@ -426,35 +325,18 @@ func parallel() pipe.Stop {
 
 `Parallel` 的实现里有三个关键点：
 
-```go
-func Parallel(stops []Stop, logic Logic) Stop {
-	return func(ctx *contextx.Context, inProd Product) (outProd Product, err error) {
-		var (
-			stopsLen  = len(stops)
-			waitGroup = sync.WaitGroup{}
-			outChan   = make(chan Product, len(stops))   // ① 容量 = 环节数，写入不阻塞
-		)
-		waitGroup.Add(stopsLen)
-		for _, handler := range stops {
-			go func(goStop Stop) {
-				defer func() {
-					waitGroup.Done()
-					re := recover()
-					errorx.RecoverErr(ctx, re)           // ② panic 在环节内被吞掉
-				}()
-				goOutProd, goErr := goStop(ctx, inProd)
-				if goErr == nil && goOutProd != nil {
-					outChan <- goOutProd                 // ③ 只写自己的产出
-				}
-			}(handler)
-		}
-		waitGroup.Wait()
-		close(outChan)
-		outProd = inProd.Merge(ctx, outChan, logic)      // 主协程串行合并
-		return
-	}
-}
-```
+{{< mermaid >}}
+sequenceDiagram
+    participant M as 主协程
+    participant C as 结果通道（容量 = 环节数）
+    participant G as 环节 goroutine × N
+    M->>G: 共享只读入参，并发启动 N 个环节
+    G->>C: 成功的结果写入自己的产出
+    Note over G: panic 被 recover 隔离<br/>出错的结果不进入通道
+    M->>M: WaitGroup 等待全部结束
+    M->>C: close 通道
+    M->>M: 串行合并（And / Or）
+{{< /mermaid >}}
 
 ① 通道容量等于环节数，每个 goroutine 各自写入，不会因为没人消费而卡住；
 ② panic 被 recover 隔离，一个环节炸掉不影响其他环节；
@@ -464,28 +346,19 @@ func Parallel(stops []Stop, logic Logic) Stop {
 
 ### 4.2 And 合并的真实语义：一个被覆写的变量
 
-`Merge` 的 And 分支值得逐行读：
+`Merge` 的 And 分支值得拆开看：
 
-```go
-// service/filter/pipe4f/product.go
-case pipe.And:
-	stopsLen := 0                                  // 局部变量遮蔽了外面同名的 stopsLen
-	for item := range resChan {
-		stopsLen++                                 // 统计"实际收到的结果数"
-		outSlotAd := item.(*Product)
-		for slot, adIds := range outSlotAd.SlotAd {
-			for _, id := range adIds {
-				slotAdCount[slot][id]++
-			}
-		}
-	}
-	for slot, ads := range slotAdCount {
-		for adID, count := range ads {
-			if count < stopsLen { continue }        // 出现次数 == 实际结果数
-			slotAds.SlotAd[slot] = append(slotAds.SlotAd[slot], adID)
-		}
-	}
-```
+{{< mermaid >}}
+flowchart TD
+    A["并行环节的输出"] --> B["统计每个广告在各环节结果中出现的次数"]
+    A --> C["统计实际到达的结果份数（stopsLen）"]
+    B --> D{"出现次数 == stopsLen？"}
+    C --> D
+    D -->|"是"| E["保留：每个环节都放行了它"]
+    D -->|"否"| F["丢弃"]
+    G["环节返回错误或 panic"] --> H["输出不进入通道<br/>stopsLen 少计一份"]
+    H --> I["合并退化为按剩余环节取交集<br/>即 fail-open"]
+{{< /mermaid >}}
 
 技术方案里的描述是"出现次数 == 环节数才保留"，但实现里参与比较的是**实际能把结果送进通道的环节数**，不是配置的环节数。这个差异正好构成了 fail-open 机制：
 
@@ -521,42 +394,24 @@ func (sa *Product) Merge(ctx *contextx.Context, resChan chan pipe.Product, logic
 
 ### 5.1 三级缓存与两类 worker
 
-```
-数据源（配置服务 / MySQL）
-   │  ① 数据源 → 缓存        （仅 Leader 执行，周期任务）
-   ▼
- 缓存（Redis）
-   │  ② 缓存 → 内存          （所有实例各自执行，秒级周期）
-   ▼
-进程内存（只读）
-```
+{{< mermaid >}}
+flowchart LR
+    DS[("数据源<br/>配置服务 / MySQL")] -->|"① 数据源 → 缓存<br/>仅 Leader 执行，周期任务"| RD[("Redis")]
+    RD -->|"② 缓存 → 内存<br/>所有实例各自执行，秒级周期"| MEM[("进程内存（只读）")]
+    MEM -->|"检索只读内存"| SRV(["检索链路"])
+{{< /mermaid >}}
 
-调度器简单到只有 57 行：
+同步调度器的结构很轻：
 
-```go
-// service/global/maintainer/scheduler.go（简化）
-func (s *Manager) Run() {
-	for _, item := range s.jobs {
-		item.RedisToMemory()                                        // 启动时先全量拉一次，尽快就绪
-	}
-	for _, item := range s.jobs {
-		go s.timmer(item, item.SrcToRedis, item.GetS2RInterval(), true)   // 需要 Leader
-		go s.timmer(item, item.RedisToMemory, item.GetR2CInterval(), false) // 所有实例
-	}
-}
-
-func (s *Manager) timmer(item Storage, callable func() error, interval time.Duration, checkLeader bool) {
-	for true {
-		select {
-		case <-time.NewTimer(interval).C:
-			if checkLeader && !leader.Default.IAm() { continue }
-			if err := callable(); err != nil { /* 记日志，下轮重试 */ }
-		case <-s.ctx.Done():
-			return
-		}
-	}
-}
-```
+{{< mermaid >}}
+flowchart TB
+    START["进程启动"] --> PULL["先全量 RedisToMemory 一次<br/>尽快就绪"]
+    PULL --> W1["worker ①：数据源 → 缓存<br/>周期 = 缓存同步周期，需 Leader"]
+    PULL --> W2["worker ②：缓存 → 内存<br/>周期 = 内存同步周期，所有实例"]
+    W1 --> ERR{"出错？"}
+    ERR -->|"是"| LOG["记日志，下一轮重试"]
+    W2 --> ERR
+{{< /mermaid >}}
 
 "数据源→缓存"只由 Leader 执行，避免多实例同时打数据源；"缓存→内存"每个实例都做，保证本地读路径永远最新。同步任务失败只记日志，下一轮重试——数据同步不是请求链路，没有重试的紧迫性。
 
@@ -566,30 +421,16 @@ func (s *Manager) timmer(item Storage, callable func() error, interval time.Dura
 
 每类数据在两级缓存上各有一把摘要（MD5），核心是 `cau`（compare and update）：
 
-```go
-// service/global/storage/atomic.go（简化）
-func (m *atomic) cau(key string, newData []byte, update func()) bool {
-	m.lock.Lock()
-	if md5Cache == nil { goto doUpdate }              // 本地缓存不可用 → 退化为每次都更新
-
-	dstMd5 = helper.Md5(string(newData))
-	if m.needExpire {
-		srcMd5, err = md5Cache.Get(key)               // 缓存层：摘要存 bigcache
-		if err != nil { goto doUpdate }
-	} else {
-		srcMd5 = []byte(m.md5[key])                   // 内存层：摘要存进程内 map
-	}
-	if dstMd5 == "" || dstMd5 == string(srcMd5) { goto doNotUpdate }
-doUpdate:
-	/* 更新摘要 */
-	update()                                          // 真正的数据替换
-	m.lock.Unlock()
-	return true
-doNotUpdate:
-	m.lock.Unlock()
-	return false
-}
-```
+{{< mermaid >}}
+flowchart TD
+    A["拿到新数据"] --> B["计算 MD5 摘要"]
+    B --> C{"摘要与记录相同？"}
+    C -->|"是"| D["跳过：不写容器<br/>无 GC 压力、无锁竞争"]
+    C -->|"否 / 摘要缺失"| E["执行 update()：整体替换容器"]
+    E --> F["写入新摘要"]
+    G["缓存层摘要"] --> G1["存在进程内 bigcache<br/>TTL 23 小时"]
+    H["内存层摘要"] --> H1["存在普通 map<br/>进程重启即空，首轮强制全量"]
+{{< /mermaid >}}
 
 这三个细节都值得记：
 
@@ -599,12 +440,7 @@ doNotUpdate:
 
 **② 摘要的 TTL 比数据本身短一小时。**
 
-```go
-// config/sync.go
-SyncRedisExpire   = 24 * time.Hour   // 数据在 Redis 的过期时间
-SyncRedisSafeTime = 1 * time.Hour    // 摘要提前过期的缓冲
-// bigcache 摘要 TTL = SyncRedisExpire - SyncRedisSafeTime = 23h
-```
+数据在 Redis 的 TTL 是 24 小时，而摘要的 TTL 是 23 小时（`SyncRedisExpire - SyncRedisSafeTime`）——这一个小时的差值正是兜底：它保证摘要失效后，必然有一轮 `cau` 会走到更新分支，从而重新写入 Redis 并续期。
 
 这个 1 小时的差值不是随手写的。设想一个场景：数据源连续 23 小时没有任何变更，摘要一直命中 → `cau` 永远返回"不更新" → Redis 里的数据 TTL 到 24 小时被 Redis 清掉，而摘要还在 → 数据永远回不来（除非摘要也过期）。
 
@@ -616,17 +452,7 @@ SyncRedisSafeTime = 1 * time.Hour    // 摘要提前过期的缓冲
 
 另外，`srcToRedis` 的 update 回调里还有一段"相同值就只延长 Redis TTL"的逻辑：
 
-```go
-m.atomicRedis.cau(redisKey, redisNewVal, func() {
-	redisOldVal, err := redisx.Client().Get(redisKey).Bytes()
-	// ...
-	if bytes.Compare(redisOldVal, redisNewVal) == 0 {   // 值相同，只续期
-		redisx.Client().Expire(redisKey, config.SyncRedisExpire)
-		return
-	}
-	redisx.Client().Set(redisKey, redisNewVal, config.SyncRedisExpire)
-})
-```
+更新回调里还有一段"值相同就只延长 TTL"的比较逻辑。由于 `cau` 已经用摘要挡掉了未变化的数据，这段分支在正常路径下基本不会命中——它是双重防抖留下的冗余代码，了解它的存在可以避免后来者困惑"到底哪一层负责去重"。
 
 由于 `cau` 已经用 MD5 挡掉了"值没变"的情况，这段 `bytes.Compare` 分支在正常路径下基本不会命中——它是**双重防抖**留下的冗余代码（也可能是历史演进的结果）。留着无害，但会让后来者困惑"到底哪一层负责去重"。
 
@@ -634,25 +460,16 @@ m.atomicRedis.cau(redisKey, redisNewVal, func() {
 
 内存层的更新是**整体替换**而不是原地修改：
 
-```go
-// service/global/storage/index.go
-i.lock.Lock()
-i.index[slotID] = invertIndex        // 整个资源位的倒排索引，一次性换成新构建的
-i.adField[slotID] = adFieldMap
-i.adIDs[slotID] = adIDs
-i.lock.Unlock()
-```
+{{< mermaid >}}
+flowchart LR
+    B["锁外：构建新的整份索引 map<br/>解析 DNF、展开字段_值"] --> L["锁内：三个 map 指针整体替换<br/>O(1)"]
+    L --> RD["读侧：RLock 取引用后立即释放<br/>后续遍历完全无锁"]
+    RD --> SNAP["读到的要么是旧快照<br/>要么是新快照，不会读到半成品"]
+{{< /mermaid >}}
 
 索引的构建（解析 DNF、展开键、填 map）全部在**锁外**完成，锁内只做三个 map 的指针赋值（O(1)）。读侧的访问器也很短：
 
-```go
-func (i *Index) InvertIndex(slotID string, preview bool) globaltype.InvertIndex {
-	i.lock.RLock()
-	tmp := i.index[slotID]
-	i.lock.RUnlock()
-	return tmp        // 拿到引用后立即释放锁
-}
-```
+读侧访问器同样很短：加读锁取出 map 引用、立刻释放锁，之后的遍历完全在锁外进行。
 
 拿到 map 的引用就释放锁，后续的遍历完全在锁外进行。这在 Go 里是安全的，因为**map 本身是不可变替换的**（没有任何代码会往已发布的 map 里写入）——读到的要么是旧快照，要么是新快照，不会是"改了一半"的状态。同样的模式在广告对象上重复了一次：`AdV2.Get` 加读锁取出指针，之后无锁访问对象内容。
 
@@ -667,28 +484,22 @@ func (i *Index) InvertIndex(slotID string, preview bool) globaltype.InvertIndex 
 
 数据源同步需要单写，用一个 Redis key 做抢占式租约：
 
-```go
-// util/leader/leader.go
-const (
-	leaseInSecond     = 10
-	heartbeatInSecond = 5
-)
-
-func (l *Leader) beat() {
-	redisx.Client().SetNX(leaderKey, l.host, leaseInSecond*time.Second)
-	regHost, err := redisx.Client().Get(leaderKey).Result()
-	if err != nil || regHost == "" {
-		l.setIAm(false)
-		return
-	}
-	if regHost == l.host {
-		l.setIAm(true)
-		redisx.Client().Expire(leaderKey, leaseInSecond*time.Second)   // 续租
-	} else {
-		l.setIAm(false)
-	}
-}
-```
+{{< mermaid >}}
+sequenceDiagram
+    participant I as 实例
+    participant R as Redis 租约 key（TTL 10 秒）
+    loop 每 5 秒心跳
+        I->>R: SETNX 抢租约
+        I->>R: GET 读回持有者
+        alt 持有者是自己
+            I->>R: EXPIRE 续租 10 秒
+            I->>I: 标记为 Leader
+        else 持有者是别人
+            I->>I: 标记为非 Leader
+        end
+    end
+    Note over I,R: 宕机后最长 10 秒由新实例接管<br/>三步非原子，存在双 Leader 窗口
+{{< /mermaid >}}
 
 选型上很克制：不引 Etcd/ZooKeeper，直接用 Redis 的 key + TTL。租约 10s、心跳 5s，Leader 宕机后最长 10s 内新 Leader 接管；key 带 `集群_环境_部署名` 前缀，多环境互不干扰。
 
@@ -702,25 +513,14 @@ func (l *Leader) beat() {
 
 数据之间存在真实依赖：
 
-```
-在线资源位集合（决定"哪些资源位在同步"）
-  └→ 倒排索引（先同步）
-      └→ 广告详情 / 素材（按索引里的广告 ID 遍历同步）
-```
+{{< mermaid >}}
+flowchart LR
+    A["在线资源位集合"] --> B["倒排索引"] --> C["广告详情 / 素材<br/>按索引中的广告 ID 遍历"]
+{{< /mermaid >}}
 
 `AdInfo.SrcToRedis` 的实现就是这个依赖的体现——它必须先读索引拿到广告 ID 列表：
 
-```go
-func (m *AdInfo) SrcToRedis() error {
-	for _, slotID := range SlotV2.GetOnlineSlotIDs() {
-		for _, adID := range IndexV2.AdIDs(slotID, m.isPreview) {   // 依赖索引已同步
-			resp, err := resource.GetAdDetail(m.ctx, adID, m.isPreview)
-			m.srcToRedis(m, adID, resp, err)
-		}
-	}
-	return nil
-}
-```
+广告详情的同步正是这个依赖的体现：外层遍历在线资源位、内层遍历该资源位索引里的广告 ID，逐个拉取。
 
 依赖顺序靠 worker 注册顺序 + 各自周期保证，是"通常成立"而不是"严格保证"。所以检索末尾有那道 `global.Ad(adID) != nil` 的防御性过滤——**用一次 map 查找，把同步窗口期的脏数据挡在链路之外**。这是很典型的"架构上不追求严格顺序，而是在消费端做兜底"的取舍。
 
@@ -743,23 +543,14 @@ func (m *AdInfo) SrcToRedis() error {
 
 每个频控 handler 都是同一个套路：先把需要判断的 key 全部收集起来，一次 `MGET` 拉完，再在本地做判断。
 
-```go
-// service/filter/handler/adslot/freq.go（简化）
-cacheKeys := make([]string, 0)
-adslotToIdx := make(map[string]int)
-for slotID, adIDs := range slotAd.SlotAd {
-	if len(adIDs) == 0 { continue }
-	freqRule := storage.RuleVar.GetFreq(slotID)
-	if freqRule == nil || freqRule.FreqRule.IntervalMinuteOn != 1 { continue }
-	adslotToIdx[slotID] = len(cacheKeys)     // 记住每个资源位在结果中的下标
-	cacheKeys = append(cacheKeys, redisx.BuildKey(config.RedisFreqIntervalMinute, userID, slotID))
-}
-
-redisResList, err := redisx.Client().MGet(cacheKeys...).Result()
-if err != nil {
-	return slotAd, nil                        // 读取失败 → 全部放行
-}
-```
+{{< mermaid >}}
+flowchart TD
+    A["遍历候选资源位"] --> B["收集需要判断的频控 key<br/>并记录每个资源位的下标"]
+    B --> C["一次 MGET 批量读取"]
+    C --> D{"读取失败？"}
+    D -->|"是"| E["全量放行（fail-open）"]
+    D -->|"否"| F["逐资源位、逐广告判定<br/>最小间隔 / 每日次数 / 业务 N 天 1 次"]
+{{< /mermaid >}}
 
 一次请求最多几次 Redis 往返（每个资源位一次批量），而不是"每个广告一次"。
 
@@ -769,29 +560,14 @@ if err != nil {
 
 曝光后的计数写入全部塞进一个 Redis pipeline，一次网络往返：
 
-```go
-// service/filter/handler/adslot/freq.go（简化）
-pipe := redisx.Client().Pipeline()
-
-// 最小间隔
-if freqRule.IntervalMinuteOn == 1 && freqRule.IntervalMinute > 0 {
-	pipe.Set(redisKey, now.Unix(), time.Duration(freqRule.IntervalMinute)*time.Minute)
-}
-
-// 特定业务每日 N 次
-if freqRule.OtherRuleOn == 1 && len(freqRule.OtherBizIDS) > 0 && freqRule.OtherDailyShow > 0 {
-	expire := helper.TodayLastSecond().Add(time.Duration(rand.Intn(120)) * time.Minute).Sub(now)
-	pipe.Incr(redisKey)
-	pipe.Expire(redisKey, expire)      // 过期时间 = 今日剩余 + 0~120 分钟随机抖动
-}
-
-// 常规每日 N 次（排除已归入"特定业务"的广告）
-for _, ad := range ads {
-	if adBelongOther[ad.Id] > 0 { continue }
-	adCount++
-}
-if adCount > 0 { pipe.Incr(redisKey); pipe.Expire(redisKey, expire) }
-```
+{{< mermaid >}}
+flowchart LR
+    A["曝光结果进入异步消费者"] --> B["按规则类型组装写入命令"]
+    B --> P[("Redis Pipeline<br/>一次网络往返")]
+    P --> C1["最小间隔：SET + EXPIRE(N 分钟)"]
+    P --> C2["每日 N 次：INCR + EXPIRE<br/>今日剩余 + 0~120 分钟抖动"]
+    P --> C3["业务 N 天 1 次：SET 时间戳 + EXPIRE<br/>今日剩余 + 抖动 + N-1 天"]
+{{< /mermaid >}}
 
 三个细节：
 
@@ -821,26 +597,14 @@ for _, ad := range ads {
 
 频控计数不是由检索链路写的，而是**由埋点的异步消费者写的**：
 
-```go
-// service/bury/buryreach/buryserver/init.go
-buryManyChan = make(chan *buryManyElem, 100000)      // 有界队列，容量 10 万
-go func() {
-	for true {
-		select {
-		case elem := <-buryManyChan:
-			for _, ads := range elem.infos {
-				for idx, ad := range ads {
-					mysqlBury(elem.ctx, idx, &ad)      // 写报表
-					logBury(elem.ctx, idx, &ad)        // 写结构化日志
-				}
-			}
-			adslot.BuryFreq(elem.ctx, elem.infos)      // 写频控计数
-		case <-contextx.Daemon.Done():
-			break loop
-		}
-	}
-}()
-```
+{{< mermaid >}}
+flowchart LR
+    A["检索响应前：结果投递有界队列<br/>容量 10 万"] --> B["单消费者 goroutine<br/>串行消费"]
+    B --> C["写报表（MySQL / ClickHouse）"]
+    B --> D["写结构化日志"]
+    B --> E["写频控计数<br/>与埋点顺序一致、不重复"]
+    F["trace 前缀为 trace_ / pts_ / test_ 的流量"] -.-> G["直接丢弃，不进埋点"]
+{{< /mermaid >}}
 
 检索请求在阶段 ⑥ 只做一件事：把结果丢进队列（`buryManyChan <- ...`），然后立刻返回响应。计数、报表、日志全部在**单消费者 goroutine 里串行**执行——串行的好处是埋点与计数顺序一致、不会重复，也天然避免了并发写 Redis 的竞争。
 
@@ -858,28 +622,14 @@ go func() {
 
 轮转的判定依据是"用户对这个业务/广告看过几天、点过几次"：
 
-```go
-// service/user/behavior/v2/behavior.go（简化）
-func (b *Client) mark(ctx context.Context, userKey string, adKeys []int, lv types.Level, evt types.Event, evtTime time.Time) {
-	cli := redisx.Client()
-
-	for _, adKey := range adKeys {
-		// 天数：ZSet，member/score 都是日期整数
-		redisDay := b.redisKey(redisPrefixDay, userKey, adKey)
-		dateStrInt := helper.TimeToDateInt(evtTime)
-		added, err := cli.ZAdd(redisDay, redis.Z{Score: float64(dateStrInt), Member: dateStrInt}).Result()
-		if err == nil && added != 0 {                 // 只有"新的一天"才做维护
-			cli.ZRemRangeByLex(redisDay, helper.Itoa(0), helper.Itoa(helper.TimeToDateInt(expiredDate)))
-			cli.Expire(redisDay, config.RedisUserBehaviorExpire)
-		}
-
-		// 次数：普通自增
-		redisCount := b.redisKey(redisPrefixCount, userKey, adKey)
-		cli.Incr(redisCount)
-		cli.Expire(redisCount, config.RedisUserBehaviorExpire)
-	}
-}
-```
+{{< mermaid >}}
+flowchart TD
+    A["曝光 / 点击事件"] --> B["写天数：ZSet<br/>member 与 score 都是日期整数"]
+    B --> C{"ZAdd 返回新增成员？"}
+    C -->|"是（当天第一次）"| D["清理过期日期 + 续期"]
+    C -->|"否（同一天重复）"| E["不做任何维护<br/>只付出一次幂等写入"]
+    A --> F["写次数：INCR + EXPIRE"]
+{{< /mermaid >}}
 
 两个设计点：
 
@@ -891,16 +641,7 @@ func (b *Client) mark(ctx context.Context, userKey string, adKeys []int, lv type
 
 读取侧同样是把 N 个 key 一次拉完：
 
-```go
-pipe := redisx.Client().Pipeline()
-for _, addKey := range adKeys {
-	pipe.ZRange(redisDayClick, 0, -1)    // 点击天数
-	pipe.ZRange(redisDayShow, 0, -1)     // 展示天数
-	redisCountKeys = append(redisCountKeys, redisCountClick, redisCountShow)
-}
-pipe.MGet(redisCountKeys...)
-redisRes, err := pipe.Exec()
-```
+读取侧同样是把 N 个 key 一次拉完：每个 key 两条 `ZRange`（点击天数、展示天数），再加一次 `MGet`（计数），一轮 pipeline 往返就拿到全部规则所需数据。
 
 一次往返拿到所有规则需要的天数 + 次数（印证了技术方案里"管道一次拉取全部规则"的说法），然后按 `idx*2`、`idx*2+1` 的下标约定从 `SliceCmd` 里取值——**用序号约定代替结构体，是性能与可读性之间的一个取舍**：省了一次解包，代价是任何新增命令都必须同步维护这些下标。
 
@@ -908,40 +649,33 @@ redisRes, err := pipe.Exec()
 
 业务层级的轮转控制，逻辑可以画成一棵树：
 
-```
-轮转层级 = 业务层级？
- ├─ 是：按规则列表（每条规则对应一条业务线）逐条判断资格
- │    └─ 资格：已展示天数 ≥ 上限 或 点击次数 ≥ 上限 → 剔除该业务
- │    └─ 选择：随机模式 → 从合格业务里随机；否则按配置顺序取第一个合格的
- │    └─ 全部无资格时，按"结束策略"：
- │         ├─ 循环（Loop）  → 回到第一条业务，并重置该用户的行为记录
- │         ├─ 停留（Last）  → 保持最后一条业务
- │         ├─ 结束（Stop）  → 返回空，或按配置回退到基础检索结果
- │         └─ 资格轮转     → 直接回退基础检索结果
- └─ 否：广告层级
-      └─ 每个固定位置一组广告规则，逐位置判断资格 → 命中则占位
-      └─ 未命中的位置：按配置从基础检索结果补齐
-      └─ 数量收敛：最终数量 = 选中位置数（裁剪多余）
-```
+{{< mermaid >}}
+flowchart TD
+    L{"轮转层级"} -->|"业务层级"| B1["逐条业务规则判断资格<br/>已展示天数 ≥ 上限 或 点击次数 ≥ 上限 → 剔除"]
+    B1 --> B2{"有合格业务？"}
+    B2 -->|"是"| B3["随机模式取随机一条<br/>否则按配置顺序取第一条"]
+    B2 -->|"否"| B4{"全部无资格时的结束策略"}
+    B4 -->|"循环"| B5["回到第一条业务<br/>并重置该用户的行为记录"]
+    B4 -->|"停留"| B6["保持最后一条业务"]
+    B4 -->|"结束"| B7["返回空，或按配置回退基础检索结果"]
+    B4 -->|"资格轮转"| B8["直接回退基础检索结果"]
+    L -->|"广告层级"| A1["每个固定位置一组广告规则<br/>逐位置判断资格，命中则占位"]
+    A1 --> A2["未命中的位置按配置<br/>从基础检索结果补齐"]
+    A2 --> A3["数量收敛：最终数量 = 选中位置数"]
+{{< /mermaid >}}
 
-代码上，资格判断只有几行：
+资格判断的规则本身很直接：
 
-```go
-// service/strategy/artificial/rotationctrl/rotation.go
-func (r *RotationRule) CheckForBusinessLevel(behaviors types.BehaviorListBusiness, ads globaltype.ADs, adID int) (ret globaltype.ADs, ifDo bool) {
-	behavior := behaviors.GetByBusinessID(r.BusinessSpecificID)
-	if behavior == nil {
-		return ads, false                                          // 没有行为记录 → 有资格
-	}
-	if r.EnableViewDays && r.ViewDays <= behavior.ShowDayCount() {  // 已看够天数 → 剔除
-		return ads.DelByAdID(adID), true
-	}
-	if r.EnableClicks && r.Clicks <= behavior.ClickCount() {        // 已点够次数 → 剔除
-		return ads.DelByAdID(adID), true
-	}
-	return ads, false
-}
-```
+{{< mermaid >}}
+flowchart TD
+    A["某业务 / 某广告的轮转规则"] --> B{"有该用户的行为记录？"}
+    B -->|"否"| P["有资格，放行"]
+    B -->|"是"| C{"已展示天数 ≥ 上限？"}
+    C -->|"是"| X["剔除"]
+    C -->|"否"| D{"点击次数 ≥ 上限？"}
+    D -->|"是"| X
+    D -->|"否"| P
+{{< /mermaid >}}
 
 "没有行为记录 → 有资格"这个默认分支很关键：新用户、或缓存被清空（`behaviors.Reset()`）的用户，都能看到广告，不会因为"查不到行为数据"而没广告。
 
@@ -964,16 +698,7 @@ func (r RotationRules) GetBySpecificId(specificId int) *RotationRule {
 
 更有意思的是调用方怎么用它：
 
-```go
-curStrategy := r.Rules.GetBySpecificId(adInfo.SpecificId)
-if curStrategy.RuleType == 1 {
-	// 通用规则：用配置里的公共值覆盖这条规则的阈值
-	curStrategy.ViewDays = r.CommonRule.ViewDays
-	curStrategy.Clicks = r.CommonRule.Clicks
-	curStrategy.EnableClicks = r.CommonRule.EnableClicks
-	curStrategy.EnableViewDays = r.CommonRule.EnableViewDays
-}
-```
+调用方拿到的是**副本的指针**，所以后面用公共规则覆盖阈值（`ViewDays`、`Clicks` 等）时不会写回 `r.Rules` —— 而策略配置对象很可能被多个并发请求共享。
 
 因为拿到的是**副本的指针**，这些赋值不会写回 `r.Rules`——而 `r.Rules` 是策略配置对象，很可能被多个并发请求共享。如果哪天有人"顺手优化"成按下标取址（`return &r[i]`）以消除 G601 告警，就会把配置对象变成**并发写入的共享状态**，数据竞争随之而来。
 
@@ -985,39 +710,20 @@ if curStrategy.RuleType == 1 {
 
 多个资源位可能展示同一个业务的广告（首页横幅 + 弹窗同时推同一门课）。去重规则把"一组资源位 + 一组业务"绑在一起，按优先级升序处理：**先处理的资源位挑走一个业务并"占用"，后面的资源位不能再展示已被占用的业务**。不属于去重业务的广告始终放行。
 
-```go
-// service/render/handler/duprule.go（简化）
-for _, slotId := range dupSlotIds {                    // 已按优先级升序排好
-	selectedBusinessId := 0
-	for _, adInfo := range adInfos {
-		businessId := adInfo.SpecificId
-		// 不属于去重业务的广告，或本次已选中的业务 → 直接放行
-		if !isInOriginBusinessIds[businessId] ||
-			(!isInSelectedBusinessIds[businessId] && selectedBusinessId != 0 && selectedBusinessId == businessId) {
-			outAdInfos = append(outAdInfos, adInfo)
-			continue
-		}
-		// 本资源位选中第一个"未被其他资源位占用"的去重业务
-		if selectedBusinessId == 0 && !isInSelectedBusinessIds[businessId] {
-			outAdInfos = append(outAdInfos, adInfo)
-			selectedBusinessId = businessId
-		}
-	}
-	isInSelectedBusinessIds[selectedBusinessId] = true
-}
-```
+{{< mermaid >}}
+flowchart TD
+    A["按优先级升序取出参与去重的资源位"] --> B["逐资源位处理"]
+    B --> C{"广告属于去重业务？"}
+    C -->|"否"| D["直接放行"]
+    C -->|"是"| E{"该业务已被更高优先级的资源位占用？"}
+    E -->|"是"| F["剔除"]
+    E -->|"否"| G["占位并放行<br/>本资源位只选一个去重业务"]
+    G --> H["记录占用，供后续资源位判断"]
+{{< /mermaid >}}
 
 优先级排序用的是"`priority` map + 按下标 1..N 取值"：
 
-```go
-priority := make(map[int]string)
-for _, item := range data.AdslotEffect {
-	priority[item.Priority] = item.AdslotId
-}
-for i := 0; i < len(data.AdslotEffect); i++ {
-	dupSlotIds = append(dupSlotIds, priority[i+1])
-}
-```
+优先级排序用的是"`priority` map + 按下标 1..N 取值"：先把"优先级 → 资源位"装进 map，再按 1、2、3… 依次取出。这是"用 map 当稀疏数组再按序取值"的写法，能用，但隐含了"优先级必须是 1..N 连续整数"的前提——出现重复优先级（后者覆盖前者）或跳号（取出空字符串）时，排序会静默出错，且没有任何校验。
 
 这是"用 map 当稀疏数组再按序取值"的写法，能用，但隐含了"优先级必须是 1..N 连续整数"的前提；如果配置里出现重复优先级（后者覆盖前者）或跳号（取出空字符串），排序就会静默出错，且没有校验。更稳的写法是显式排序并断言连续性。
 
@@ -1034,12 +740,12 @@ for _, adData := range adDatas {
 
 ### 8.2 素材三层结构
 
-```
-广告对象
- └─ 素材组列表（按 AB 实验 / 年级 / 屏幕比例分组）
-     └─ 候选素材列表（每组可配多个候选）
-         └─ 素材（标题 / 图片 / 跳转链接 / 文本字段 / 扩展）
-```
+{{< mermaid >}}
+flowchart LR
+    AD["广告对象"] --> G["素材组列表<br/>按 AB 实验 / 年级 / 屏幕比例分组"]
+    G --> C["候选素材列表<br/>每组可配多个候选"]
+    C --> M["素材<br/>标题 / 图片 / 跳转链接 / 文本字段 / 扩展"]
+{{< /mermaid >}}
 
 渲染链路按序执行：挂载素材组 → 屏幕比例适配（标准 1.78 / 加长 2.17，取相对误差最近者）→ 年级适配 → AB 实验过滤（素材组配置了实验分层的，与实验平台返回的用户分组比对，实验接口异常默认取第一组）→ 选定素材 → 提取展示内容 → 追加教师信息 → 拼装跳转链接（课程失效则丢弃该广告）。
 
@@ -1047,29 +753,16 @@ for _, adData := range adDatas {
 
 素材展示内容（标题、图片、跳转链接、自定义文本字段）在**数据同步时**就预计算成键值结构；广告对象写入内存时也顺手做了拆分：
 
-```go
-// service/global/storage/ad.go
-func (a *AdInfo) Update(adID string, val interface{}, preview bool) error {
-	data := val.(*globaltype.AD)
-	data.GradeList = strings.Split(data.Grade, ",")   // 同步时预计算，检索时直接用
-	// ...
-}
-```
+素材展示内容（标题、图片、跳转链接、自定义文本字段）在**数据同步时**就预计算成键值结构；广告对象写入内存时也顺手做了拆分（例如把 `grade` 字符串拆成列表）。检索与埋点直接读预计算结果，不做现场拼装。
 
 埋点侧则反过来，用索引去反查全维度（素材 → 教师 → 广告 → 业务线），避免每个事件都带一堆冗余字段：
 
-```go
-// service/bury/buryreach/buryclient/core.go（简化）
-if creativityInfo := storage.CreativityV2.Creativity(helper.Atoi(logMain.MaterialId), false); creativityInfo != nil {
-	logMsg.XBusinesslineID = helper.Itoa(creativityInfo.XBusinesslineID)
-	if adInfo := storage.AdV2.Get(creativityInfo.AdID, false); adInfo != nil {
-		logMsg.ChannelID = helper.Itoa(adInfo.ChannelID)
-		logMsg.CategoryID = helper.Itoa(adInfo.CategoryID)
-		logMsg.SpecificID = helper.Itoa(adInfo.SpecificID)
-		// ...
-	}
-}
-```
+{{< mermaid >}}
+flowchart LR
+    M["素材 ID"] --> C["素材信息<br/>反查得到广告 ID"]
+    C --> A["广告信息<br/>渠道 / 类目 / 业务线 / 位置 / 营销素材"]
+    A --> L["埋点字段补全"]
+{{< /mermaid >}}
 
 **写路径贵一次、读路径省一万次**——检索是高频路径，同步是低频路径，把计算放在哪一侧是很明确的选择。
 
@@ -1081,46 +774,19 @@ if creativityInfo := storage.CreativityV2.Creativity(helper.Atoi(logMain.Materia
 
 **① 测试流量按 trace 前缀过滤。**
 
-```go
-func BuryMany(ctx *contextx.Context, slotData globaltype.SlotData) {
-	traceID := tracex.TraceID(ctx)
-	if strings.HasPrefix(traceID, "trace_") || strings.HasPrefix(traceID, "pts_") ||
-		strings.HasPrefix(traceID, "test_") || len(traceID) < 1 {
-		return
-	}
-	buryManyChan <- &buryManyElem{ctx: ctx, infos: slotData}
-}
-```
+投递前先看 trace 前缀（`trace_`、`pts_`、`test_`）与长度：压测、回归比对、联调流量直接丢弃，否则报表会被测试数据污染。
 
 压测、回归比对、联调流量不进埋点，否则报表会被测试数据污染。
 
 **② 单日去重。** 报表写入前先抢一个"用户 + 日期 + 素材"的 SetNX 标记：
 
-```go
-// key = 业务前缀_日期_用户_素材
-uniqKey := strings.Join([]string{pvKeyPrefix, now.Format(helper.TimeFormatDate), tmpUserID, creativity.CreativityId}, "_")
-expire := helper.TodayLastSecond().Sub(now) + time.Minute*time.Duration(randx.Intn(120))
-res, _ := cachex.SetNX(uniqKey, helper.Itoa(int(now.Unix())), expire)
-if res != true {
-	continue        // 今天这个用户已经记过这个素材
-}
-```
+报表写入前先抢一个 SetNX 标记，key 由"业务前缀 + 日期 + 用户 + 素材"拼成；抢到才写，抢不到就跳过。过期时间同样加上 0~120 分钟随机抖动。
 
 注意过期时间也用了同样的 0~120 分钟随机抖动——和频控 key 是同一套防"整点集中过期"的思路。
 
 **③ 历史数据清理只由 Leader 做。**
 
-```go
-func MysqlBuryClear() {
-	if !leader.Default.IAm() { return }
-	for i := 0; i < 150; i++ {
-		stmt := sqlxx.NewStmtCore("DELETE FROM ... WHERE created_at < ? LIMIT 5000", time.Now().AddDate(0, 0, -2))
-		// ...
-		if rowsCount <= 0 { return }
-		time.Sleep(200 * time.Millisecond)      // 限速，避免打满 MySQL
-	}
-}
-```
+历史清理是标准姿势：**只由 Leader 执行** + 每批 `LIMIT 5000` + 每批之间 `Sleep 200ms` 限速 + 最多 150 轮，避免清理任务打满 MySQL。
 
 小批量（LIMIT 5000）+ 限速 + 只由 Leader 执行 + 最多 150 轮，是清理类任务的标准姿势。
 
@@ -1128,29 +794,15 @@ func MysqlBuryClear() {
 
 有一类需求是"某个配置变了，通知所有实例刷新本地缓存"。系统没有用 Redis Pub/Sub，而是实现了一个基于 List 的扇出：
 
-```go
-// util/broadcast/broadcast.go（简化）
-func Product(ctx context.Context, topic, payload string) error {
-	hostnames, _ := redisx.Client().SMembers(_keyHosts(topic)).Result()
-	for _, hostStr := range hostnames {
-		// 心跳还在的实例才投递
-		if exists, err := redisx.Client().Get(_keyHeartbeatFull(topic, hostStr)).Result(); err != nil || exists == "" {
-			continue
-		}
-		redisx.Client().LPush(_keyQueueFull(topic, hostStr), payload)   // 每个实例一个私有队列
-	}
-	return nil
-}
-
-func Consume(topic string, f ConsumerFunc) error {
-	for {
-		time.Sleep(500 * time.Millisecond)
-		payload, err := redisx.Client().RPop(_keyQueue(topic)).Result()
-		if err != nil || payload == "" { continue }
-		f(string(payload))
-	}
-}
-```
+{{< mermaid >}}
+flowchart TB
+    P["生产者：遍历 hosts 集合"] --> H{"该实例心跳还在？"}
+    H -->|"否"| SKIP["跳过<br/>僵尸队列由清理者回收"]
+    H -->|"是"| L["LPush 到该实例的私有队列<br/>ads_queue_queue_topic_host"]
+    L --> C["各实例消费者：每 500ms RPop 一条"]
+    C --> F["处理消息：配置变更 → 刷新本地缓存"]
+    CL["清理者：每 2 秒执行<br/>SetNX 抢锁选出唯一执行者"] --> CL2["心跳过期的实例<br/>移出 hosts 并删除其队列"]
+{{< /mermaid >}}
 
 结构是：一个 hosts 集合记录活着的实例，每个实例有一个心跳 key（TTL 5s，1s 刷新一次）和一个私有 List 队列；生产者遍历 hosts，向每个实例自己的队列 `LPush`；消费者每 500ms 从自己的队列 `RPop` 一条。
 
@@ -1165,19 +817,7 @@ func Consume(topic string, f ConsumerFunc) error {
 
 反馈（负反馈）事件需要通知所有实例更新本地缓存，但反馈可能很频繁。于是有一个很实用的降噪策略：
 
-```go
-func broadcastFeedback(ctx *gin.Context, input FeedBack) {
-	if load.CpuLoad.IsOverLoad() {              // 平均响应时间超过阈值
-		if randx.Intn(100) == 1 {               // 过载时只放行 1%
-			productFeedback(ctx, input.UserId)
-		} else {
-			logx.D("avg_response time = %v, bypass boardcast update local cache by mq ", load.ResponseTime.Average)
-		}
-	} else {
-		productFeedback(ctx, input.UserId)
-	}
-}
-```
+响应时间超过阈值（70ms）时，只放 1% 的广播出去，其余记日志跳过：**过载时主动降低非关键链路的负载**，而且降的是"消息扇出"这种会放大成本的写操作（一次广播等于 N 次 LPush）。
 
 响应时间超过阈值（`IG_User_Tag_Filter = 70ms`）时，只放 1% 的广播出去，其余记日志跳过。**过载时主动降低非关键链路的负载**，而且降的是"消息扇出"这种会放大成本的写操作（一次广播 = N 次 LPush），选择很准确。
 
@@ -1185,40 +825,15 @@ func broadcastFeedback(ctx *gin.Context, input FeedBack) {
 
 ### 10.1 EWMA 过载指标
 
-```go
-// util/load/load.go
-type ResponseTimeCalculator struct {
-	exp1    float64 // exp(-5/60)
-	Average float64
-	Lock    sync.RWMutex
-}
-
-func (rtc *ResponseTimeCalculator) Append(value float64) {
-	rtc.Lock.Lock()
-	rtc.Average = rtc.Average*rtc.exp1 + value*(1-rtc.exp1)   // EWMA
-	rtc.Lock.Unlock()
-}
-```
+用 EWMA（指数加权移动平均）统计接口平均耗时，权重 `exp(-5/60) ≈ 0.92004` —— 采样周期 1 秒、半衰期约 5 秒，与 Linux 内核 load 平均的算法一致：**平均耗时 = 平均耗时 × 0.92004 + 本次耗时 × 0.07996**。
 
 `exp(-5/60) ≈ 0.92004` 是 Linux 内核 load 平均的经典衰减系数（采样 1 秒、半衰期 5 秒）。请求耗时通过中间件在每次请求结束时追加：
 
-```go
-func ResponseTimeMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		t := time.Now()
-		c.Next()
-		load.ResponseTime.Append(time.Since(t).Seconds() * 1000)
-	}
-}
-```
+每次请求结束时由中间件追加一次采样：进入 handler 前记下开始时间，`c.Next()` 之后把耗时（毫秒）追加进 EWMA。
 
 阈值分成三档（20ms / 40ms / 70ms），对应不同成本的操作（Redis 额外操作、Redis 基础操作、用户标签过滤），由 `LevelConfigs` 定义；探活接口直接把当前值写出去：
 
-```go
-rootGroup.GET("/test/responsetime", func(c *gin.Context) {
-	c.Writer.WriteString(strconv.FormatFloat(load.ResponseTime.Average, 10, 4, 64))
-})
-```
+探活接口直接把当前平均值暴露出来，供监控与压测观察；阈值分三档（20ms / 40ms / 70ms）对应不同成本的操作，由 `LevelConfigs` 定义。
 
 这里有**一处并发缺陷**：`Append` 在锁内写 `Average`，但读取侧（`IsOverLoad`、探活接口）完全没有加锁——虽然 float64 在 64 位平台上通常是原子的，但在 Go 的内存模型下这仍是数据竞争（`go test -race` 会报），而且"读到半新半旧的值"在 EWMA 场景下虽无害、却不是可以依赖的性质。修法很简单：把 `Average` 收进一个方法 `AverageNow()` 用读锁返回，或者干脆用 `atomic.Uint64` 存 bits。
 
@@ -1239,47 +854,30 @@ func (c *cpuLoad) IsOverLoad() bool {
 - **HTTP 客户端分级超时**：快 / 中 / 慢三档，对应不同 SLA 的下游（画像、活动、实验），内部硬超时保证快速失败；
 - **签名鉴权按域名自动选择凭据**：`appid + 毫秒时间戳 + md5 签名`，按 host 后缀自动切换新旧网关的三套 appid/appKey：
 
-```go
-func (r *Request) seturl(apiURL string) *Request {
-	r.url, err = url.Parse(apiURL)
-	if err == nil {
-		// 按 host 后缀命中不同的内部网关，自动挂上对应的 appid / appKey
-		if isInternalHost(r.url.Host) {
-			if strings.HasPrefix(r.url.Host, "adstapi") {
-				r.WithAuthOld()      // 旧版网关凭据
-			} else {
-				r.WithAuth()         // 新版网关凭据
-			}
-		} else if isExperimentHost(r.url.Host) {
-			r.WithAuthNew()          // 实验平台单独申请的凭据
-		}
-	}
-	return r
-}
-```
+{{< mermaid >}}
+flowchart TD
+    A["HTTP 客户端：解析目标 URL"] --> B{"host 命中内部网关？"}
+    B -->|"是，且前缀为 adstapi"| C["旧版网关凭据"]
+    B -->|"是，其它"| D["新版网关凭据"]
+    B -->|"否"| E{"命中实验平台域名？"}
+    E -->|"是"| F["实验平台专用凭据"]
+    E -->|"否"| G["不带签名凭据"]
+{{< /mermaid >}}
 
 用 host 后缀来路由鉴权凭据，好处是调用方不用关心（写个 URL 就自动带对签名）；坏处是**鉴权规则散落在 HTTP 客户端内部**，新增一个网关就要改一次这个函数，且没有测试覆盖。更清晰的形态是把凭据选择做成显式配置（域名 → 凭据集），由配置驱动。
 
 - **响应缓存**：对高频且稳定的接口（画像、活动）开启进程内缓存，key = `host+path` + 请求体（GET 用 query、POST 用 body）的 MD5，TTL 2 分钟：
 
-```go
-func (r *Request) FetchByte() ([]byte, error) {
-	var cacheEntry cache.Entry
-	if r.withCache {
-		var tmpBody []byte
-		switch r.method {
-		case MethodGet:  tmpBody = []byte(r.url.RawQuery)
-		case MethodPost: tmpBody = r.body
-		}
-		cacheEntry = cache.NewEntry(r.url.Host+r.url.Path, tmpBody)
-		respByte, err := cacheEntry.Get()
-		if err != nil && respByte != nil {
-			return respByte, nil        // 命中缓存
-		}
-	}
-	// ... 真实请求，成功后 Set
-}
-```
+{{< mermaid >}}
+flowchart TD
+    A["发起 HTTP 请求"] --> B{"开启响应缓存？"}
+    B -->|"是"| C["组装缓存 key：host + path + 请求体 MD5"]
+    C --> D{"命中本地缓存？"}
+    D -->|"是"| E["直接返回缓存响应"]
+    D -->|"否"| F["真实 HTTP 调用<br/>分级超时 + 签名 + trace 透传"]
+    B -->|"否"| F
+    F --> G["成功后写入缓存<br/>bigcache，TTL 2 分钟"]
+{{< /mermaid >}}
 
 底层是 bigcache（`MaxEntriesInWindow = 3000*60`、`HardMaxCacheSize = 6*1024` MB，即按 3000 QPS 的规模预留），缓存实例创建失败时错误被丢弃（`bigCacheClient, _ = bigcache.NewBigCache(config)`），**一旦为 nil，Get/Set 会 panic**。这是个应该补上的错误处理。
 
