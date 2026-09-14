@@ -35,63 +35,67 @@ summary: "一套支撑教育选课场景高并发条件筛选的自研内存检�
 | `course` | 课程数据同步任务 | 离线/定时 ETL，把业务库数据加工后批量写入引擎 |
 | `course-count` | 购课数统计任务 | 基于引擎快照并行统计购课数并写回业务库 |
 
-整体分四层，外加数据生产链路与消费端：
+系统由「四层引擎 + 基础组件」构成，整体架构如下：
 
 {{< mermaid >}}
 flowchart TB
-    subgraph 消费端
-        APP["App / Web / 选课中台"]
+    subgraph L1["接入层"]
+        GW["HTTP 服务（Gin）<br/>search / doc / index / db"]
     end
 
-    subgraph 生产链路
-        MYSQL[("业务 MySQL")]
-        ETL["course 数据同步任务<br/>生产者-消费者流水线"]
-        CC["course-count 购课数统计<br/>快照导入 + 并行计数"]
-        STAT[("统计 MySQL")]
+    subgraph L2["查询处理层"]
+        PA["Parser<br/>DSL 解析"] --> PL["Planner<br/>查询计划"] --> EX["Executor<br/>执行树"]
+        EX --> AG["聚合器<br/>桶 + 指标"]
     end
 
-    subgraph 引擎["filter-server 筛选引擎"]
-        subgraph 接入层
-            HTTP["HTTP 服务（Gin）<br/>search / doc / index / db 路由"]
-        end
-        subgraph 查询处理层
-            PARSER["Parser<br/>JSON DSL → 查询计划"]
-            EXEC["Executor<br/>执行树 Open / Next / Close"]
-            AGG["聚合器<br/>桶聚合 + 指标聚合"]
-        end
-        subgraph 存储引擎层
-            MEM[("内存 DB<br/>多索引管理")]
-            INVERT["字段倒排索引<br/>哈希 / 跳表"]
-            BITMAP["文档位图<br/>RoaringBitmap 交并差"]
-        end
+    subgraph L3["存储引擎层"]
+        DB[("内存 DB<br/>多索引")]
+        IDX["倒排索引<br/>哈希 / 跳表"]
+        BM["文档位图"]
+        DB --- IDX
+        DB --- BM
     end
 
-    subgraph 基础组件
-        ETCD[("Etcd<br/>主备选举")]
-        NACOS["Nacos<br/>动态配置"]
-        STORE[("持久化 Store<br/>Redis / OSS / 文件")]
+    subgraph L4["持久化与基础组件"]
+        ST[("Store<br/>快照多后端")]
+        ET["Etcd<br/>主备选举"]
+        NC["Nacos<br/>配置下发"]
     end
 
-    APP -->|检索请求| HTTP
-    HTTP --> PARSER --> EXEC
-    EXEC --> AGG
-    EXEC --> MEM
-    AGG --> MEM
-    MEM --> INVERT
-    MEM --> BITMAP
-
-    MYSQL -->|原始数据| ETL
-    ETL -->|批量写入文档| HTTP
-    MEM -->|定时导出快照| STORE
-    STORE -->|导入快照| MEM
-    STORE -->|读取快照| CC
-    CC -->|统计结果| STAT
-
-    ETCD -. 主备竞选 .-> MEM
-    NACOS -. 配置下发 .-> HTTP
+    GW --> PA
+    EX --> DB
+    DB --> ST
+    ET -. 选举 .-> DB
+    NC -. 配置 .-> GW
 {{< /mermaid >}}
 
-这个分层里有两点值得注意：
+各层职责：
+
+| 层次 | 主要组成 | 职责 |
+|------|----------|------|
+| 接入层 | HTTP 服务、路由与控制器 | 对外暴露检索、文档、索引、快照等 HTTP 接口 |
+| 查询处理层 | Parser、Planner、Executor、聚合器 | DSL 解析 → 查询计划 → 执行树 → 排序分页分组聚合 |
+| 存储引擎层 | 内存 DB、字段倒排索引、文档位图 | 多索引内存库；字段级倒排索引与位图运算 |
+| 持久化与基础组件 | Store 抽象、Etcd、Nacos、运行时观测 | 快照的多后端存储；主备选举、配置下发、指标采集 |
+| 数据生产链路 | `course` 同步任务、`course-count` 统计任务 | 业务数据加工写入引擎；基于快照统计购课数并回流 |
+
+从数据流动的视角看，同一套系统串起了写入、查询、统计三条链路：
+
+{{< mermaid >}}
+flowchart TB
+    D[("业务 MySQL")] --> E["course 同步任务<br/>数据加工 → 建索引 → 批量写入"]
+    E --> F[("内存索引<br/>倒排索引 + 位图")]
+
+    A["选课请求"] --> B["检索接口<br/>位图筛选 → 排序分页聚合"]
+    B --> C["结果返回"]
+    F --> B
+
+    F --> G["定时导出快照"]
+    G --> H["course-count<br/>并行计数"]
+    H --> I[("统计 MySQL")]
+{{< /mermaid >}}
+
+这套结构里有两点值得注意：
 
 1. **查询处理与存储解耦，读取路径无锁**。查询全程只读内存索引，写入（文档变更、快照导入）才加锁，因此一次耗时的快照导入不会长时间阻塞查询。
 2. **数据流入与流出分离**。业务数据经 ETL 任务单向写入引擎；引擎的状态则通过快照在实例之间流动。两条路径互不依赖，任一环节出问题都不会同时影响读写。
