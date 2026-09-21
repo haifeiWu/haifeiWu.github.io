@@ -49,3 +49,47 @@
     radial-gradient(rgba(148, 163, 184, 0.10) 1px, transparent 1.5px);
   background-size: auto, auto, 26px 26px;
 }
+
+/* ===== 作品页（微信小程序码） =====
+   小程序码需白底才能被稳定识别，卡片自带浅色底；用自定义类而非 Tailwind 工具类，
+   避免主题预编译 CSS 未扫描本站 layouts/ 导致类被 purge */
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.work-card {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  border: 1px solid rgba(var(--color-neutral-600), 0.3);
+  border-radius: 1rem;
+  background-color: rgba(var(--color-neutral-100), 1);
+}
+
+.work-card img {
+  width: 240px;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto 1rem;
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+}
+
+.work-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.work-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5rem;
+}
+
+.dark .work-card {
+  border-color: rgba(var(--color-neutral-600), 0.5);
+  background-color: rgba(var(--color-neutral-800), 1);
+}

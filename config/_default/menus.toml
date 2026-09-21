@@ -11,6 +11,11 @@
   weight = 20
 
 [[main]]
+  name = "作品"
+  pageRef = "works"
+  weight = 25
+
+[[main]]
   name = "博客"
   url = "/posts/"
   weight = 30
