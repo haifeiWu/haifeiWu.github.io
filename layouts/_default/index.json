@@ -1,0 +1,38 @@
+{{- /* 覆盖主题同路径模板，给搜索索引瘦身（线上 index.json 压缩后仍有 306KB）：
+   1. 只索引内容页（Kind = page），剔除 tags / categories / authors / series / section / home 条目
+   2. content 字段截断到 400 字符 —— Fuse 中它的权重仅 0.4（title 0.8、summary 0.6），
+      而全文占索引体积 89%；开篇关键词仍可搜到，标题与摘要保持全量 */ -}}
+{{- $index := slice -}}
+{{ $pages := .Site.Pages }}
+{{ range .Site.Home.Translations }}
+{{ $pages = $pages | lang.Merge .Site.Pages }}
+{{ end }}
+{{- range $pages -}}
+  {{- if and (not .Params.excludeFromSearch) (eq .Kind "page") -}}
+    {{- $section := .Site.GetPage "section" .Section -}}
+    {{- $content := .Plain | truncate 400 -}}
+    {{- if .Date -}}
+      {{- $index = $index | append (dict
+      "date" (.Date | time.Format (.Site.Language.Params.dateFormat | default ":date_long"))
+      "title" (.Title | emojify | safeJS)
+      "section" ($section.Title | emojify | safeJS)
+      "summary" (.Summary | plainify | htmlUnescape | safeJS)
+      "content" ($content | safeJS)
+      "permalink" .RelPermalink
+      "externalUrl" .Params.externalUrl
+      "type" .Type
+      ) -}}
+    {{- else -}}
+      {{- $index = $index | append (dict
+      "title" (.Title | emojify | safeJS)
+      "section" ($section.Title | emojify | safeJS)
+      "summary" (.Summary | plainify | htmlUnescape | safeJS)
+      "content" ($content | safeJS)
+      "permalink" .RelPermalink
+      "externalUrl" .Params.externalUrl
+      "type" .Type
+      ) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $index | jsonify -}}

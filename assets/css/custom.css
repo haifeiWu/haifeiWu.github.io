@@ -93,3 +93,128 @@
   border-color: rgba(var(--color-neutral-600), 0.5);
   background-color: rgba(var(--color-neutral-800), 1);
 }
+
+/* ===== 首页入口卡（项目与作品 / 博客） ===== */
+.home-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1.75rem 0 0;
+}
+
+.home-cards .home-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  border: 1px solid rgba(var(--color-neutral-600), 0.3);
+  border-radius: 1rem;
+  background-color: rgba(var(--color-neutral-100), 1);
+  text-decoration: none;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.home-cards .home-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--color-primary-500), 0.6);
+}
+
+.home-cards .home-card h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  line-height: 1.5rem;
+}
+
+.home-cards .home-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5rem;
+  color: rgba(var(--color-neutral-500), 1);
+}
+
+.home-cards .home-card .home-card-more {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: rgba(var(--color-primary-500), 1);
+}
+
+.dark .home-cards .home-card {
+  border-color: rgba(var(--color-neutral-600), 0.5);
+  background-color: rgba(var(--color-neutral-800), 1);
+}
+
+/* ===== 咖啡浮动按钮 / 弹层：定位 + 小屏图标化 =====
+   fixed 元素原先停留在视口右下偏上位置，压住卡片与 TOC：下移贴角，
+   小屏收成 44px 圆钮（原先 168px 宽会压住卡片标题），并适配安全区 */
+.bf-coffee-fab {
+  position: fixed;
+  inset-inline-end: 1.25rem;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* 页面顶部时隐藏（右下角此时会压住未吸顶的目录条目），滚动超过阈值后由脚本移除 */
+.bf-coffee-fab.bf-coffee-hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(0.75rem);
+  pointer-events: none;
+}
+
+.bf-coffee-pop {
+  position: fixed;
+  inset-inline-end: 1.25rem;
+  bottom: calc(9rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* 主题自带的「回到顶部」按钮原本也在 bottom-6 end-6，与咖啡按钮重叠 82%
+   （实测 1208~1256 × 738~776 完全落在咖啡按钮 1092~1260 × 738~780 内）：
+   把回到顶部上移，与咖啡按钮在右下角纵向排列 */
+#scroll-to-top {
+  bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 639px) {
+  .bf-coffee-fab {
+    inset-inline-end: 1rem;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .bf-coffee-label {
+    display: none;
+  }
+
+  .bf-coffee-pop {
+    inset-inline-end: 1rem;
+    bottom: calc(8.75rem + env(safe-area-inset-bottom, 0px));
+    width: calc(100vw - 2rem);
+    max-width: 16rem;
+  }
+
+  #scroll-to-top {
+    bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* 正文底部留白：滚动到底时最后一段 / 页脚不被浮动按钮盖住 */
+#main-content {
+  padding-bottom: 4.5rem;
+}
+
+/* TOC 限高：文章页 TOC 停在 lg:top-[140px]，不限高会一路延伸到视口右下角，
+   把两个浮动按钮都压在目录文字上。16.5rem = 140px 顶部偏移 + 回到顶部 48px
+   + 咖啡按钮 42px + 间距余量 */
+.toc {
+  max-height: calc(100vh - 16.5rem);
+  overflow-y: auto;
+}
+
+/* TOC 所在侧栏预留底部空间：滚动到页面底部时 sticky 目录提前收住，
+   否则会被下推到视口右下角、与浮动按钮重叠 */
+section > div:has(> .toc) {
+  padding-bottom: 5.5rem;
+}
+
+
