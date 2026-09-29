@@ -2,6 +2,18 @@
    （主题 CSS 为预编译产物，不扫描本站 layouts/，以下类需手动补充）
    语法与 Tailwind v4 / Blowfish 变量保持一致 */
 
+/* ===== 设计变量（统一从这里取值，避免卡片圆角/边框/底色在各处硬编码） ===== */
+:root {
+  --site-radius: 1rem;
+  --site-card-border: rgba(var(--color-neutral-600), 0.3);
+  --site-card-bg: rgba(var(--color-neutral-100), 1);
+}
+
+.dark {
+  --site-card-border: rgba(var(--color-neutral-600), 0.5);
+  --site-card-bg: rgba(var(--color-neutral-800), 1);
+}
+
 /* 位置与尺寸 */
 .bottom-40 { bottom: 10rem; }
 .w-64 { width: 16rem; }
@@ -215,6 +227,55 @@
    否则会被下推到视口右下角、与浮动按钮重叠 */
 section > div:has(> .toc) {
   padding-bottom: 5.5rem;
+}
+
+/* ===== P1：阅读体验与视觉 ===== */
+
+/* 卡片统一引用设计变量（值与原硬编码一致，仅做收敛；dark 变体由 .dark 块声明） */
+.work-card,
+.home-cards .home-card {
+  border-color: var(--site-card-border);
+  background-color: var(--site-card-bg);
+  border-radius: var(--site-radius);
+}
+
+/* 中文正文：18px 在纯中文段落里偏大，收到 17px 并把行高提到 1.85 */
+.article-content {
+  font-size: 1.0625rem;
+  line-height: 1.85;
+}
+
+/* 移动端文章标题：text-4xl(36px) 下中文长标题会占满三行，降一档 */
+@media (max-width: 640px) {
+  header#single_header h1 {
+    font-size: 1.75rem;
+    line-height: 1.35;
+  }
+}
+
+/* 卡片标签收敛：一篇文章最多 6 个标签会把卡片底部铺满两行，
+   卡片里只保留前 4 个（文章页头部的标签仍完整展示） */
+.article-link--card div.flex.flex-row.flex-wrap.items-center > a:nth-child(n + 5) {
+  display: none;
+}
+
+/* 页面顶部氛围渐变：站点文章没有封面图，主题的 hero/background 分支不会渲染
+   （.single_hero_background 实际只挂在 #menu-blur 上）。改挂在 body 上：
+   fixed 顶栏区域也一起渐变，且与页面底色无缝（挂在 #main-content 上时，
+   容器顶边会出现一条横向断层） */
+body {
+  background-image:
+    radial-gradient(circle 900px at 14% -10%, rgba(99, 102, 241, 0.16), transparent 70%),
+    radial-gradient(circle 800px at 86% -6%, rgba(14, 165, 233, 0.12), transparent 68%);
+  background-repeat: no-repeat;
+  background-size: 100% 660px;
+  background-position: top center;
+}
+
+.dark body {
+  background-image:
+    radial-gradient(circle 900px at 14% -10%, rgba(99, 102, 241, 0.26), transparent 70%),
+    radial-gradient(circle 800px at 86% -6%, rgba(56, 189, 248, 0.18), transparent 68%);
 }
 
 

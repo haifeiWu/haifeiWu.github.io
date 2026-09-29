@@ -35,7 +35,8 @@ hotlinkFeatureImage = false
 
 highlightCurrentMenuArea = true
 smartTOC = true
-smartTOCHideUnfocusedChildren = false
+# 长文目录只高亮当前分支（false 时会把当前章节的所有子项都展开，目录变得很长）
+smartTOCHideUnfocusedChildren = true
 
 #giteaDefaultServer = "https://git.fsfe.org"
 #forgejoDefaultServer = "https://v11.next.forgejo.org"
